@@ -40,7 +40,7 @@ kaushal-forge/
 │       └── styles/           # the 4 proven LaTeX styles (copied, de-personalised)
 │           ├── cf-ats.tex  cf-modern.tex  cf-twocol.tex  cf-letter.tex
 │
-├── skill/                    # LAYER 2 — the AI "core engine" (Claude Code Skill format)
+├── .github/skills/           # LAYER 2 — the AI "core engine" (Claude Code Skill format)
 │   └── kaushal-forge/
 │       ├── SKILL.md          # master orchestrator skill (frontmatter + the runbook the agent follows)
 │       ├── phases/           # one self-contained prompt per judgement step (schema + rules + example inline)
@@ -111,7 +111,7 @@ The AI only ever emits **structured JSON or templated markdown**; every render/c
 11. **`engine/render_linkedin.py`** & **`render_strategy.py`** ← new, simple: `render_linkedin.py` turns `work/linkedin.json` (keys: headline_variants[], about, experience[], skills, featured, certs, misc) into the 8 `output/LinkedIn/*.md` files using the section layouts from `journey/LinkedIn/*.md` as templates; `render_strategy.py` copies `work/strategy/*.md` to `output/Strategy/` and writes a small index.
 
 ### STEP C — Layer 2 (the Skill / AI core engine)
-12. **`skill/kaushal-forge/SKILL.md`** ← new. Frontmatter:
+12. **`.github/skills/kaushal-forge/SKILL.md`** ← new. Frontmatter:
     ```
     ---
     name: kaushal-forge
@@ -119,23 +119,23 @@ The AI only ever emits **structured JSON or templated markdown**; every render/c
     ---
     ```
     Body = the operator runbook: the phase table above + "for each phase, open phases/PN-*.md, follow it, write the JSON to work/, then run the named engine script; finally run build_pdfs.py and verify.py and do not finish until verify.py exits 0." Emphasise: **the model only writes JSON/MD; scripts render & check.**
-13. **`skill/kaushal-forge/rules/`** ← extract, verbatim where possible, from this session:
+13. **`.github/skills/kaushal-forge/rules/`** ← extract, verbatim where possible, from this session:
     - `confidentiality.md`: omit GPA; generalise client names → category (e.g., "Fortune-500 retail"); strip internal codenames; "AI-augmented engineering"; **no public job-seeking signal** (diplomacy); **no fabrication — every claim traces to the dump**. (Source: `journey/_source/master-profile.md` §9.)
     - `linkedin-limits.md`: Headline ≤220 · About ≤2600 · Experience desc ≤2000 each · ≤50 skills (pin 3) · title ≤100. (Source: `journey/LinkedIn/00-overview.md`.)
     - `fit-and-caps.md`: 1-page caps (skills 4 rows; bullets current 4 [dense→3], then 2/2/1; projects 2; 9pt extarticle) and 2-page full (10pt). LaTeX macro contract + `esc()` rules. (Source: the style files + `_gen_resumes.py`.)
     - `style-guide.md`: voice = preserve the person's authentic persona; metrics over adjectives; STAR-ready bullets; ASCII only in JSON (scripts escape).
-14. **`skill/kaushal-forge/schemas/`** ← the JSON contracts (these are the exact shapes that produced good output this session):
+14. **`.github/skills/kaushal-forge/schemas/`** ← the JSON contracts (these are the exact shapes that produced good output this session):
     - `profile.schema.json`: `{ identity{name,pronouns,location,tagline,handles{}}, contact{email,phone,linkedin,github,portfolio}, experience[{role,org,dates,location,bullets[]}], education[{degree,institution,dates,detail}], skills_groups[{label,items}], certs[], awards[], languages[], projects[{name,meta,desc,url}], persona, achievements_bank[] }`
     - `variants.schema.json` (per résumé variant): `{ id, key, headline, summary, focus, skills_rows[{label,items}], experience[{role,org,dates,location,bullets[]}], projects[{name,meta,desc}], guide_md }`
     - `letters.schema.json`: `{ id, key, email_subject, opening, body[], closing, why_company_prompt, notes_md }`
     - `linkedin.schema.json`: `{ headline_variants[], about, experience[{title,org,dates,bullets[]}], skills{ordered[],pin3[]}, featured[], certs_note, misc_settings }`
-15. **`skill/kaushal-forge/phases/PN-*.md`** ← one prompt each. Each MUST contain, inline: **(role)**, **(inputs/where to read)**, **(the schema)**, **(the relevant rules)**, **(a worked example from `examples/`)**, **(acceptance self-checks)**, **(output path in `work/`)**. Reuse the exact, proven instructions:
+15. **`.github/skills/kaushal-forge/phases/PN-*.md`** ← one prompt each. Each MUST contain, inline: **(role)**, **(inputs/where to read)**, **(the schema)**, **(the relevant rules)**, **(a worked example from `examples/`)**, **(acceptance self-checks)**, **(output path in `work/`)**. Reuse the exact, proven instructions:
     - **P4-resumes.md** and **P5-coverletters.md**: paste the *agent prompts + schemas* we used in the two Workflow runs this session (resume-variants-draft and cover-letters-draft) — they are the gold instructions; just swap person-specific text for "read from `work/profile.json`."
     - **P1-structure.md**: instruct mining `work/00-raw-dump.txt` into `profile.json` per schema, applying `rules/confidentiality.md`; example = `journey/_source/master-profile.md` + `achievements-bank.md`.
     - **P2-targeting.md**: example = `journey/_source/role-targeting-and-counsel.md`. Output `targeting.json` (roles[], counsel, variant_list incl. a master + counsellor's-pick).
     - **P3-linkedin.md**: example = `journey/LinkedIn/*.md`. Output `linkedin.json`.
     - **P6-strategy.md**: example = `journey/Strategy/*.md` (career-strategy, global-visibility, masters, target-companies, interview-prep). Output `work/strategy/*.md`.
-16. **`skill/kaushal-forge/examples/`** ← copy this session's `_source/*.md`, a couple of `Resumes/*/content.tex`, `LinkedIn/02-about.md`, a `CoverLetters/*/letter.md`, and one `Strategy/*.md` as the gold-standard references the phase prompts point to.
+16. **`.github/skills/kaushal-forge/examples/`** ← copy this session's `_source/*.md`, a couple of `Resumes/*/content.tex`, `LinkedIn/02-about.md`, a `CoverLetters/*/letter.md`, and one `Strategy/*.md` as the gold-standard references the phase prompts point to.
 
 ### STEP D — Layer 3 (portable any-model pack)
 17. **`prompts/`** ← for each phase, a standalone copy-paste prompt = the phase file's content reformatted for a chat-only model (system role + task + schema + example + "return ONLY valid JSON"). `00-how-to-use.md` explains: run setup+intake locally → paste P1 prompt + the dump into your model → save returned JSON to `work/profile.json` → run script → repeat P2..P6 → run build+verify. This is the **"works even without Claude/Opus"** guarantee.

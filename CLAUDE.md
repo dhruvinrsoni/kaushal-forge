@@ -24,7 +24,7 @@ Work is split so the model never has to be clever:
 - **Mechanical** (render LaTeX, compile PDFs, count characters, scan for leaks, check page counts) →
   deterministic Python in `engine/`. Zero intelligence required; identical on any machine.
 - **Judgement** (write tailored content) → the AI, but **confined to filling rigid JSON schemas** with a
-  worked example beside each (`skill/kaushal-forge/` or `prompts/`). A weak model pattern-matches instead
+  worked example beside each (`.github/skills/kaushal-forge/` or `prompts/`). A weak model pattern-matches instead
   of inventing.
 - **`engine/verify.py` is a hard gate** — exits non-zero on any leak, stray HTML entity, char-limit, or
   page-count failure.
@@ -39,7 +39,7 @@ Navigate here first — don't broad-search when the location is known:
 |------|-------|
 | Engine (mechanical) | `engine/` — `bootstrap.py`, `intake_dump.py`, `render_{resumes,coverletters,linkedin,strategy}.py`, `build_pdfs.py`, `verify.py` |
 | LaTeX styles | `engine/templates/styles/cf-{ats,modern,twocol,letter}.tex` |
-| Claude skill (judgement) | `skill/kaushal-forge/` — `SKILL.md`, `phases/P1–P6`, `schemas/`, `rules/`, `examples/` (anonymized gold) |
+| Claude skill (judgement) | `.github/skills/kaushal-forge/` — `SKILL.md`, `phases/P1–P6`, `schemas/`, `rules/`, `examples/` (anonymized gold) |
 | Portable prompt pack | `prompts/` — `00-how-to-use.md`, `P1`–`P6` (for non-Claude models) |
 | Config | `config.example.yaml` → copy to `config.yaml` (gitignored) |
 | Pipeline I/O | `inbox/` (raw) → `work/` (JSON + strategy) → `output/` (PDFs + md) — contents gitignored |
@@ -75,7 +75,7 @@ Load `.github/skills/<name>/SKILL.md` for deep domain knowledge:
 | `systematic-debugging` | Tracking down a failing render or verify |
 | `testing` | Adding or adjusting CI fixtures / smoke checks |
 
-> To use the `kaushal-forge` skill in Claude Code, symlink or copy `skill/kaushal-forge/` into
+> To use the `kaushal-forge` skill in Claude Code, symlink or copy `.github/skills/kaushal-forge/` into
 > `~/.claude/skills/` (or a project-level `.claude/skills/`).
 
 ---
@@ -84,7 +84,7 @@ Load `.github/skills/<name>/SKILL.md` for deep domain knowledge:
 
 - **Commit convention** — `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`, `ci:`, `license:` prefixes
 - **Never commit** `config.yaml`, `work/*`, `output/*`, `*.pdf`, personal data, or the Tectonic binary (all gitignored)
-- **Examples stay fictional** — `skill/kaushal-forge/examples/` and `tests/fixtures/` use the
+- **Examples stay fictional** — `.github/skills/kaushal-forge/examples/` and `tests/fixtures/` use the
   "Asha Verma / Acme Cloud" persona; never real career data
 - **Engine stays deterministic and path-relative** — it derives paths from its own location, so the repo can move without breaking it
 

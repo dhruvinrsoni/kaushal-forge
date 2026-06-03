@@ -24,7 +24,7 @@ python engine/intake_dump.py          # -> work/00-raw-dump.txt
 | P5 Cover letters | variants | `work/letters.json` | `python engine/render_coverletters.py` |
 | P6 Strategy | profile + targeting | `work/strategy/*.md` | `python engine/render_strategy.py` |
 
-- **Claude Code:** invoke the `kaushal-forge` skill; it walks these phases. The phase prompts live in `skill/kaushal-forge/phases/PN-*.md` (schema + rules + gold example inline).
+- **Claude Code:** invoke the `kaushal-forge` skill; it walks these phases. The phase prompts live in `.github/skills/kaushal-forge/phases/PN-*.md` (schema + rules + gold example inline).
 - **Any other model:** open `prompts/PN-*.md`, paste it + the needed `work/` file into the model, save the returned JSON to the path above. (`prompts/00-how-to-use.md` has the full loop.)
 
 > Rule for the model: **emit only valid JSON / templated markdown** — never raw LaTeX, never prose outside the schema. The scripts do all rendering & escaping. Keep text ASCII.
