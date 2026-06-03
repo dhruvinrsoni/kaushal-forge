@@ -1,0 +1,8 @@
+# Default owner for everything
+* @dhruvinrsoni
+
+# Protect CI/CD and project config
+.github/ @dhruvinrsoni
+CLAUDE.md @dhruvinrsoni
+
+

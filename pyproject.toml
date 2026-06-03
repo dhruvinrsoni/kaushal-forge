@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=75.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kaushal-forge"
+version = "0.1.0"
+description = "Repeatable, model-agnostic career-toolkit generator (LaTeX résumés, LinkedIn, cover letters, strategy)"
+readme = "README.md"
+license = {text = "Proprietary"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Dhruvin Rupesh Soni"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+# Engine runtime deps (used by render_*.py / build_pdfs.py / verify.py).
+dependencies = [
+    "pyyaml",
+    "pypdf",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.8",
+]
+
+# KaushalForge runs as scripts under engine/ — it is not an installable or publishable
+# package, and there is intentionally no PyPI publish workflow. py-modules = [] stops
+# `pip install .` from auto-discovering the engine/skill/prompts trees as packages.
+[tool.setuptools]
+py-modules = []
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "TCH"]
