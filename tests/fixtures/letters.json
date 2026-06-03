@@ -1,0 +1,30 @@
+[
+  {
+    "id": "01",
+    "key": "software-engineer-backend",
+    "email_subject": "Senior Backend Engineer Application -- Asha Verma (Java/Spring, Python, Kubernetes)",
+    "opening": "The hardest problem I have enjoyed solving was untangling a monolithic batch service that had outgrown its design. At [Company], the work behind [Role] reads like the kind of backend engineering I want to do for the next decade, and [why-this-company] is what made me reach out.",
+    "body": [
+      "Over six years I have built backend systems in Java/Spring and Python that hold up under real production pressure. My most consequential project re-architected that monolith into decoupled microservices on Kubernetes and migrated it with zero downtime across two consecutive releases -- which mattered more to the business than any single feature.",
+      "Reliability is a habit, not a one-off. I designed SLA-based alerting and self-healing retries, added readiness probes for zero-downtime rolling updates, and delivered a secrets-rotation integration with least-privilege IAM. Earlier, at Globex Systems, I cut CI build time ~55% and cloud cost ~30% while owning REST APIs for 40+ enterprise clients.",
+      "The modern edge I bring is AI applied pragmatically to engineering itself: an internal test-generation agent that produced ~20,000 lines of tests across 40+ modules at near-zero added cost. Outside work I maintain open source, including PromptForge, an LLM prompt toolkit with 300+ tests."
+    ],
+    "closing": "I would welcome the chance to talk through how I would approach [Role] and where I could contribute fastest. I am open to relocation and can work across time zones. Thank you for reading.",
+    "why_company_prompt": "Replace [why-this-company] with one specific, recent detail about [Company] that genuinely draws you: a backend/platform engineering blog post, an open-sourced library, or a scale/reliability challenge they have written about. Avoid generic praise like \"industry leader\" -- name the concrete thing and why it resonates.",
+    "notes_md": "- Use for backend / Senior Software Engineer roles where Java/Spring or Python + microservices + reliability are the core ask; AI is a bonus, not the headline.\n- Customize: fill [Company], [Role], and especially [why-this-company] with a concrete, verifiable detail. Drop the relocation line if the role is local/remote.\n- Tone: confident and warm; let the exact numbers (zero downtime, ~55%, ~30%, 40+ clients) carry the weight. Keep numbers exact and ASCII.\n- ~300 words across short paragraphs. If a recruiter prefers brevity, cut the open-source sentence first."
+  },
+  {
+    "id": "03",
+    "key": "ai-genai-engineer",
+    "email_subject": "AI/GenAI Application Engineer -- Asha Verma (agentic LLM tooling, RAG, production backend)",
+    "opening": "When I handed my coding standards to an internal test-generation agent, it produced ~20,000 lines of tests across 40+ modules and cut manual QA effort ~70% -- with zero production incidents. That convinced me the next leap in software is not bigger models but tighter, well-instructed agents wired into real workflows. It is also why [Role] at [Company] caught my attention: [why-this-company].",
+    "body": [
+      "Those agents lifted coverage at near-zero added cost because I reused existing authenticated model sessions rather than provisioning new spend. I extended the same pattern into a multi-provider prompt toolkit adopted across three teams and a retrieval-augmented (RAG) layer over an internal knowledge base that cut support escalations ~25%. The throughline is turning LLMs from chat toys into dependable, auditable teammates.",
+      "I also build in the open: PromptForge is a multi-provider LLM prompt toolkit with 300+ tests, and AgentKit collects reusable AI-agent skills. Shipping these end to end keeps me honest about prompt design, evaluation, and the unglamorous reliability work production GenAI actually demands.",
+      "Underneath the AI sits real backend and cloud credibility: Java/Spring and Python services, microservice re-architecture on Kubernetes with zero downtime, and CI/CD discipline. I would love to bring this agent-first, cost-disciplined approach to [Company], and I am happy to relocate for the right team."
+    ],
+    "closing": "Thanks for reading -- I would welcome the chance to walk through any of this in more detail, and I look forward to hearing from you.",
+    "why_company_prompt": "Replace [why-this-company] with one or two concrete reasons you want THIS employer: a product, an AI/LLM initiative, an eng-blog post, or an open-source project, tied to agentic tooling, GenAI applications, or developer productivity. Avoid generic praise -- reference something only someone who researched the company would know.",
+    "notes_md": "- Use when the target role centers on AI/GenAI/LLM application engineering, agentic tooling, or developer-productivity AI -- not generic backend roles.\n- Customize: fill [Company], [Role], and [why-this-company] with a researched, product-specific hook; if the JD names a stack (LangChain, a specific vector DB), mirror it.\n- Lead with the test-gen agent result; it is the strongest, most quantified proof for this archetype. Keep the open-source paragraph if the company values builders.\n- Tone: confident and specific, warm not boastful; relocation mentioned once. Keep numbers exact and ASCII."
+  }
+]

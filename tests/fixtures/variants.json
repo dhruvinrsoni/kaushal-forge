@@ -1,0 +1,122 @@
+[
+  {
+    "id": "01",
+    "key": "software-engineer-backend",
+    "headline": "Senior Backend Engineer | Java/Spring & Python Microservices | Cloud-Native APIs & Reliability",
+    "summary": "Senior software engineer with 6 years building secure, scalable backend systems in Java/Spring and Python, from REST APIs to microservices on Kubernetes. Signature strength: re-architecting monoliths into reliable, decoupled services and keeping production healthy. Increasingly multiplies output with applied AI, but the foundation is production-grade backend design and delivery.",
+    "focus": "",
+    "skills_rows": [
+      {"label": "Languages", "items": "Java, Python, TypeScript/JavaScript, SQL, Bash"},
+      {"label": "Backend", "items": "Spring Boot, REST APIs, Microservices, FastAPI, Node.js, gRPC"},
+      {"label": "Data", "items": "PostgreSQL, MySQL, MongoDB, Redis, ETL, schema migrations"},
+      {"label": "Cloud", "items": "AWS, GCP, Kubernetes, Docker, Terraform, Cloud Run"},
+      {"label": "DevOps / Reliability", "items": "CI/CD, GitHub Actions, Helm, readiness probes, rolling updates, Prometheus, Grafana, tracing"},
+      {"label": "Practices", "items": "System design, microservices decomposition, DevSecOps, Agile, technical writing, mentoring"},
+      {"label": "AI (modernization)", "items": "LLM-assisted test generation, prompt patterns, RAG over internal docs, evaluation harnesses"}
+    ],
+    "experience": [
+      {
+        "role": "Senior Software Engineer",
+        "org": "Acme Cloud Technologies",
+        "dates": "Mar 2021 -- Present",
+        "location": "Bengaluru, India (Hybrid)",
+        "bullets": [
+          "Re-architected a monolithic batch service into decoupled microservices on Kubernetes and migrated it with zero downtime across two consecutive releases.",
+          "Designed SLA-based alerting and self-healing retries that moved an on-call rota from reactive firefighting to proactive operation, with readiness probes for zero-downtime rolling updates.",
+          "Delivered a secrets-rotation integration (least-privilege IAM, atomic rotation) that removed hard-coded credentials from the deployment path.",
+          "Owned data models, migrations, and REST API contracts for a service backing 40+ enterprise clients, holding backwards compatibility across versions.",
+          "Introduced contract tests and a schema-migration checklist that let the team ship API changes weekly without breaking downstream consumers.",
+          "Profiled and tuned hot paths -- connection pooling, query batching, and caching -- to hold p99 latency steady as traffic grew.",
+          "Added retrieval-augmented answers over an internal knowledge base, reducing support escalations ~25% while keeping the backend simple and observable."
+        ]
+      },
+      {
+        "role": "Software Engineer",
+        "org": "Globex Systems",
+        "dates": "Jul 2018 -- Mar 2021",
+        "location": "Bengaluru, India",
+        "bullets": [
+          "Built Java and Spring Boot backend services and REST APIs serving 40+ enterprise clients, owning the full path from schema design to release.",
+          "Cut CI build time ~55% and reduced cloud cost ~30% via right-sized autoscaling and image slimming; led an SVN-to-Git migration to trunk-based development.",
+          "Built internal tooling and dashboards that gave the team visibility into build health and flaky tests, cutting time spent chasing CI failures.",
+          "Mentored two junior engineers and owned onboarding runbooks, improving ramp-up time and code-review quality."
+        ]
+      },
+      {
+        "role": "Software Engineer Intern",
+        "org": "Initech Labs",
+        "dates": "Jan 2018 -- Jun 2018",
+        "location": "Remote",
+        "bullets": [
+          "Built the responsive front-end for an internal analytics dashboard (React, TypeScript), improving first-load performance ~15% via code-splitting."
+        ]
+      }
+    ],
+    "projects": [
+      {"name": "PromptForge", "meta": "Python; OpenAI/Gemini", "desc": "Open-source multi-provider LLM prompt toolkit; 300+ tests; standardizes LLM calls and evaluation for small teams."},
+      {"name": "QuickLog", "meta": "TypeScript", "desc": "Lightweight structured-logging library with redaction helpers; used across several side projects."},
+      {"name": "AgentKit", "meta": "TypeScript", "desc": "A small library of reusable AI-agent skills, with worked examples and docs."}
+    ],
+    "guide_md": "# GUIDE.md - Variant 01: Software Engineer (Backend)\n\n## Use this when applying to\nSenior Software Engineer / Backend Engineer roles where Java/Spring or Python microservices, REST APIs, system design, and reliability are the core ask.\n\n## What it foregrounds\n- Backend-first: monolith-to-microservices re-architecture, REST API ownership, and reliability (self-healing retries, zero-downtime rolling updates).\n- Data depth (PostgreSQL/MongoDB/SQL) given its own row right after backend.\n- AI demoted to a modernization strength, present but not the identity.\n\n## Target-JD keywords\nJava, Spring Boot, Python, microservices, REST APIs, system design, PostgreSQL, SQL, CI/CD, Docker, Kubernetes, reliability, zero-downtime deployment, scalability, backend.\n\n## Honest fit and odds\nHigh odds for most senior-backend JDs. Scale is described qualitatively (40+ clients) rather than at hyperscale -- fine for product companies, weaker for internet-scale infra roles. If a JD demands a stack she lacks (e.g., Go, Kafka), address it in the cover note rather than stretching the resume.\n\n## Recommended LaTeX style: ATS (single-column)\nProduct-company pipelines run resumes through ATS parsers; the single-column layout maximizes parse safety. Modern is an acceptable fallback for a hand-delivered referral.\n\n## Tweak tips\n1. Mirror the JD's stack ordering in the Backend/Data rows.\n2. Trim the AI row for a traditional backend shop; keep it for an AI-curious team.\n3. Add honest throughput/latency numbers to the microservices bullet if the role is high-scale -- never invent metrics.\n\n*(Fictional, anonymized sample for CI only.)*"
+  },
+  {
+    "id": "03",
+    "key": "ai-genai-engineer",
+    "headline": "AI / GenAI Engineer | LLM Apps, Agents & RAG | Production Backend (Java/Python)",
+    "summary": "AI/GenAI engineer with 6 years shipping production systems and a track record of building practical LLM tooling. Built an internal AI test-generation agent (~20,000 lines of tests, ~70% less QA toil) and a multi-provider prompt toolkit adopted across three teams. Pairs applied LLM work with a solid Java/Spring and cloud foundation.",
+    "focus": "Applied LLM systems, agentic workflows, RAG, prompt engineering",
+    "skills_rows": [
+      {"label": "GenAI / LLM", "items": "LLM app dev, agentic workflows, RAG, prompt engineering, evaluation harnesses, OpenAI/Gemini APIs, embeddings"},
+      {"label": "Languages", "items": "Python, Java, TypeScript, SQL"},
+      {"label": "Backend", "items": "Spring Boot, REST APIs, microservices, FastAPI"},
+      {"label": "Cloud / DevOps", "items": "AWS, GCP, Kubernetes, Docker, CI/CD, Terraform"},
+      {"label": "Data", "items": "PostgreSQL, MongoDB, Redis, vector stores, ETL"},
+      {"label": "MLOps / Reliability", "items": "Model and version pinning, evaluation gates, observability, cost controls, CI/CD for AI services"},
+      {"label": "Practices", "items": "System design, evaluation, DevSecOps, technical writing, mentoring"}
+    ],
+    "experience": [
+      {
+        "role": "Senior Software Engineer",
+        "org": "Acme Cloud Technologies",
+        "dates": "Mar 2021 -- Present",
+        "location": "Bengaluru, India (Hybrid)",
+        "bullets": [
+          "Built an internal AI test-generation agent that produced ~20,000 lines of tests across 40+ modules, cutting manual QA effort ~70% with zero production incidents.",
+          "Shipped a multi-provider LLM prompt toolkit adopted across three teams, standardizing model selection, prompt patterns, and a lightweight evaluation harness.",
+          "Added retrieval-augmented (RAG) answers over an internal knowledge base, reducing support escalations ~25% and cutting median time-to-answer roughly in half.",
+          "Wired the agentic tooling to reuse existing authenticated model sessions, keeping incremental cost near zero while expanding coverage.",
+          "Built evaluation harnesses -- golden sets and regression checks -- so prompt and model changes shipped with measurable quality rather than guesswork.",
+          "Added guardrails and structured-output validation so agent results were auditable and safe to wire into CI.",
+          "Kept the AI work production-grade: backed it with the same microservices, IAM, and observability discipline as the core platform."
+        ]
+      },
+      {
+        "role": "Software Engineer",
+        "org": "Globex Systems",
+        "dates": "Jul 2018 -- Mar 2021",
+        "location": "Bengaluru, India",
+        "bullets": [
+          "Built Java/Spring backend services and REST APIs serving 40+ enterprise clients, owning data models, migrations, and release pipelines.",
+          "Cut CI build time ~55% and reduced cloud cost ~30% via right-sized autoscaling, image slimming, and a SVN-to-Git move to trunk-based development.",
+          "Introduced automated checks and code-review standards that reduced regressions and steadied the release cadence.",
+          "Mentored two junior engineers and owned onboarding runbooks, improving ramp-up time and review quality."
+        ]
+      },
+      {
+        "role": "Software Engineer Intern",
+        "org": "Initech Labs",
+        "dates": "Jan 2018 -- Jun 2018",
+        "location": "Remote",
+        "bullets": [
+          "Built the responsive front-end for an internal analytics dashboard (React, TypeScript), improving first-load performance ~15% via code-splitting."
+        ]
+      }
+    ],
+    "projects": [
+      {"name": "PromptForge", "meta": "Python; OpenAI/Gemini", "desc": "Open-source multi-provider LLM prompt toolkit; 300+ tests; standardizes LLM calls and evaluation for small teams."},
+      {"name": "AgentKit", "meta": "TypeScript", "desc": "A small library of reusable AI-agent skills, with worked examples and docs."},
+      {"name": "QuickLog", "meta": "TypeScript", "desc": "Lightweight structured-logging library with redaction helpers; used across several side projects."}
+    ],
+    "guide_md": "# GUIDE.md - Variant 03: AI / GenAI Engineer\n\n## Use this when applying to\nAI / GenAI / LLM Application Engineer roles, agentic tooling, or developer-productivity AI -- not generic backend roles.\n\n## What it foregrounds\nThe AI test-gen agent, the prompt toolkit, and RAG work; backend/cloud as the production-grade credibility base.\n\n## Target-JD keywords\nLLM, GenAI, RAG, prompt engineering, agents, evaluation, Python, Spring Boot, Kubernetes.\n\n## Honest fit and odds\nHigh and rising for AI-first scaleups. Lead with the AI test-gen result; it is the strongest, most quantified proof for this archetype.\n\n## Recommended LaTeX style: Modern\nClean and ATS-safe; good for a differentiated but still-parseable AI resume.\n\n## Tweak tips\n1. Mirror the JD's exact AI vocabulary (RAG vs retrieval, agents vs workflows).\n2. Lead with the most relevant project.\n3. Trim a skills row if the 1-pager spills.\n\n*(Fictional, anonymized sample for CI only.)*"
+  }
+]

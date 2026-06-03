@@ -1,0 +1,99 @@
+{
+  "identity": {
+    "name": "Asha Verma",
+    "pronouns": "She/Her",
+    "location": "Bengaluru, India",
+    "tagline": "Pragmatic builder",
+    "handles": {
+      "github": "asha-verma-example",
+      "linkedin": "asha-verma-example"
+    }
+  },
+  "headline": "Senior Software Engineer | Cloud-Native Backend & Applied AI",
+  "summary": "Senior software engineer (6 years) building secure, scalable backend systems and, more recently, practical applied-AI tooling. Strong across Java/Spring and Python services, Kubernetes and DevOps, and LLM application work (agents, RAG, prompt engineering). Known for turning constraints into leverage -- shipping reliable systems and automation that pay for themselves.",
+  "focus": "",
+  "experience": [
+    {
+      "role": "Senior Software Engineer",
+      "org": "Acme Cloud Technologies",
+      "dates": "Mar 2021 -- Present",
+      "location": "Bengaluru, India (Hybrid)",
+      "bullets": [
+        "Built an internal AI test-generation agent that produced ~20,000 lines of tests across 40+ modules, cutting manual QA effort ~70% with zero production incidents.",
+        "Shipped a multi-provider LLM prompt toolkit adopted across three teams, standardizing model selection, prompt patterns, and a lightweight evaluation harness.",
+        "Added retrieval-augmented (RAG) answers over an internal knowledge base, reducing support escalations ~25% and cutting median time-to-answer roughly in half.",
+        "Re-architected a monolithic batch service into decoupled microservices on Kubernetes, migrating with zero downtime across two consecutive releases.",
+        "Designed SLA-based alerting and self-healing retries that moved an on-call rota from reactive firefighting to proactive operation.",
+        "Delivered a secrets-rotation integration (least-privilege IAM, atomic rotation) that removed hard-coded credentials from the deployment path."
+      ]
+    },
+    {
+      "role": "Software Engineer",
+      "org": "Globex Systems",
+      "dates": "Jul 2018 -- Mar 2021",
+      "location": "Bengaluru, India",
+      "bullets": [
+        "Built Java and Spring Boot backend services and REST APIs serving 40+ enterprise clients, owning data models, migrations, and release pipelines.",
+        "Cut CI build time ~55% and reduced cloud cost ~30% through right-sized autoscaling and container image slimming.",
+        "Led an SVN-to-Git migration and introduced trunk-based development with automated checks, improving release cadence.",
+        "Mentored two junior engineers and owned onboarding runbooks, improving ramp-up time and code-review quality."
+      ]
+    },
+    {
+      "role": "Software Engineer Intern",
+      "org": "Initech Labs",
+      "dates": "Jan 2018 -- Jun 2018",
+      "location": "Remote",
+      "bullets": [
+        "Built the responsive front-end for an internal analytics dashboard (React, TypeScript), improving first-load performance ~15% via code-splitting."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.Tech, Computer Science",
+      "institution": "National Institute of Technology",
+      "dates": "2014 -- 2018",
+      "detail": "Coursework: Distributed Systems, Databases, Machine Learning, Algorithms, Computer Networks."
+    }
+  ],
+  "skills_groups": [
+    {"label": "Languages", "items": "Python, Java, TypeScript/JavaScript, SQL, Bash"},
+    {"label": "Backend", "items": "Spring Boot, REST APIs, Microservices, FastAPI, Node.js"},
+    {"label": "Cloud", "items": "AWS, GCP, Kubernetes, Docker, Terraform, Cloud Run"},
+    {"label": "DevOps / SRE", "items": "CI/CD, GitHub Actions, Helm, Prometheus, Grafana, readiness probes, rolling updates"},
+    {"label": "AI / GenAI", "items": "LLM app dev, agentic workflows, RAG, prompt engineering, embeddings, OpenAI/Gemini APIs"},
+    {"label": "Data", "items": "PostgreSQL, MySQL, MongoDB, Redis, ETL"},
+    {"label": "Practices", "items": "System design, DevSecOps, Agile, technical writing, mentoring"}
+  ],
+  "certs": [
+    "AWS Certified Solutions Architect -- Associate",
+    "Google Cloud -- Associate Cloud Engineer",
+    "Certified Kubernetes Application Developer (CKAD)",
+    "Deep Learning Specialization (Coursera)"
+  ],
+  "awards": [
+    "Spot Award, Acme Cloud Technologies (2023)",
+    "Hackathon Winner -- Internal AI Tooling Track (2022)"
+  ],
+  "languages": [
+    "English (professional)",
+    "Hindi (native)",
+    "Kannada"
+  ],
+  "projects": [
+    {"name": "PromptForge", "meta": "Python; OpenAI/Gemini", "desc": "Open-source multi-provider LLM prompt toolkit; 300+ tests; standardizes LLM calls and evaluation for small teams.", "url": "github.com/asha-verma-example/promptforge"},
+    {"name": "QuickLog", "meta": "TypeScript", "desc": "Lightweight structured-logging library with redaction helpers; used across several side projects.", "url": "github.com/asha-verma-example/quicklog"},
+    {"name": "AgentKit", "meta": "TypeScript", "desc": "A small library of reusable AI-agent skills, with worked examples and docs.", "url": "github.com/asha-verma-example/agentkit"}
+  ],
+  "persona": "Pragmatic builder; automates repetitive work; mentors juniors; values clarity and shipping over ceremony.",
+  "achievements_bank": [
+    "Internal AI test-generation agent: ~20,000 lines of tests across 40+ modules, ~70% less QA toil, zero production incidents.",
+    "Multi-provider LLM prompt toolkit adopted across three teams.",
+    "RAG over internal knowledge base cut support escalations ~25%.",
+    "Monolith to microservices on Kubernetes with zero downtime across two releases.",
+    "CI build time cut ~55%; cloud cost cut ~30% via autoscaling and image slimming.",
+    "SVN-to-Git migration with trunk-based development and automated checks.",
+    "PromptForge: open-source multi-provider LLM prompt toolkit, 300+ tests."
+  ]
+}

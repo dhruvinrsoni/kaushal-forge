@@ -8,6 +8,9 @@
 # ============================================================================
 # Regenerated each run; folders are kept via .gitkeep.
 config.yaml
+# Exception: the fully-fictional CI fixture config MUST be tracked (the live
+# root config.yaml above stays ignored everywhere else).
+!tests/fixtures/config.yaml
 inbox/*
 !inbox/.gitkeep
 work/*

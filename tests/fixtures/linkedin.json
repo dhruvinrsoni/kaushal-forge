@@ -1,0 +1,71 @@
+{
+  "headline_variants": [
+    {
+      "label": "Recommended (AI + Backend)",
+      "text": "Senior Software Engineer @ Acme Cloud | Cloud-Native Backend & Applied AI | LLM apps, agents & RAG | Java, Python, Kubernetes | Pragmatic builder"
+    },
+    {
+      "label": "AI-forward",
+      "text": "Senior Software Engineer | Applied AI on a solid backend: LLM apps, agents & RAG + Java/Python microservices on Kubernetes | Open-source maker"
+    }
+  ],
+  "about": {
+    "primary": "Pragmatic builder -- I pair engineering precision with a bias for shipping. Senior Software Engineer (6 years) building secure, cloud-native backend systems and, more recently, practical applied-AI tooling. My through-line is leverage: turning constraints into outsized outcomes -- an internal AI test-generation agent that wrote ~20,000 lines of tests across 40+ modules at near-zero added cost; a monolith re-architected into microservices on Kubernetes with zero downtime; a multi-provider LLM prompt toolkit adopted across three teams. I also build in the open (PromptForge, AgentKit, QuickLog). Java/Spring, Python, Kubernetes, LLM apps, RAG. Always happy to connect and trade ideas with people who love hard problems.",
+    "alt": "Senior Software Engineer (6 yrs) -- cloud-native backend + applied AI. Turn constraints into leverage: an AI test-gen agent (~20,000 lines of tests at near-zero cost), a monolith re-architected to microservices on Kubernetes with zero downtime, a prompt toolkit used by three teams. Open-source builder (PromptForge, AgentKit)."
+  },
+  "experience": [
+    {
+      "title": "Senior Software Engineer",
+      "org": "Acme Cloud Technologies",
+      "dates": "Mar 2021 - Present",
+      "location": "Bengaluru (Hybrid)",
+      "bullets": [
+        "Built an internal AI test-generation agent: ~20,000 lines of tests, ~70% less QA toil, zero incidents.",
+        "Multi-provider LLM prompt toolkit adopted across three teams.",
+        "Monolith -> microservices on Kubernetes, zero downtime across two releases."
+      ],
+      "skills_line": "Python - Java - Kubernetes - LLM apps - RAG"
+    }
+  ],
+  "skills": {
+    "ordered": [
+      "Applied AI",
+      "Large Language Models (LLM)",
+      "Retrieval-Augmented Generation (RAG)",
+      "Python",
+      "Java",
+      "Spring Boot",
+      "Microservices",
+      "Kubernetes",
+      "CI/CD",
+      "Docker",
+      "PostgreSQL",
+      "System Design"
+    ],
+    "pin3": [
+      "Applied AI",
+      "Python",
+      "Kubernetes"
+    ]
+  },
+  "featured": [
+    {
+      "title": "PromptForge",
+      "note": "Multi-provider LLM prompt toolkit (Python), 300+ tests -- open source."
+    },
+    {
+      "title": "AgentKit",
+      "note": "Reusable AI-agent skills with worked examples -- open source."
+    }
+  ],
+  "certs_order": [
+    "AWS Certified Solutions Architect -- Associate",
+    "Google Cloud -- Associate Cloud Engineer",
+    "Certified Kubernetes Application Developer (CKAD)"
+  ],
+  "misc": [
+    "Keep Open-to-Work set to recruiters-only (not the public green banner) to stay diplomatic.",
+    "Pin the three highest-signal skills; reorder the rest to mirror target roles.",
+    "Lead Featured with the project most relevant to the roles you are targeting."
+  ]
+}

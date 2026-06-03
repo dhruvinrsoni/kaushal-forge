@@ -1,0 +1,28 @@
+# CI fixture config — FULLY FICTIONAL persona (Asha Verma / Acme Cloud).
+# Used only by the render-smoke in .github/workflows/ci.yml. No real data.
+person:
+  name: "Asha Verma"
+  pronouns: "She/Her"
+  location_display: "Bengaluru, India | Open to relocation"
+
+contact:
+  email: "asha.verma@example.com"
+  phone: "+91-90000-00000"
+  linkedin: "linkedin.com/in/asha-verma-example"
+  github: "github.com/asha-verma-example"
+  portfolio: "asha-verma-example.github.io"
+
+targets:
+  geos: ["US", "Canada", "Australia", "NZ"]
+  diplomatic: true
+
+resume:
+  accent_hex: "1F4E79"
+  two_page: "all"
+  cap_overrides:
+    "01": 4
+
+verify:
+  # Fictional internal codenames that must never leak into outputs. None appear in
+  # the fixture content, so the leak gate exercises its logic and passes cleanly.
+  forbidden_terms: ["project-bluefalcon", "internal-codename-x", "client-zzyzx"]
