@@ -6,6 +6,15 @@
 
 A **repeatable, AI-powered career-toolkit generator.** Feed it a person's raw data; it produces a complete, tailored toolkit: a LinkedIn rewrite, multi-variant LaTeX résumés (compiled to PDF, 1- and 2-page), matching cover letters, and a strategy pack — reproducibly, **on any model** (Opus, Sonnet, or Haiku).
 
+## Documentation
+New here? **[docs/](docs/README.md)** is a guided, top-to-bottom walkthrough — from a 15-minute local run to a line-by-line engine reading:
+- **[Onboarding](docs/01-onboarding.md)** — get a green pipeline locally, fast.
+- **[Concepts](docs/02-concepts.md)** · **[Architecture](docs/03-architecture.md)** — why it works and how it's shaped.
+- **[Engine internals](docs/04-engine.md)** · **[AI layer](docs/05-ai-layer.md)** · **[Data contracts](docs/06-data-contracts.md)** — code-level depth.
+- **[CI & extending](docs/07-ci-and-extending.md)** — testing and adding styles / phases / variants.
+
+Operators can also jump to the step-by-step [RUNBOOK.md](RUNBOOK.md); the full design rationale lives in [MASTER-PLAN.md](MASTER-PLAN.md).
+
 ## Why it works on cheap models
 Two kinds of work are split cleanly:
 - **Mechanical** (render LaTeX, compile PDFs, count characters, scan for leaks, check page counts) → **deterministic Python in `engine/`**. Zero intelligence required; identical on any machine.
