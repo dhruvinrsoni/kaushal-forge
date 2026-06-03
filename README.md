@@ -1,8 +1,8 @@
 # KaushalForge
 
-> ✅ **Status: built & verified.** A full end-to-end dry-run on real data compiled **57 résumé PDFs + 10 cover-letter PDFs (67 total, 0 failures)** and passed `engine/verify.py` ("VERIFY OK"). `work/` and `output/` currently hold that **worked demo** (Dhruvin's data) — clear them (keep the `.gitkeep`) to start fresh for a new person; `config.yaml` is pre-filled, `config.example.yaml` is the blank template.
+> ✅ **Status: built & verified.** A full end-to-end dry-run compiled **57 résumé PDFs + 10 cover-letter PDFs (67 total, 0 failures)** and passed `engine/verify.py` ("VERIFY OK"). To start a run, copy `config.example.yaml` → `config.yaml`, drop the person's data in `inbox/`, and follow the quickstart below. `config.yaml`, `inbox/`, `work/`, and `output/` are never tracked — clear them (keep the `.gitkeep`) to start fresh.
 >
-> 🔒 **Going public later:** `config.yaml`, `work/`, and `output/` are already gitignored (never tracked). The one thing to handle before flipping public is `.github/skills/kaushal-forge/examples/` — it ships **real sample data** as the gold-standard reference; anonymize it (or swap in a fictional sample) first.
+> 🔒 **Proprietary & private.** All-Rights-Reserved (see `LICENSE`); personal data, generated output, and PDFs are gitignored and never committed. The gold examples in `.github/skills/kaushal-forge/examples/` and the CI fixtures in `tests/fixtures/` are **fully fictional** ("Asha Verma / Acme Cloud") — safe to share. CI (`.github/workflows/ci.yml`) runs a render-smoke over the fixtures plus the `verify.py` gate on every push.
 
 A **repeatable, AI-powered career-toolkit generator.** Feed it a person's raw data; it produces a complete, tailored toolkit: a LinkedIn rewrite, multi-variant LaTeX résumés (compiled to PDF, 1- and 2-page), matching cover letters, and a strategy pack — reproducibly, **on any model** (Opus, Sonnet, or Haiku).
 
@@ -40,7 +40,10 @@ Output lands in `output/` (LinkedIn / Resumes / CoverLetters / Strategy). Re-run
 - `RUNBOOK.md` — the operator's step-by-step.
 - `engine/` — deterministic scripts + the 4 LaTeX styles.
 - `.github/skills/kaushal-forge/` — the AI orchestrator skill (phases + schemas + rules + gold examples).
+- `.github/` — CI (`workflows/ci.yml` render-smoke + security scan), issue/PR templates, and the shared `repo-maintenance` / `systematic-debugging` / `testing` skills.
 - `prompts/` — portable copy-paste prompt pack for non-Claude models.
-- `config.yaml` · `inbox/` · `work/` · `output/`.
+- `tests/fixtures/` — fully fictional sample run that the CI render-smoke exercises end to end.
+- `CLAUDE.md` · `pyproject.toml` · `Makefile` — project context + Python tooling.
+- `config.yaml` · `inbox/` · `work/` · `output/` — runtime I/O (gitignored).
 
 See `MASTER-PLAN.md` for the complete design.
