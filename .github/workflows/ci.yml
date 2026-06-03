@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint-validate:
+    name: Lint + validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff pyyaml pypdf
+      - name: Compile-check engine
+        run: python -m py_compile engine/*.py
+      - name: Lint (non-blocking for now)
+        run: ruff check engine || true
+      - name: Validate JSON (schemas, examples, fixtures)
+        run: |
+          python - <<'PY'
+          import glob, json, sys
+          bad = 0
+          for f in (glob.glob('.github/skills/kaushal-forge/schemas/*.json')
+                    + glob.glob('.github/skills/kaushal-forge/examples/*.json')
+                    + glob.glob('tests/fixtures/**/*.json', recursive=True)):
+              try:
+                  json.load(open(f, encoding='utf-8'))
+              except Exception as e:
+                  bad += 1
+                  print('INVALID', f, '->', e)
+          print('checked JSON; invalid =', bad)
+          sys.exit(1 if bad else 0)
+          PY
+
+  render-smoke:
+    name: Render + build + verify (the gate)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml pypdf
+      - name: Install Tectonic (LaTeX engine)
+        uses: wtfjoke/setup-tectonic@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Stage anonymized fixtures
+        run: |
+          cp tests/fixtures/config.yaml ./config.yaml
+          mkdir -p work
+          cp tests/fixtures/*.json work/
+          [ -d tests/fixtures/strategy ] && cp -r tests/fixtures/strategy work/strategy || true
+      - name: Render + build + verify
+        run: |
+          python engine/render_resumes.py
+          python engine/render_coverletters.py
+          python engine/render_linkedin.py
+          python engine/render_strategy.py
+          export CAREERFORGE_TECTONIC="$(which tectonic)"
+          python engine/build_pdfs.py
+          python engine/verify.py
