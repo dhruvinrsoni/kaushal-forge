@@ -7,7 +7,8 @@ name = "kaushal-forge"
 version = "0.1.0"
 description = "Repeatable, model-agnostic career-toolkit generator (LaTeX résumés, LinkedIn, cover letters, strategy)"
 readme = "README.md"
-license = {text = "Proprietary"}
+# Proprietary / All Rights Reserved — NOT an OSI license (see LICENSE).
+license = "LicenseRef-Proprietary"
 requires-python = ">=3.10"
 authors = [
     {name = "Dhruvin Rupesh Soni"}
@@ -15,6 +16,8 @@ authors = [
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
+    # Prevents accidental upload to public PyPI (proprietary, private).
+    "Private :: Do Not Upload",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",

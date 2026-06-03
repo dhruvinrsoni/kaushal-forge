@@ -95,3 +95,11 @@ Load `.github/skills/<name>/SKILL.md` for deep domain knowledge:
 - The engine needs no intelligence: keep it deterministic. All judgement lives in the schemas + examples the model fills.
 - Not a PyPI package — KaushalForge runs as scripts; there is intentionally **no publish workflow**.
 - `tests/fixtures/` drives the CI **render-smoke** (`.github/workflows/ci.yml`): render → `build_pdfs.py` → `verify.py`.
+
+---
+
+## License
+
+🔒 **Proprietary — All Rights Reserved.** See `LICENSE`. Not open source; no use, copying,
+modification, or distribution without the author's prior written permission. `pyproject.toml`
+declares `LicenseRef-Proprietary` and `Private :: Do Not Upload` — this package is **never** published to PyPI.

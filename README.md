@@ -47,3 +47,7 @@ Output lands in `output/` (LinkedIn / Resumes / CoverLetters / Strategy). Re-run
 - `config.yaml` · `inbox/` · `work/` · `output/` — runtime I/O (gitignored).
 
 See `MASTER-PLAN.md` for the complete design.
+
+## License
+
+🔒 **Proprietary — All Rights Reserved.** See [`LICENSE`](LICENSE). KaushalForge is **not** open source: no use, reproduction, modification, or distribution is permitted without the author's prior written permission.
