@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Example App — {{PROJECT_NAME}}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+    .meta { font-size: 0.8rem; color: #6c757d; margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <nav><a href="../">&larr; Back to Dashboard</a></nav>
+  <h1>Example App</h1>
+  <p>This is a starter nano-app demonstrating the Core framework.</p>
+
+  <div class="meta">
+    <p>Created: <span id="meta-created">—</span></p>
+    <p>Updated: <span id="meta-updated">—</span></p>
+  </div>
+
+  <script src="../app_registry.js"></script>
+  <script src="../core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

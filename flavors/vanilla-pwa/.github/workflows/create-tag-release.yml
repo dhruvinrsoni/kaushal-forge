@@ -1,0 +1,108 @@
+name: Create Tag & Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version (e.g., 1.2.0)"
+        required: true
+        type: string
+      release_type:
+        description: "Release type"
+        required: true
+        type: choice
+        options:
+          - release
+          - prerelease
+          - hotfix
+      auto_deploy:
+        description: "Auto-deploy after release"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate version format
+        run: |
+          if ! echo "${{ inputs.version }}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9\.\-]+)?$'; then
+            echo "::error::Invalid version format. Use semver: X.Y.Z or X.Y.Z-qualifier"
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update version.txt
+        run: |
+          TIMESTAMP=$(TZ='Asia/Kolkata' date '+%Y-%m-%d %H:%M:%S IST')
+          TYPE="${{ inputs.release_type }}"
+          VERSION="${{ inputs.version }}"
+          echo "v${VERSION} · ${TIMESTAMP} · ${TYPE^}" > version.txt
+          cat version.txt
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -n "$LAST_TAG" ]; then
+            CHANGES=$(git log "${LAST_TAG}..HEAD" --pretty=format:"- %s (%h)" --no-merges | head -50)
+          else
+            CHANGES=$(git log --pretty=format:"- %s (%h)" --no-merges | head -50)
+          fi
+
+          EOF_MARKER=$(dd if=/dev/urandom bs=15 count=1 2>/dev/null | base64)
+          echo "changes<<${EOF_MARKER}" >> $GITHUB_OUTPUT
+          echo "$CHANGES" >> $GITHUB_OUTPUT
+          echo "${EOF_MARKER}" >> $GITHUB_OUTPUT
+
+      - name: Commit version update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add version.txt
+          git diff --staged --quiet || git commit -m "chore: bump version to v${{ inputs.version }}"
+
+          # Conflict-safe push with 3-attempt retry
+          for i in 1 2 3; do
+            git push origin main && break
+            echo "Push attempt $i failed, pulling with rebase..."
+            git pull --rebase origin main || git pull origin main
+          done
+
+      - name: Create tag
+        run: |
+          git tag -a "v${{ inputs.version }}" -m "Release v${{ inputs.version }}"
+          git push origin "v${{ inputs.version }}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v${{ inputs.version }}"
+          name: "v${{ inputs.version }}"
+          body: |
+            ## Changes
+
+            ${{ steps.changelog.outputs.changes }}
+          prerelease: ${{ inputs.release_type == 'prerelease' }}
+          generate_release_notes: true
+
+      - name: Trigger deploy
+        if: inputs.auto_deploy
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'deploy-pages.yml',
+              ref: 'main'
+            });

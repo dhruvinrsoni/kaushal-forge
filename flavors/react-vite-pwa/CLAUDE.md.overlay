@@ -1,0 +1,39 @@
+
+
+---
+
+## React Vite PWA — Flavor-Specific Notes
+
+### Architecture
+
+React + Vite + Tailwind CSS + PWA. State via Context API + useReducer.
+
+### Layer Rules (Enforced)
+
+- `components/` — UI only, no API calls
+- `context/` — State management, coordinates API + UI
+- `hooks/` — Custom React hooks
+- `utils/` — Pure functions, services (API calls here)
+- `types/` — TypeScript definitions
+- `constants/` — Config values
+
+See `.github/copilot-design-philosophy.md` for detailed patterns.
+See `.github/copilot-security-enforcement.md` for security rules.
+
+### Commands
+
+| Command | Purpose | Speed |
+|---------|---------|-------|
+| `npm run dev` | Vite dev server with HMR | instant |
+| `npm test` | Run tests | ~10s |
+| `npm run build:clean` | Clean production build | ~30s |
+| `npm run typecheck` | TypeScript strict check | ~5s |
+
+### PWA
+
+Configured via `vite-plugin-pwa` in `vite.config.ts`. Manifest in the plugin config.
+Auto-update service worker on new builds.
+
+### Deployment
+
+GitHub Pages via `deploy-pages.yml`. Sets `BASE_URL=/<repo-name>/` for correct asset paths.

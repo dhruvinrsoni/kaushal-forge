@@ -1,0 +1,87 @@
+#!/usr/bin/env node
+
+/**
+ * Creates a distributable zip for Chrome/Edge Web Store.
+ * Cross-platform — uses archiver instead of shell `zip`.
+ *
+ * Output: release/{{PROJECT_NAME}}-v{version}.zip
+ */
+
+import { createWriteStream, readFileSync, existsSync, mkdirSync } from 'fs';
+import { join, dirname, relative } from 'path';
+import { fileURLToPath } from 'url';
+import { readdirSync, statSync } from 'fs';
+import archiver from 'archiver';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const rootDir = join(__dirname, '..');
+const distDir = join(rootDir, 'dist');
+const releaseDir = join(rootDir, 'release');
+
+const pkg = JSON.parse(readFileSync(join(rootDir, 'package.json'), 'utf-8'));
+const version = pkg.version;
+const zipName = `{{PROJECT_NAME}}-v${version}.zip`;
+const zipPath = join(releaseDir, zipName);
+
+async function createZip() {
+  console.log(`\nPackaging {{PROJECT_NAME}} v${version}...`);
+  console.log('-'.repeat(50));
+
+  if (!existsSync(distDir)) {
+    console.error('dist/ folder not found. Run `npm run build:prod` first.');
+    process.exit(1);
+  }
+
+  if (!existsSync(releaseDir)) {
+    mkdirSync(releaseDir, { recursive: true });
+  }
+
+  const files = getAllFiles(distDir);
+  console.log(`\nFiles to package (${files.length} files):`);
+  files.slice(0, 10).forEach(f => console.log(`  - ${relative(rootDir, f)}`));
+  if (files.length > 10) {
+    console.log(`  ... and ${files.length - 10} more`);
+  }
+
+  const output = createWriteStream(zipPath);
+  const archive = archiver('zip', { zlib: { level: 9 } });
+
+  return new Promise((resolve, reject) => {
+    output.on('close', () => {
+      const sizeMB = (archive.pointer() / 1024 / 1024).toFixed(2);
+      console.log(`\nPackage created: ${relative(rootDir, zipPath)}`);
+      console.log(`Size: ${sizeMB} MB`);
+      console.log(`Ready to upload to Chrome/Edge Web Store.`);
+      resolve();
+    });
+
+    archive.on('error', reject);
+    archive.pipe(output);
+
+    // Exclude underscore-prefixed entries (CWS rejects them)
+    archive.glob('**/*', {
+      cwd: distDir,
+      ignore: ['_*', '_*/**'],
+    });
+
+    archive.finalize();
+  });
+}
+
+function getAllFiles(dir, files = []) {
+  for (const entry of readdirSync(dir)) {
+    if (entry.startsWith('_')) { continue; }
+    const fullPath = join(dir, entry);
+    if (statSync(fullPath).isDirectory()) {
+      getAllFiles(fullPath, files);
+    } else {
+      files.push(fullPath);
+    }
+  }
+  return files;
+}
+
+createZip().catch(err => {
+  console.error('Packaging failed:', err);
+  process.exit(1);
+});

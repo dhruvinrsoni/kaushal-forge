@@ -1,0 +1,23 @@
+
+
+---
+
+## Scripts Toolbox — Flavor-Specific Notes
+
+### Architecture
+
+Cross-platform script collection. Every tool has both `.sh` and `.ps1` variants.
+
+### Conventions
+
+- Shell scripts: `#!/usr/bin/env bash` + `set -euo pipefail`
+- PowerShell: `#Requires -Version 7.0` + `[CmdletBinding()]`
+- Shared logic in `.logic` or `.conf` files (DRY principle from git-sutras)
+- Non-interactive design — no `read` or `Read-Host` prompts (scripts must work in automation)
+
+### Testing
+
+No automated test framework. CI validates syntax:
+- `shellcheck` for `.sh` files
+- `python -m py_compile` for `.py` files
+- `pwsh` parser check for `.ps1` files

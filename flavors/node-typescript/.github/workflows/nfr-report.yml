@@ -1,0 +1,121 @@
+name: Quality Report
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, develop]
+  schedule:
+    - cron: "0 0 1 * *" # Monthly
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  quality:
+    name: Quality Report
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        id: lint
+        continue-on-error: true
+        run: |
+          LINT_OUTPUT=$(npm run lint 2>&1 || true)
+          ERRORS=$(echo "$LINT_OUTPUT" | grep -c "error" || echo "0")
+          WARNINGS=$(echo "$LINT_OUTPUT" | grep -c "warning" || echo "0")
+          echo "errors=$ERRORS" >> $GITHUB_OUTPUT
+          echo "warnings=$WARNINGS" >> $GITHUB_OUTPUT
+
+      - name: Test with coverage
+        id: test
+        continue-on-error: true
+        run: |
+          npm run test:coverage 2>&1 | tee /tmp/test-output.txt
+          # Extract coverage from json-summary
+          if [ -f coverage/coverage-summary.json ]; then
+            COVERAGE=$(node -e "const c=require('./coverage/coverage-summary.json');console.log(c.total.lines.pct)")
+            echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
+          else
+            echo "coverage=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: TypeCheck
+        id: typecheck
+        continue-on-error: true
+        run: npx tsc --noEmit 2>&1 | tail -5
+
+      - name: Build
+        id: build
+        continue-on-error: true
+        run: npm run build
+
+      - name: Generate report
+        if: always()
+        run: |
+          echo "## Quality Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Generated:** $(TZ='Asia/Kolkata' date '+%Y-%m-%d %H:%M:%S IST')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint Errors | ${{ steps.lint.outputs.errors || '0' }} | ${{ steps.lint.outcome == 'success' && ':white_check_mark:' || ':warning:' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint Warnings | ${{ steps.lint.outputs.warnings || '0' }} | — |" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Coverage | ${{ steps.test.outputs.coverage || '0' }}% | ${{ steps.test.outcome == 'success' && ':white_check_mark:' || ':x:' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| TypeCheck | ${{ steps.typecheck.outcome }} | ${{ steps.typecheck.outcome == 'success' && ':white_check_mark:' || ':x:' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ steps.build.outcome }} | ${{ steps.build.outcome == 'success' && ':white_check_mark:' || ':x:' }} |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const coverage = '${{ steps.test.outputs.coverage || "0" }}';
+            const body = `<!-- nfr-coverage-comment -->
+            ## Quality Report
+
+            | Metric | Value |
+            |--------|-------|
+            | Coverage | ${coverage}% |
+            | Lint | ${{ steps.lint.outcome }} |
+            | TypeCheck | ${{ steps.typecheck.outcome }} |
+            | Build | ${{ steps.build.outcome }} |
+
+            *Updated: ${new Date().toISOString()}*`;
+
+            // Upsert: find existing comment or create new
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.includes('<!-- nfr-coverage-comment -->'));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }

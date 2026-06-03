@@ -1,0 +1,75 @@
+/* {{PROJECT_NAME}} — Main Styles */
+
+:root {
+  --color-primary: #007BFF;
+  --color-bg: #ffffff;
+  --color-text: #1a1a2e;
+  --color-muted: #6c757d;
+  --font-main: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --max-width: 960px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1a1a2e;
+    --color-text: #e0e0e0;
+    --color-muted: #a0a0b0;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-main);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  padding: 1rem;
+  text-align: center;
+  border-bottom: 1px solid var(--color-muted);
+}
+
+main {
+  flex: 1;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  width: 100%;
+}
+
+footer {
+  padding: 1rem;
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+/* Utility: visually hidden (accessibility) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

@@ -1,0 +1,72 @@
+/**
+ * {{PROJECT_NAME}} Core Framework
+ * Shared utilities for all nano-apps: instance identity, namespaced state, theme management.
+ * Loaded via <script src="../core.js"> in each nano-app.
+ */
+(function () {
+  'use strict';
+
+  function generateUUID() {
+    if (crypto.randomUUID) return crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = (Math.random() * 16) | 0;
+      return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+    });
+  }
+
+  /**
+   * Initialize a nano-app instance.
+   * @param {string} appId - Unique app identifier (matches registry id)
+   * @returns {{ instanceId: string, State: object, renderMeta: function }}
+   */
+  function init(appId) {
+    // Instance identity: per-tab isolation via sessionStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    let instanceId = urlParams.get('instanceId') || sessionStorage.getItem(`${appId}__instanceId`);
+    if (!instanceId) {
+      instanceId = generateUUID();
+      sessionStorage.setItem(`${appId}__instanceId`, instanceId);
+    }
+
+    const prefix = `${instanceId}__`;
+
+    const State = {
+      save(key, value) {
+        localStorage.setItem(prefix + key, JSON.stringify(value));
+        localStorage.setItem(prefix + '__meta_updated', new Date().toISOString());
+        document.dispatchEvent(new CustomEvent('core:meta-updated', { detail: { key, instanceId } }));
+      },
+      load(key, fallback = null) {
+        const raw = localStorage.getItem(prefix + key);
+        if (raw === null) return fallback;
+        try { return JSON.parse(raw); } catch { return fallback; }
+      },
+      clear() {
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith(prefix)) keysToRemove.push(k);
+        }
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+      },
+    };
+
+    // Auto-set creation timestamp
+    if (!State.load('__meta_created')) {
+      State.save('__meta_created', new Date().toISOString());
+    }
+
+    function renderMeta() {
+      const created = State.load('__meta_created', '—');
+      const updated = State.load('__meta_updated', '—');
+      const elCreated = document.getElementById('meta-created');
+      const elUpdated = document.getElementById('meta-updated');
+      if (elCreated) elCreated.textContent = created;
+      if (elUpdated) elUpdated.textContent = updated;
+    }
+
+    return { instanceId, State, renderMeta };
+  }
+
+  window.Core = { init };
+})();

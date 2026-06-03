@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: {{PROJECT_NAME}}
+
+server:
+  port: 8080
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Logging
+logging:
+  level:
+    root: INFO
+    {{PACKAGE_NAME}}: DEBUG
+
+---
+# Development profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  # H2 Console (dev only)
+  # h2:
+  #   console:
+  #     enabled: true
+  #     path: /h2-console
+
+---
+# Production profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+logging:
+  level:
+    root: WARN
+    {{PACKAGE_NAME}}: INFO

@@ -1,0 +1,31 @@
+
+
+---
+
+## Vanilla PWA — Flavor-Specific Notes
+
+### Architecture
+
+Zero dependencies. Pure HTML/CSS/JS. Works on `file://` and `python -m http.server`.
+
+### Service Worker
+
+- Cache-first strategy with named versioned cache (`{{PROJECT_NAME}}-v1`)
+- Bump cache version in `sw.js` when updating static assets
+- Test offline: DevTools → Application → Service Workers → Offline checkbox
+
+### PWA Checklist
+
+- `manifest.json` — name, icons (192 + 512), theme_color, background_color, display: standalone
+- `sw.js` — precache all CSS/JS/HTML files
+- Icons in `assets/icons/` — 192x192 and 512x512 PNG (maskable recommended)
+
+### Deployment
+
+GitHub Pages via `deploy-pages.yml` on push to main. Health check runs every 6 hours.
+
+### This Repo Specifically
+
+- Every JS module has a 1:1 CSS counterpart (e.g., `notifications.js` / `notifications.css`)
+- URL parameters supported for deep linking: `?key=value`
+- Service Worker version must match `version.txt`

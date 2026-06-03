@@ -1,0 +1,85 @@
+version: "1.0.0"
+description: Template registry — single source of truth for all project flavors
+
+flavors:
+  - id: vanilla-pwa
+    name: Vanilla PWA
+    description: Pure HTML/CSS/JS progressive web app with GitHub Pages deployment
+    path: flavors/vanilla-pwa/
+    tags: [pwa, static, zero-dependency, github-pages]
+    stack: HTML · CSS · JavaScript
+
+  - id: node-typescript
+    name: Node.js TypeScript
+    description: General-purpose Node.js package or tool with TypeScript, Vitest, and release automation
+    path: flavors/node-typescript/
+    tags: [node, typescript, vitest, npm]
+    stack: Node.js · TypeScript · Vitest
+
+  - id: react-vite-pwa
+    name: React Vite PWA
+    description: React app with Vite, Tailwind CSS, PWA support, and GitHub Pages deployment
+    path: flavors/react-vite-pwa/
+    tags: [react, vite, tailwind, pwa, github-pages]
+    stack: React · TypeScript · Vite · Tailwind
+
+  - id: chrome-extension
+    name: Chrome Extension
+    description: Chrome MV3 extension with esbuild, Vitest, and Chrome Web Store automation
+    path: flavors/chrome-extension/
+    tags: [chrome, extension, mv3, esbuild, vitest]
+    stack: TypeScript · esbuild · Chrome MV3
+
+  - id: spring-boot
+    name: Spring Boot
+    description: Modern Java Spring Boot 3+ API with Gradle Kotlin DSL and Docker
+    path: flavors/spring-boot/
+    tags: [java, spring-boot, gradle, docker]
+    stack: Java 21 · Spring Boot 3 · Gradle
+
+  - id: scripts-toolbox
+    name: Scripts Toolbox
+    description: Cross-platform script collection with bash, PowerShell, and Python
+    path: flavors/scripts-toolbox/
+    tags: [scripts, bash, powershell, python, cross-platform]
+    stack: Bash · PowerShell · Python
+
+  - id: nano-app-collection
+    name: Nano-App Collection
+    description: Dashboard of independent micro-apps sharing a core framework
+    path: flavors/nano-app-collection/
+    tags: [nano-app, dashboard, zero-dependency, offline-first]
+    stack: HTML · CSS · JavaScript
+
+  - id: python-tool
+    name: Python Tool
+    description: Python CLI tool with modern tooling — pytest, mypy, ruff, PyPI publishing
+    path: flavors/python-tool/
+    tags: [python, cli, pytest, mypy, ruff, pypi]
+    stack: Python 3.10+ · pytest · mypy · ruff
+
+skills:
+  - name: repo-maintenance
+    path: base/.github/skills/repo-maintenance/SKILL.md
+    description: Adaptive cleanup framework with greedy optimization
+    tags: [maintenance, cleanup, universal]
+
+  - name: pwa-optimization
+    path: flavors/vanilla-pwa/.github/skills/pwa-optimization/SKILL.md
+    description: PWA best practices and service worker strategies
+    tags: [pwa, service-worker, offline]
+
+  - name: testing-vitest
+    path: flavors/node-typescript/.github/skills/testing/SKILL.md
+    description: Vitest testing patterns and conventions
+    tags: [testing, vitest, typescript]
+
+  - name: cross-platform
+    path: flavors/scripts-toolbox/.github/skills/cross-platform/SKILL.md
+    description: Cross-platform scripting patterns
+    tags: [scripts, cross-platform]
+
+  - name: nano-app-protocol
+    path: flavors/nano-app-collection/.github/skills/nano-app-protocol/SKILL.md
+    description: Protocol for creating and modifying nano-apps
+    tags: [nano-app, protocol]

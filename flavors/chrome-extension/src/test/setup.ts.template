@@ -1,0 +1,36 @@
+/**
+ * Vitest global setup — Chrome API mocks for jsdom environment.
+ * Loaded via vitest.config.ts setupFiles.
+ */
+
+import { vi } from 'vitest';
+
+const mockChrome = {
+  runtime: {
+    onInstalled: { addListener: vi.fn() },
+    onMessage: { addListener: vi.fn() },
+    sendMessage: vi.fn(),
+    getManifest: vi.fn(() => ({ version: '0.1.0', name: '{{PROJECT_NAME}}' })),
+  },
+  storage: {
+    local: {
+      get: vi.fn().mockResolvedValue({}),
+      set: vi.fn().mockResolvedValue(undefined),
+      remove: vi.fn().mockResolvedValue(undefined),
+    },
+    sync: {
+      get: vi.fn().mockResolvedValue({}),
+      set: vi.fn().mockResolvedValue(undefined),
+    },
+  },
+  tabs: {
+    query: vi.fn().mockResolvedValue([]),
+    create: vi.fn(),
+  },
+  action: {
+    setIcon: vi.fn(),
+    setBadgeText: vi.fn(),
+  },
+};
+
+Object.assign(globalThis, { chrome: mockChrome });

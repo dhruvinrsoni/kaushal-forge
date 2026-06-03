@@ -1,0 +1,61 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - ".github/workflows/**"
+      - "!.github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate required files
+        run: |
+          REQUIRED=("index.html" "manifest.json" "sw.js")
+          MISSING=()
+          for file in "${REQUIRED[@]}"; do
+            [ ! -f "$file" ] && MISSING+=("$file")
+          done
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "::error::Missing required files: ${MISSING[*]}"
+            exit 1
+          fi
+          echo "All required files present"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Summary
+        run: |
+          echo "## Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "**URL:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Time:** $(TZ='Asia/Kolkata' date '+%Y-%m-%d %H:%M:%S IST')" >> $GITHUB_STEP_SUMMARY

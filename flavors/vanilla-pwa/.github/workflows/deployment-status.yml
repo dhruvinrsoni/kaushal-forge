@@ -1,0 +1,39 @@
+name: Deployment Health Check
+
+on:
+  schedule:
+    - cron: "0 */6 * * *" # Every 6 hours
+  workflow_run:
+    workflows: ["Deploy to GitHub Pages"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Custom URL to check (leave empty for default)"
+        required: false
+        type: string
+
+jobs:
+  health-check:
+    name: Health Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check deployment health
+        run: |
+          URL="${{ inputs.url || format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) }}"
+          echo "Checking: $URL"
+
+          HTTP_CODE=$(curl -s -o /tmp/response.html -w "%{http_code}" --max-time 30 "$URL" || echo "000")
+
+          echo "## Health Check Report" >> $GITHUB_STEP_SUMMARY
+          echo "**URL:** $URL" >> $GITHUB_STEP_SUMMARY
+          echo "**Time:** $(TZ='Asia/Kolkata' date '+%Y-%m-%d %H:%M:%S IST')" >> $GITHUB_STEP_SUMMARY
+          echo "**HTTP Status:** $HTTP_CODE" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "**Result:** :white_check_mark: Healthy" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Result:** :x: Unhealthy" >> $GITHUB_STEP_SUMMARY
+            echo "::error::Health check failed with HTTP $HTTP_CODE"
+            exit 1
+          fi

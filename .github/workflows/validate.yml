@@ -1,0 +1,42 @@
+name: Validate Templates
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate Templates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run validator
+        run: python scripts/validate-templates.py
+
+      - name: Test generator (dry-run all flavors)
+        run: |
+          FLAVORS=(vanilla-pwa node-typescript react-vite-pwa chrome-extension spring-boot scripts-toolbox nano-app-collection python-tool)
+          for flavor in "${FLAVORS[@]}"; do
+            echo "Testing flavor: $flavor"
+            node scripts/init-project.mjs --flavor "$flavor" --name "test-$flavor" --dry-run
+          done
+          echo "All flavors passed dry-run"
+
+      - name: Summary
+        run: |
+          echo "## Template Validation" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** :white_check_mark: All templates valid" >> $GITHUB_STEP_SUMMARY
+          echo "**Flavors:** vanilla-pwa, node-typescript, react-vite-pwa, chrome-extension, spring-boot, scripts-toolbox, nano-app-collection, python-tool" >> $GITHUB_STEP_SUMMARY

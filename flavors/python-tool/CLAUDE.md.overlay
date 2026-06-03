@@ -1,0 +1,36 @@
+
+
+---
+
+## Python Tool — Flavor-Specific Notes
+
+### Architecture
+
+Python CLI tool with `pyproject.toml` (PEP 621). Modern tooling: ruff, mypy, pytest.
+
+### Commands
+
+| Command | Purpose | Speed |
+|---------|---------|-------|
+| `make dev` | Install with dev dependencies | ~5s |
+| `make test` | Run pytest | ~5s |
+| `make test-cov` | Tests + coverage report | ~10s |
+| `make lint` | ruff lint check | ~2s |
+| `make typecheck` | mypy strict check | ~5s |
+| `make format` | ruff auto-format | ~2s |
+| `make all` | lint + typecheck + test | ~15s |
+
+### Conventions
+
+- **Type hints everywhere** — mypy strict mode
+- **ruff** for linting and formatting (replaces black + isort + flake8)
+- **pytest** for testing — tests in `tests/` directory
+- **src layout** — package in `src/{{PACKAGE_NAME}}/`
+- **CLI entry point** — `{{PACKAGE_NAME}}.cli:main` registered in `pyproject.toml`
+- **No `requirements.txt`** — all deps in `pyproject.toml` (PEP 621)
+
+### Release
+
+1. Bump version in `pyproject.toml` and `src/{{PACKAGE_NAME}}/__init__.py`
+2. Create GitHub Release (tag `v0.2.0`)
+3. `publish.yml` auto-publishes to PyPI via trusted publisher

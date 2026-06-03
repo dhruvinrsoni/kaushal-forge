@@ -1,0 +1,45 @@
+
+
+---
+
+## Spring Boot — Flavor-Specific Notes
+
+### Architecture
+
+Spring Boot 3+ with Gradle Kotlin DSL. Java 21. Layered architecture.
+
+### Layer Structure
+```
+src/main/java/{{PACKAGE}}/
+├── config/        # Spring configuration, security, CORS
+├── controller/    # REST endpoints (@RestController)
+├── service/       # Business logic (@Service)
+├── repository/    # Data access (@Repository)
+└── model/         # Domain entities, DTOs
+```
+
+### Commands
+
+| Command | Purpose | Speed |
+|---------|---------|-------|
+| `./gradlew bootRun` | Start dev server | ~10s |
+| `./gradlew test` | Run all tests | ~30s |
+| `./gradlew build` | Full build with tests | ~45s |
+| `./gradlew bootJar` | Create executable JAR | ~30s |
+| `./gradlew dependencyCheckAnalyze` | OWASP vulnerability scan | ~60s |
+
+### Key Conventions
+
+- **No raw SQL in controllers** — all data access through `@Repository`
+- **Validation** — use `@Valid` + Jakarta validation annotations on DTOs
+- **Profiles** — `dev` for local, `prod` for production. Set via `SPRING_PROFILES_ACTIVE`
+- **No hardcoded credentials** — use environment variables or Spring config
+- **Test naming** — `MethodName_Scenario_ExpectedResult` pattern
+- **Actuator** — `/actuator/health`, `/actuator/info`, `/actuator/metrics` enabled
+
+### Docker
+
+```bash
+docker compose up          # Start app (+ optional DB)
+docker compose up --build  # Rebuild and start
+```

@@ -1,0 +1,30 @@
+
+
+---
+
+## Node.js TypeScript — Flavor-Specific Notes
+
+### TypeScript Rules
+
+- **No `any`** — ESLint warns. Use `unknown` or proper generics.
+- **Consistent type imports** — `import type { Foo } from './bar.js'`
+- **Strict mode** — `tsconfig.json` has `strict: true`
+
+### Test Convention
+
+- Co-located: `src/<area>/__tests__/<filename>.test.ts`
+- `npm test` finishes in ~15s — run after every change
+- `npm run test:coverage` for v8 coverage report
+
+### Build
+
+- `npm run build` → TypeScript compiler → `dist/`
+- `npm run dev` → `tsx` for direct execution during development
+- Husky pre-commit: typecheck + lint + test
+
+### Release
+
+```
+node scripts/release.mjs <patch|minor|major>   # bump, changelog, tag, push, GitHub Release
+node scripts/release.mjs patch --dry-run        # preview without executing
+```

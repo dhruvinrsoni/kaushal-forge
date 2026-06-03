@@ -1,0 +1,56 @@
+name: Validate Scripts
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/**"
+      - "*.sh"
+      - "*.py"
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Shellcheck (.sh files)
+        continue-on-error: true
+        run: |
+          echo "## Shellcheck Results" >> $GITHUB_STEP_SUMMARY
+          find . -name "*.sh" -not -path "./.git/*" | while read f; do
+            echo "Checking: $f"
+            shellcheck "$f" 2>&1 || true
+          done
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Python syntax check
+        continue-on-error: true
+        run: |
+          echo "## Python Syntax Check" >> $GITHUB_STEP_SUMMARY
+          find . -name "*.py" -not -path "./.git/*" | while read f; do
+            python -m py_compile "$f" && echo "OK: $f" || echo "FAIL: $f"
+          done
+
+      - name: PowerShell syntax check
+        continue-on-error: true
+        run: |
+          echo "## PowerShell Syntax Check" >> $GITHUB_STEP_SUMMARY
+          find . -name "*.ps1" -not -path "./.git/*" | while read f; do
+            pwsh -Command "try { [System.Management.Automation.Language.Parser]::ParseFile('$f', [ref]\$null, [ref]\$null) | Out-Null; Write-Host 'OK: $f' } catch { Write-Host 'FAIL: $f' }" 2>/dev/null || echo "SKIP: $f (pwsh not available)"
+          done

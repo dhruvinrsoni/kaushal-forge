@@ -1,0 +1,114 @@
+#!/usr/bin/env node
+
+/**
+ * Release automation script
+ * Usage: node scripts/release.mjs <patch|minor|major> [--dry-run]
+ *
+ * Steps:
+ * 1. Validate: clean tree, on main, tests pass, build succeeds
+ * 2. Bump version in package.json
+ * 3. Generate changelog from conventional commits since last tag
+ * 4. Commit, tag, push to origin
+ * 5. Create GitHub Release with changelog
+ */
+
+import { execSync } from 'node:child_process';
+import { readFileSync, writeFileSync } from 'node:fs';
+
+const VALID_BUMPS = ['patch', 'minor', 'major'];
+
+function run(cmd, opts = {}) {
+  console.log(`  $ ${cmd}`);
+  if (opts.dryRun) return '';
+  return execSync(cmd, { encoding: 'utf-8', stdio: opts.silent ? 'pipe' : 'inherit' });
+}
+
+function getChangelog(lastTag) {
+  const range = lastTag ? `${lastTag}..HEAD` : 'HEAD';
+  const log = execSync(`git log ${range} --pretty=format:"- %s (%h)" --no-merges`, {
+    encoding: 'utf-8',
+  }).trim();
+  return log || '- No changes';
+}
+
+function main() {
+  const args = process.argv.slice(2);
+  const dryRun = args.includes('--dry-run');
+  const bump = args.find((a) => VALID_BUMPS.includes(a));
+
+  if (!bump) {
+    console.error(`Usage: node scripts/release.mjs <${VALID_BUMPS.join('|')}> [--dry-run]`);
+    process.exit(1);
+  }
+
+  if (dryRun) console.log('\n  DRY RUN — no changes will be made\n');
+
+  // 1. Validate
+  console.log('\n1. Validating...');
+  const branch = execSync('git branch --show-current', { encoding: 'utf-8' }).trim();
+  if (branch !== 'main') {
+    console.error(`  Error: Must be on main branch (currently on ${branch})`);
+    process.exit(1);
+  }
+
+  const status = execSync('git status --porcelain', { encoding: 'utf-8' }).trim();
+  if (status) {
+    console.error('  Error: Working tree is not clean');
+    process.exit(1);
+  }
+
+  console.log('  Running tests...');
+  run('npm test', { dryRun });
+
+  console.log('  Building...');
+  run('npm run build', { dryRun });
+
+  // 2. Bump version
+  console.log('\n2. Bumping version...');
+  const pkg = JSON.parse(readFileSync('package.json', 'utf-8'));
+  const [major, minor, patch] = pkg.version.split('.').map(Number);
+  const newVersion =
+    bump === 'major'
+      ? `${major + 1}.0.0`
+      : bump === 'minor'
+        ? `${major}.${minor + 1}.0`
+        : `${major}.${minor}.${patch + 1}`;
+
+  console.log(`  ${pkg.version} → ${newVersion}`);
+  if (!dryRun) {
+    pkg.version = newVersion;
+    writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+  }
+
+  // 3. Changelog
+  console.log('\n3. Generating changelog...');
+  const lastTag = execSync('git describe --tags --abbrev=0 2>/dev/null || echo ""', {
+    encoding: 'utf-8',
+  }).trim();
+  const changelog = getChangelog(lastTag);
+  console.log(changelog);
+
+  // 4. Commit, tag, push
+  console.log('\n4. Committing and tagging...');
+  run('git add package.json', { dryRun });
+  run(`git commit -m "chore: release v${newVersion}"`, { dryRun });
+  run(`git tag -a "v${newVersion}" -m "Release v${newVersion}"`, { dryRun });
+  run('git push origin main --follow-tags', { dryRun });
+
+  // 5. Create GitHub Release
+  console.log('\n5. Creating GitHub Release...');
+  if (!dryRun) {
+    try {
+      execSync(
+        `gh release create "v${newVersion}" --title "v${newVersion}" --notes "${changelog.replace(/"/g, '\\"')}"`,
+        { stdio: 'inherit' },
+      );
+    } catch {
+      console.warn('  Warning: gh CLI not available — skip GitHub Release creation');
+    }
+  }
+
+  console.log(`\nDone! Released v${newVersion}`);
+}
+
+main();

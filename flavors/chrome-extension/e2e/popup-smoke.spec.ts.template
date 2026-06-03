@@ -1,0 +1,23 @@
+import { test, expect } from './fixtures/extension';
+
+test.describe('Popup smoke test', () => {
+  test('popup loads and shows extension name', async ({ extPage: page, extensionId }) => {
+    await page.goto(`chrome-extension://${extensionId}/src/popup/popup.html`);
+    await page.waitForLoadState('load');
+
+    const body = page.locator('body');
+    await expect(body).toBeVisible();
+  });
+
+  test('service worker responds to ping', async ({ extPage: page, extensionId }) => {
+    await page.goto(`chrome-extension://${extensionId}/src/popup/popup.html`);
+
+    const response = await page.evaluate(async () => {
+      return new Promise((resolve) => {
+        chrome.runtime.sendMessage({ type: 'ping' }, resolve);
+      });
+    });
+
+    expect(response).toEqual({ status: 'pong' });
+  });
+});

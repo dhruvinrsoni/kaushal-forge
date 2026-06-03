@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Description: Example script template
+# Usage: ./scripts/example.sh [args]
+
+echo "{{PROJECT_NAME}} — example script"
+echo "Platform: $(uname -s)"
+echo "Arguments: $*"

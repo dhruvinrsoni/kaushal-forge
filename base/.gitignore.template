@@ -1,0 +1,65 @@
+# === Dependencies ===
+node_modules/
+vendor/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# === Build output ===
+dist/
+build/
+out/
+target/
+*.class
+*.jar
+*.war
+
+# === Environment & secrets ===
+.env
+.env.*
+!.env.example
+credentials.json
+*.pem
+*.key
+
+# === IDE / editor ===
+.idea/
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/extensions.json
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Test & coverage ===
+coverage/
+.nyc_output/
+htmlcov/
+.pytest_cache/
+.coverage
+*.lcov
+
+# === Logs ===
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# === Package archives ===
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+{{ADDITIONAL_IGNORES}}

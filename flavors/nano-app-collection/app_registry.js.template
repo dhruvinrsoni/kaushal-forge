@@ -1,0 +1,17 @@
+/**
+ * {{PROJECT_NAME}} — App Registry
+ * Single source of truth for all registered nano-apps.
+ * Dashboard reads this to render the app grid.
+ */
+window.APP_REGISTRY = [
+  {
+    id: 'example-app',
+    name: 'Example App',
+    shortCode: 'EA',
+    description: 'A starter nano-app to demonstrate the framework.',
+    path: 'example-app/',
+    tags: ['starter', 'demo'],
+    version: '0.1.0',
+  },
+  // Add new apps here. Dashboard auto-discovers from this array.
+];

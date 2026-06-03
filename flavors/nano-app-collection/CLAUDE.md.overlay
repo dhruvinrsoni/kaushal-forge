@@ -1,0 +1,30 @@
+
+
+---
+
+## Nano-App Collection — Flavor-Specific Notes
+
+### Architecture
+
+Dashboard of independent micro-apps sharing a core framework. Zero dependencies, works on `file://`.
+
+### Key Files
+
+- `app_registry.js` — Single source of truth for all apps
+- `core.js` — Shared framework (IIFE, instance isolation, namespaced state, theme)
+- `index.html` — Dashboard that renders app grid from registry
+
+### Adding a New App
+
+1. Create `my-app/` directory with `index.html` + `app.js`
+2. Use `Core.init('my-app')` for state management
+3. Add entry to `app_registry.js`
+
+See `.github/skills/nano-app-protocol/SKILL.md` for full checklist.
+
+### Conventions
+
+- All state through `State.save/load` — never raw `localStorage`
+- No `fetch()` — use script-injection for `file://` compatibility
+- Each app is self-contained and independently understandable
+- Per-tab isolation via `sessionStorage` + `?instanceId=`

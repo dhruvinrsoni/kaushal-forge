@@ -1,0 +1,57 @@
+
+
+
+---
+
+## Chrome Extension — Flavor-Specific Notes
+
+### Architecture
+
+Chrome MV3 service worker + popup. Built with esbuild (not webpack).
+
+### Key Files
+
+- `manifest.json` — Chrome MV3 manifest (permissions, service worker entry)
+- `src/background/service-worker.ts` — Extension entry point
+- `src/core/settings.ts` — `SETTINGS_SCHEMA` single source of truth
+- `src/popup/popup.html` — Popup UI
+- `scripts/esbuild-*.mjs` — Build scripts (dev with sourcemaps, prod minified + metafile)
+- `scripts/package.mjs` — Cross-platform zip packaging (archiver)
+- `scripts/verify.mjs` — Full local CI pipeline (lint + build + test + E2E)
+- `scripts/preflight.mjs` — Pre-release checks (verify + manifest + dist integrity)
+
+### Commands
+
+| Command | Purpose | Speed |
+|---------|---------|-------|
+| `npm test` | Run all unit tests | ~15s |
+| `npm run build:dev` | Dev build with source maps | ~10s |
+| `npm run build:prod` | Production build (minified, metafile) | ~30s |
+| `npm run package` | Build + cross-platform zip for CWS | ~35s |
+| `npm run verify` | Full verification (lint + build + tests) | ~2min |
+| `npm run verify -- --no-e2e` | Verify without E2E tests | ~1min |
+| `npm run preflight` | Pre-release checks (verify + manifest + dist) | ~3min |
+| `npm run test:e2e` | Playwright E2E against real Chrome | ~1min |
+| `npm run sync-version` | Sync package.json version -> manifest.json | instant |
+
+### Chrome API Mocking
+
+jsdom has no `chrome.*`. Every test touching Chrome APIs must mock them.
+See `src/test/setup.ts` for the global mock loaded via vitest setupFiles.
+
+### CWS Naming Constraints
+
+Chrome Web Store rejects packages with underscore-prefixed directories (`__tests__`, `__mocks__`). Tests live as colocated `*.test.ts` / `*.spec.ts` files; shared test setup is in `src/test/`.
+
+### Settings
+
+Never hardcode a setting key. Always reference `SETTINGS_SCHEMA` in `src/core/settings.ts`.
+
+### Version Sync
+
+`scripts/sync-version.mjs` keeps `package.json` and `manifest.json` versions in sync.
+Always bump in `package.json` first, then run `npm run sync-version`.
+
+### E2E Testing (Playwright)
+
+E2E tests live in `e2e/` and use a custom fixture (`e2e/fixtures/extension.ts`) that launches Chromium with the extension loaded from `dist/`. Extensions cannot run headless — CI uses `xvfb` on Linux. The `e2e.yml` workflow runs automatically on PRs that touch `src/`, `e2e/`, or `manifest.json`.

@@ -1,0 +1,18 @@
+/**
+ * Example App — Demonstrates Core framework usage
+ */
+'use strict';
+
+(function () {
+  const { instanceId, State, renderMeta } = Core.init('example-app');
+
+  console.log(`Example App initialized (instance: ${instanceId})`);
+
+  // Example: save and load state
+  const visits = (State.load('visits') || 0) + 1;
+  State.save('visits', visits);
+  console.log(`Visit #${visits}`);
+
+  // Render metadata timestamps
+  renderMeta();
+})();

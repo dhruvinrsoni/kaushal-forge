@@ -1,0 +1,30 @@
+.PHONY: install dev test lint typecheck format clean all
+
+install:
+	pip install -e .
+
+dev:
+	pip install -e ".[dev]"
+
+test:
+	pytest
+
+test-cov:
+	pytest --cov=src --cov-report=term-missing --cov-report=html
+
+lint:
+	ruff check src/ tests/
+
+lint-fix:
+	ruff check --fix src/ tests/
+
+typecheck:
+	mypy src/
+
+format:
+	ruff format src/ tests/
+
+clean:
+	rm -rf dist/ build/ *.egg-info .pytest_cache .mypy_cache .ruff_cache htmlcov/ .coverage
+
+all: lint typecheck test

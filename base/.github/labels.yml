@@ -1,0 +1,86 @@
+# Unified label set — synced via label-sync workflow
+# Categories: Type, Area, Priority, Status, Agent
+
+# === Type ===
+- name: bug
+  color: "d73a4a"
+  description: Something isn't working
+
+- name: enhancement
+  color: "a2eeef"
+  description: New feature or improvement
+
+- name: testing
+  color: "0e8a16"
+  description: Test creation or improvement
+
+- name: coverage
+  color: "006b75"
+  description: Test coverage improvement
+
+- name: performance
+  color: "fbca04"
+  description: Performance improvement
+
+- name: security
+  color: "e11d48"
+  description: Security fix or hardening
+
+- name: documentation
+  color: "0075ca"
+  description: Documentation improvement
+
+- name: refactor
+  color: "d4c5f9"
+  description: Code restructuring without behavior change
+
+- name: chore
+  color: "ededed"
+  description: Maintenance, dependencies, tooling
+
+# === Priority ===
+- name: "priority: critical"
+  color: "b60205"
+  description: Must fix immediately — blocks release
+
+- name: "priority: high"
+  color: "d93f0b"
+  description: Should fix this sprint
+
+- name: "priority: medium"
+  color: "fbca04"
+  description: Fix when bandwidth allows
+
+- name: "priority: low"
+  color: "0e8a16"
+  description: Nice to have — backlog
+
+# === Status ===
+- name: needs-triage
+  color: "ededed"
+  description: Needs initial assessment
+
+- name: "status: in-progress"
+  color: "1d76db"
+  description: Actively being worked on
+
+- name: "status: blocked"
+  color: "b60205"
+  description: Blocked by dependency or decision
+
+- name: "status: ready-for-review"
+  color: "0e8a16"
+  description: Ready for code review
+
+- name: "status: wontfix"
+  color: "ffffff"
+  description: Decided not to address
+
+# === Agent ===
+- name: "agent: test-coverage"
+  color: "7057ff"
+  description: Automated test coverage agent
+
+- name: "agent: maintenance"
+  color: "7057ff"
+  description: Automated maintenance agent

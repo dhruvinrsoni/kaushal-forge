@@ -1,0 +1,87 @@
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_version:
+        description: "Version to rollback to (e.g., v1.2.0 or commit SHA)"
+        required: true
+        type: string
+      strategy:
+        description: "Rollback strategy"
+        required: true
+        type: choice
+        options:
+          - soft  # Revert to version, preserve workflows
+          - hard  # Full reset to target state
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    name: Rollback Deployment
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve target ref
+        id: resolve
+        run: |
+          TARGET="${{ inputs.target_version }}"
+          # Check if it's a tag
+          if git rev-parse "refs/tags/$TARGET" >/dev/null 2>&1; then
+            REF="refs/tags/$TARGET"
+          elif git rev-parse "$TARGET" >/dev/null 2>&1; then
+            REF="$TARGET"
+          else
+            echo "::error::Cannot resolve target: $TARGET"
+            exit 1
+          fi
+          echo "ref=$REF" >> $GITHUB_OUTPUT
+          echo "Resolved to: $(git log -1 --oneline $REF)"
+
+      - name: Soft rollback
+        if: inputs.strategy == 'soft'
+        run: |
+          # Checkout target version's files but preserve .github/workflows
+          git checkout ${{ steps.resolve.outputs.ref }} -- . ':!.github/workflows'
+          echo "Rolled back files to ${{ inputs.target_version }} (workflows preserved)"
+
+      - name: Hard rollback
+        if: inputs.strategy == 'hard'
+        run: |
+          git checkout ${{ steps.resolve.outputs.ref }} -- .
+          echo "Full rollback to ${{ inputs.target_version }}"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."
+
+      - name: Deploy rollback
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Summary
+        run: |
+          echo "## Rollback Complete" >> $GITHUB_STEP_SUMMARY
+          echo "**Strategy:** ${{ inputs.strategy }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Target:** ${{ inputs.target_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Time:** $(TZ='Asia/Kolkata' date '+%Y-%m-%d %H:%M:%S IST')" >> $GITHUB_STEP_SUMMARY
+          echo "**URL:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY

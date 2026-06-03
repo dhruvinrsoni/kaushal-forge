@@ -1,0 +1,17 @@
+# Generator output (never commit generated projects)
+# Only match top-level generated directories, not nested paths
+/test-*/
+/generated-*/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db

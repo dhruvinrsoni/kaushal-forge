@@ -1,0 +1,35 @@
+/**
+ * Settings Schema — Single Source of Truth
+ *
+ * All settings keys, defaults, and validation are defined here.
+ * Never hardcode setting values elsewhere — always reference this schema.
+ */
+
+export interface SettingsSchema {
+  [key: string]: {
+    default: unknown;
+    description: string;
+    type: 'boolean' | 'number' | 'string' | 'select';
+    options?: readonly string[];
+  };
+}
+
+export const SETTINGS_SCHEMA = {
+  enabled: {
+    default: true,
+    description: 'Enable the extension',
+    type: 'boolean' as const,
+  },
+  theme: {
+    default: 'auto',
+    description: 'UI theme',
+    type: 'select' as const,
+    options: ['auto', 'light', 'dark'] as const,
+  },
+} satisfies SettingsSchema;
+
+export type SettingsKey = keyof typeof SETTINGS_SCHEMA;
+
+export function getDefault<K extends SettingsKey>(key: K): (typeof SETTINGS_SCHEMA)[K]['default'] {
+  return SETTINGS_SCHEMA[key].default;
+}

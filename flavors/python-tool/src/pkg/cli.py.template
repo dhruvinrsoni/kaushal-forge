@@ -1,0 +1,25 @@
+"""{{PROJECT_NAME}} — CLI Entry Point"""
+
+import argparse
+import sys
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        prog="{{PROJECT_NAME}}",
+        description="{{PROJECT_DESCRIPTION}}",
+    )
+    parser.add_argument("--version", action="version", version="%(prog)s 0.1.0")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+
+    args = parser.parse_args()
+
+    if args.verbose:
+        print("Verbose mode enabled")
+
+    print("{{PROJECT_NAME}} — ready")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

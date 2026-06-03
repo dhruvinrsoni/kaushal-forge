@@ -1,0 +1,19 @@
+# Copilot Instructions — {{PROJECT_NAME}}
+
+For comprehensive project context, see `CLAUDE.md` in the repo root.
+
+## Tech Stack
+{{TECH_STACK}}
+
+## Key Commands
+{{COMMON_COMMANDS_SUMMARY}}
+
+## Domain Skills
+Detailed context in `.github/skills/<name>/SKILL.md`:
+{{SKILL_INDEX}}
+
+## Coding Rules
+- Follow conventional commits: `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`
+- No hardcoded secrets — use environment variables
+- No `any` without justification (TypeScript projects)
+{{ADDITIONAL_COPILOT_RULES}}

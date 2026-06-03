@@ -1,0 +1,10 @@
+/**
+ * {{PROJECT_NAME}} — Entry Point
+ */
+
+export function main(): void {
+  console.log('{{PROJECT_NAME}} started');
+}
+
+// Run when executed directly
+main();

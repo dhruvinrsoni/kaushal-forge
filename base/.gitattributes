@@ -1,0 +1,48 @@
+# Auto-detect text files and normalize line endings
+* text=auto
+
+# Force LF for all text files (cross-platform consistency)
+*.js    text eol=lf
+*.ts    text eol=lf
+*.tsx   text eol=lf
+*.jsx   text eol=lf
+*.json  text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.md    text eol=lf
+*.html  text eol=lf
+*.css   text eol=lf
+*.py    text eol=lf
+*.java  text eol=lf
+*.kt    text eol=lf
+*.kts   text eol=lf
+*.xml   text eol=lf
+*.properties text eol=lf
+*.gradle text eol=lf
+*.sh    text eol=lf
+
+# Force CRLF for Windows-only scripts
+*.cmd   text eol=crlf
+*.bat   text eol=crlf
+*.ps1   text eol=crlf
+
+# Binary files — do not diff or merge
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.svg   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.eot   binary
+*.zip   binary
+*.tar.gz binary
+*.jar   binary
+*.war   binary
+
+# Lock files — do not diff (too noisy)
+package-lock.json -diff
+yarn.lock -diff
+pnpm-lock.yaml -diff

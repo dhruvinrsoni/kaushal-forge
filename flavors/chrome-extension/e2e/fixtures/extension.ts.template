@@ -1,0 +1,55 @@
+import { test as base, chromium, type BrowserContext, type Page } from '@playwright/test';
+import path from 'path';
+import fs from 'fs';
+import os from 'os';
+
+const EXTENSION_PATH = path.resolve(__dirname, '../../dist');
+
+export const test = base.extend<
+  { extPage: Page },
+  { extensionContext: BrowserContext; extensionId: string }
+>({
+  // eslint-disable-next-line no-empty-pattern
+  extensionContext: [async ({}, use) => {
+    const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), '{{PROJECT_NAME}}-e2e-'));
+
+    const ctx = await chromium.launchPersistentContext(userDataDir, {
+      headless: false,
+      args: [
+        '--no-first-run',
+        '--no-default-browser-check',
+        `--disable-extensions-except=${EXTENSION_PATH}`,
+        `--load-extension=${EXTENSION_PATH}`,
+      ],
+    });
+
+    let [bg] = ctx.serviceWorkers();
+    if (!bg) { bg = await ctx.waitForEvent('serviceworker'); }
+
+    await use(ctx);
+
+    for (const p of ctx.pages()) {
+      await p.close().catch(() => {});
+    }
+    await ctx.close().catch(() => {});
+
+    try { fs.rmSync(userDataDir, { recursive: true, force: true }); } catch { /* non-critical */ }
+  }, { scope: 'worker' }],
+
+  extensionId: [async ({ extensionContext }, use) => {
+    let [background] = extensionContext.serviceWorkers();
+    if (!background) {
+      background = await extensionContext.waitForEvent('serviceworker');
+    }
+    const extensionId = background.url().split('/')[2];
+    await use(extensionId);
+  }, { scope: 'worker' }],
+
+  extPage: async ({ extensionContext }, use) => {
+    const page = await extensionContext.newPage();
+    await use(page);
+    await page.close();
+  },
+});
+
+export const expect = test.expect;

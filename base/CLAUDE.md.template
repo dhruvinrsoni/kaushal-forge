@@ -1,0 +1,97 @@
+# CLAUDE.md — {{PROJECT_NAME}} Project Context
+
+Project-specific instructions for Claude Code. Loaded automatically when working in this repo.
+
+---
+
+## Project
+
+{{PROJECT_DESCRIPTION}}
+**Stack:** {{TECH_STACK}}
+{{PRIVACY_STANCE}}
+
+---
+
+## Critical File Map
+
+Navigate here first — don't broad-search when the location is known:
+
+| What | Where |
+|------|-------|
+{{CRITICAL_FILE_MAP_ROWS}}
+
+---
+
+## Common Commands
+
+| Command | Purpose | Speed |
+|---------|---------|-------|
+{{COMMON_COMMANDS_ROWS}}
+
+---
+
+## Domain Skills (On-Demand Context)
+
+Load `.github/skills/<name>/SKILL.md` for deep domain knowledge:
+
+| Skill | Load when... |
+|-------|-------------|
+| `repo-maintenance` | Cleanup, dead code audit, file reorganization |
+{{SKILL_ROWS}}
+
+---
+
+## Efficiency Rules (Repo-Adapted)
+
+### Model / Agent Selection
+
+- **Direct (no agent):** Reading 1-2 known files, single targeted search, making code edits
+- **Explore agent:** Understanding how a subsystem works, multi-file pattern discovery
+- **Plan agent:** Before implementing non-trivial changes
+
+### Discovery Strategy
+
+Prefer in this order:
+1. **Glob** for file finding
+2. **Grep `files_with_matches`** to locate which files contain a symbol before reading
+3. **Read** with `offset`+`limit` when the relevant region is known from Grep line numbers
+4. **Explore agent** only when answer spans many files or requires iteration
+
+### Parallelization
+
+Run in parallel when independent:
+- Multiple file reads (use one message with multiple Read calls)
+- Multiple Grep/Glob searches
+- Multiple Explore agents for different subsystems
+
+{{REPO_SPECIFIC_EFFICIENCY}}
+
+---
+
+## Key Conventions
+
+- **Commit convention** — `fix:`, `feat:`, `docs:`, `chore:`, `refactor:`, `test:` prefixes
+- **No hardcoded secrets** — use environment variables or `.env` (gitignored)
+{{ADDITIONAL_CONVENTIONS}}
+
+---
+
+## Maintenance Workflows
+
+Load `.github/skills/repo-maintenance/SKILL.md` for full cleanup framework.
+
+### Bug Fix
+```
+1. Reproduce → find root cause → fix
+2. {{BUILD_TEST_COMMAND}}
+3. git commit -m "fix: <description>"
+```
+
+### New Feature
+```
+1. Load relevant domain skill → plan → implement
+2. {{BUILD_TEST_COMMAND}}
+3. git commit -m "feat: <description>"
+```
+
+{{RELEASE_WORKFLOW}}

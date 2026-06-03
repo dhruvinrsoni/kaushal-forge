@@ -1,0 +1,12 @@
+#Requires -Version 7.0
+<#
+.SYNOPSIS
+    Example script template
+.EXAMPLE
+    ./scripts/example.ps1
+#>
+[CmdletBinding()]
+param()
+
+Write-Host "{{PROJECT_NAME}} — example script"
+Write-Host "Platform: $($PSVersionTable.Platform)"

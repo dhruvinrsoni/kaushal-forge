@@ -1,0 +1,8 @@
+# Default owner for everything
+* @{{GITHUB_USER}}
+
+# Protect CI/CD and project config
+.github/ @{{GITHUB_USER}}
+CLAUDE.md @{{GITHUB_USER}}
+
+{{ADDITIONAL_CODEOWNERS}}

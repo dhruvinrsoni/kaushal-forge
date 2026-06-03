@@ -1,0 +1,47 @@
+# Contributing to {{PROJECT_NAME}}
+
+Thank you for your interest in contributing! This guide will help you get started.
+
+## Getting Started
+
+1. **Fork** the repository
+2. **Clone** your fork locally
+3. **Create a branch** from `main` for your work: `git checkout -b feat/your-feature`
+4. **Make your changes** following the conventions below
+5. **Test** your changes: `{{BUILD_TEST_COMMAND}}`
+6. **Commit** with a conventional commit message
+7. **Push** and open a Pull Request
+
+## Commit Convention
+
+We use [Conventional Commits](https://www.conventionalcommits.org/):
+
+| Prefix | When to use |
+|--------|-------------|
+| `feat:` | New feature |
+| `fix:` | Bug fix |
+| `docs:` | Documentation only |
+| `chore:` | Maintenance, dependencies |
+| `refactor:` | Code restructuring (no behavior change) |
+| `test:` | Adding or fixing tests |
+| `style:` | Formatting, whitespace (no logic change) |
+| `perf:` | Performance improvement |
+
+Example: `feat: add dark mode toggle to settings panel`
+
+## Pull Request Checklist
+
+Before submitting your PR, ensure:
+
+- [ ] Code compiles/builds without errors
+- [ ] All existing tests pass
+- [ ] New code has appropriate test coverage
+- [ ] No hardcoded secrets or credentials
+- [ ] Commit messages follow conventional format
+- [ ] PR description explains the **why**, not just the **what**
+
+## Code of Conduct
+
+Be respectful, constructive, and inclusive. We're all here to build something great.
+
+{{ADDITIONAL_CONTRIBUTING}}

@@ -1,0 +1,149 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "package.json"
+      - "package-lock.json"
+      - "requirements.txt"
+      - "pyproject.toml"
+      - "build.gradle*"
+      - "pom.xml"
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 0 * * 1" # Weekly on Monday midnight UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  security-scan:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # === Secret Detection (Universal) ===
+      - name: Detect hardcoded secrets
+        run: |
+          echo "## Secret Detection" >> $GITHUB_STEP_SUMMARY
+
+          PATTERNS=(
+            'AKIA[0-9A-Z]{16}'                    # AWS Access Key
+            'AIza[0-9A-Za-z\-_]{35}'              # Google API Key
+            'sk-[0-9a-zA-Z]{48}'                   # OpenAI API Key
+            'sk-ant-[0-9a-zA-Z\-]{80,}'           # Anthropic API Key
+            'ghp_[0-9a-zA-Z]{36}'                  # GitHub PAT
+            'gho_[0-9a-zA-Z]{36}'                  # GitHub OAuth
+            'glpat-[0-9a-zA-Z\-]{20}'             # GitLab PAT
+            'xox[baprs]-[0-9a-zA-Z\-]+'           # Slack tokens
+            'password\s*=\s*["\x27][^"\x27]{8,}'  # Hardcoded passwords
+          )
+
+          FOUND=0
+          for pattern in "${PATTERNS[@]}"; do
+            if grep -rEn "$pattern" --include="*.ts" --include="*.js" --include="*.tsx" --include="*.jsx" \
+               --include="*.py" --include="*.java" --include="*.yml" --include="*.yaml" \
+               --include="*.json" --include="*.env*" --include="*.properties" \
+               --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist \
+               --exclude-dir=build --exclude-dir=target --exclude-dir=venv . 2>/dev/null; then
+              FOUND=1
+            fi
+          done
+
+          if [ "$FOUND" -eq 1 ]; then
+            echo "::error::Potential hardcoded secrets detected! Review the matches above."
+            echo "| Status | Result |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|--------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Secrets | :x: Potential secrets found |" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "| Status | Result |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|--------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Secrets | :white_check_mark: No secrets detected |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      # === npm audit (Node.js projects) ===
+      - name: Check for package.json
+        id: check-node
+        run: echo "exists=$(test -f package.json && echo true || echo false)" >> $GITHUB_OUTPUT
+
+      - name: Setup Node.js
+        if: steps.check-node.outputs.exists == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: npm audit
+        if: steps.check-node.outputs.exists == 'true'
+        continue-on-error: true
+        run: |
+          npm ci --ignore-scripts
+          echo "## npm Audit Results" >> $GITHUB_STEP_SUMMARY
+          npm audit --json 2>/dev/null | jq -r '
+            "| Severity | Count |",
+            "|----------|-------|",
+            "| Critical | \(.metadata.vulnerabilities.critical // 0) |",
+            "| High | \(.metadata.vulnerabilities.high // 0) |",
+            "| Moderate | \(.metadata.vulnerabilities.moderate // 0) |",
+            "| Low | \(.metadata.vulnerabilities.low // 0) |"
+          ' >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "npm audit completed" >> $GITHUB_STEP_SUMMARY
+
+      - name: License compliance check
+        if: steps.check-node.outputs.exists == 'true'
+        continue-on-error: true
+        run: |
+          npx license-checker --summary --failOn "GPL-3.0;AGPL-3.0" 2>/dev/null || true
+
+      # === pip audit (Python projects) ===
+      - name: Check for Python project
+        id: check-python
+        run: |
+          if [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Python
+        if: steps.check-python.outputs.exists == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: pip audit
+        if: steps.check-python.outputs.exists == 'true'
+        continue-on-error: true
+        run: |
+          pip install pip-audit
+          echo "## pip Audit Results" >> $GITHUB_STEP_SUMMARY
+          pip-audit -r requirements.txt 2>/dev/null || pip-audit . 2>/dev/null || echo "pip audit completed" >> $GITHUB_STEP_SUMMARY
+
+      # === Gradle/Maven audit (Java projects) ===
+      - name: Check for Java project
+        id: check-java
+        run: |
+          if [ -f "build.gradle.kts" ] || [ -f "build.gradle" ] || [ -f "pom.xml" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Java
+        if: steps.check-java.outputs.exists == 'true'
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      - name: Gradle dependency check
+        if: steps.check-java.outputs.exists == 'true' && (hashFiles('build.gradle.kts') != '' || hashFiles('build.gradle') != '')
+        continue-on-error: true
+        run: |
+          echo "## Gradle Dependency Check" >> $GITHUB_STEP_SUMMARY
+          ./gradlew dependencyCheckAnalyze 2>/dev/null || echo "Dependency check plugin not configured" >> $GITHUB_STEP_SUMMARY

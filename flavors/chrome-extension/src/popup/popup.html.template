@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{PROJECT_NAME}}</title>
+  <style>
+    body {
+      width: 350px;
+      min-height: 200px;
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 16px;
+      color: #1a1a2e;
+    }
+    @media (prefers-color-scheme: dark) {
+      body { background: #1a1a2e; color: #e0e0e0; }
+    }
+    h1 { font-size: 1.1rem; margin: 0 0 12px; }
+    .status { font-size: 0.85rem; color: #6c757d; }
+  </style>
+</head>
+<body>
+  <h1>{{PROJECT_NAME}}</h1>
+  <p class="status">Extension active</p>
+
+  <script src="popup.js"></script>
+</body>
+</html>
