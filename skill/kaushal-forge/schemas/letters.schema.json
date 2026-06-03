@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "letters.json — array of tailored cover letters (output of P5)",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "key", "email_subject", "opening", "body", "closing", "why_company_prompt", "notes_md"],
+    "properties": {
+      "id": {"type": "string"}, "key": {"type": "string"},
+      "email_subject": {"type": "string"},
+      "opening": {"type": "string", "description": "para 1: specific hook + [Role] at [Company]"},
+      "body": {"type": "array", "items": {"type": "string"}, "description": "1-2 proof paragraphs"},
+      "closing": {"type": "string"},
+      "why_company_prompt": {"type": "string", "description": "instruction the candidate replaces with researched why-this-company sentences"},
+      "notes_md": {"type": "string", "description": "when to use + what to customize + tone"}
+    }
+  }
+}

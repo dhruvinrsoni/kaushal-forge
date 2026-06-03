@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "profile.json — the structured knowledge base (output of P1)",
+  "type": "object",
+  "required": ["identity", "headline", "summary", "experience", "education", "skills_groups", "achievements_bank"],
+  "properties": {
+    "identity": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string"},
+        "pronouns": {"type": "string"},
+        "location": {"type": "string"},
+        "tagline": {"type": "string"},
+        "handles": {"type": "object"}
+      }
+    },
+    "headline": {"type": "string", "description": "master-résumé headline line"},
+    "summary": {"type": "string", "description": "master-résumé 2-4 line summary"},
+    "focus": {"type": "string", "description": "optional one-line focus/interests"},
+    "experience": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["role", "org", "dates", "location", "bullets"],
+        "properties": {
+          "role": {"type": "string"}, "org": {"type": "string"},
+          "dates": {"type": "string"}, "location": {"type": "string"},
+          "bullets": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "education": {
+      "type": "array",
+      "items": {"type": "object", "properties": {
+        "degree": {"type": "string"}, "institution": {"type": "string"},
+        "dates": {"type": "string"}, "detail": {"type": "string"}}}
+    },
+    "skills_groups": {
+      "type": "array",
+      "items": {"type": "object", "required": ["label", "items"],
+        "properties": {"label": {"type": "string"}, "items": {"type": "string"}}}
+    },
+    "certs": {"type": "array", "items": {"type": "string"}},
+    "awards": {"type": "array", "items": {"type": "string"}},
+    "languages": {"type": "array", "items": {"type": "string"}},
+    "projects": {
+      "type": "array",
+      "items": {"type": "object", "properties": {
+        "name": {"type": "string"}, "meta": {"type": "string"},
+        "desc": {"type": "string"}, "url": {"type": "string"}}}
+    },
+    "persona": {"type": "string", "description": "authentic voice/motivations to preserve"},
+    "achievements_bank": {"type": "array", "items": {"type": "string"},
+      "description": "every quantified, confidentiality-safe, résumé-ready bullet"}
+  }
+}

@@ -1,0 +1,45 @@
+% ============================================================================
+% dhruvin-letter.tex — shared cover-letter style (matches the resume header)
+% Load from a build driver:  \input{../_styles/dhruvin-letter.tex}
+% ============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[letterpaper,top=0.6in,bottom=0.55in,left=0.85in,right=0.85in]{geometry}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{accent}{HTML}{1F4E79}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\raggedright
+
+\long\def\Name#1{\def\resName{#1}}
+\long\def\Contact#1{\def\resContact{#1}}
+\long\def\LetterDate#1{\def\resDate{#1}}
+\long\def\Recipient#1{\def\resRecipient{#1}}
+\long\def\Subject#1{\def\resSubject{#1}}
+\long\def\Greeting#1{\def\resGreeting{#1}}
+\long\def\Signoff#1{\def\resSignoff{#1}}
+\long\def\LetterBody#1{\def\resBody{#1}}
+\def\resDate{}\def\resRecipient{}\def\resSubject{}\def\resGreeting{}\def\resSignoff{Sincerely,}
+
+% one body paragraph
+\newcommand{\Para}[1]{#1\par}
+% a fill-me placeholder line (renders in accent italic so it's obvious to replace)
+\newcommand{\Fill}[1]{{\itshape\color{accent}#1}\par}
+
+\newcommand{\BuildLetter}{%
+  {\fontsize{17}{19}\selectfont\bfseries\color{accent}\resName}\par
+  \vspace{1pt}{\small \resContact}\par
+  \vspace{3pt}{\color{accent}\rule{\linewidth}{1pt}}\par
+  \vspace{8pt}\resDate\par
+  \vspace{5pt}\resRecipient\par
+  \vspace{5pt}\textbf{\resSubject}\par
+  \vspace{3pt}\resGreeting\par
+  \vspace{1pt}\resBody
+  \vspace{3pt}\resSignoff\par
+  \vspace{12pt}\resName\par
+}

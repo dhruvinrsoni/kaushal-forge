@@ -1,0 +1,73 @@
+% ============================================================================
+% dhruvin-modern.tex  —  Shared STYLE 2: single-column with subtle accents (compact)
+% Load from a build driver:  \input{../_styles/dhruvin-modern.tex}
+% ============================================================================
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[letterpaper,top=0.42in,bottom=0.42in,left=0.5in,right=0.5in]{geometry}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\definecolor{accent}{HTML}{1F4E79}
+\definecolor{accentlt}{HTML}{2E74B5}
+\definecolor{ink}{HTML}{222222}
+\color{ink}
+
+\newlist{Achvs}{itemize}{1}
+\setlist[Achvs]{leftmargin=1.15em,topsep=1pt,itemsep=1pt,parsep=0pt,%
+  before=\vspace{0pt},after=\vspace{0pt},label=\textcolor{accentlt}{\textbullet}}
+
+\long\def\Name#1{\def\resName{#1}}
+\long\def\Headline#1{\def\resHeadline{#1}}
+\long\def\Contact#1{\def\resContact{#1}}
+\long\def\Summary#1{\def\resSummary{#1}}
+\long\def\ExperienceData#1{\def\resExperience{#1}}
+\long\def\ProjectsData#1{\def\resProjects{#1}}
+\long\def\SkillsData#1{\def\resSkills{#1}}
+\long\def\EducationData#1{\def\resEducation{#1}}
+\long\def\ExtrasData#1{\def\resExtras{#1}}
+\long\def\FocusData#1{\def\resFocus{#1}}
+\def\resFocus{}\def\resProjects{}\def\resExtras{}\def\resSkills{}
+\def\resEducation{}\def\resSummary{}\def\resExperience{}
+
+\newcommand{\rsection}[1]{%
+  \vspace{3pt}%
+  {\color{accent}\rule[-1pt]{3pt}{10pt}}\hspace{4pt}%
+  {\large\bfseries\color{accent}\MakeUppercase{#1}}\par\vspace{-4pt}%
+  {\color{accentlt}\rule{\linewidth}{0.6pt}}\par\vspace{2pt}}
+
+\newcommand{\Role}[4]{%
+  \vspace{2pt}\noindent{\bfseries #1}\,\textemdash\, #2\hfill{\bfseries\color{accent} #3}\par
+  \ifx\relax#4\relax\else{\itshape\small #4}\par\fi\vspace{-1pt}}
+\newcommand{\Achv}[1]{\item #1}
+\newcommand{\Project}[3]{%
+  \vspace{1pt}\noindent{\bfseries\color{accent} #1}\ \ {\itshape\small #2}\par #3\par}
+\newcommand{\SkillRow}[2]{\noindent{\bfseries #1:}\ #2\par\vspace{1pt}}
+\newcommand{\EduItem}[4]{%
+  \noindent{\bfseries #1}\hfill {\color{accent}#3}\par #2\par
+  \ifx\relax#4\relax\else{\itshape\small #4}\par\fi\vspace{1pt}}
+\newcommand{\Cred}[1]{\noindent #1\par\vspace{1pt}}
+
+\newcommand{\BuildResume}{%
+  \begin{center}
+    {\fontsize{18}{20}\selectfont\bfseries\color{accent} \resName}\\[1pt]
+    {\normalsize\color{ink} \resHeadline}\\[2pt]
+    {\small \resContact}
+  \end{center}
+  \vspace{1pt}
+  \ifx\resSummary\empty\else\rsection{Summary}\resSummary\fi
+  \ifx\resFocus\empty\else\rsection{Focus}\resFocus\fi
+  \rsection{Experience}\resExperience
+  \ifx\resProjects\empty\else\rsection{Projects}\resProjects\fi
+  \ifx\resSkills\empty\else\rsection{Technical Skills}\resSkills\fi
+  \rsection{Education}\resEducation
+  \ifx\resExtras\empty\else\rsection{Certifications \& Recognition}\resExtras\fi
+}

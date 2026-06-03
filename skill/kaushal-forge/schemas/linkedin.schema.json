@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "linkedin.json — LinkedIn rewrite content (output of P3)",
+  "type": "object",
+  "properties": {
+    "headline_variants": {"type": "array", "items": {"type": "object",
+      "properties": {"label": {"type": "string"}, "text": {"type": "string", "maxLength": 220}}}},
+    "about": {"type": "object", "properties": {
+      "primary": {"type": "string", "maxLength": 2600},
+      "alt": {"type": "string", "maxLength": 2600}}},
+    "experience": {"type": "array", "items": {"type": "object", "properties": {
+      "title": {"type": "string"}, "org": {"type": "string"}, "dates": {"type": "string"},
+      "location": {"type": "string"}, "bullets": {"type": "array", "items": {"type": "string"}},
+      "skills_line": {"type": "string"}}}},
+    "skills": {"type": "object", "properties": {
+      "ordered": {"type": "array", "items": {"type": "string"}, "maxItems": 50},
+      "pin3": {"type": "array", "items": {"type": "string"}, "maxItems": 3}}},
+    "featured": {"type": "array", "items": {"type": "object",
+      "properties": {"title": {"type": "string"}, "note": {"type": "string"}}}},
+    "certs_order": {"type": "array", "items": {"type": "string"}},
+    "misc": {"type": "array", "items": {"type": "string"}, "description": "settings/diplomacy tips (e.g. recruiters-only Open-to-Work)"}
+  }
+}

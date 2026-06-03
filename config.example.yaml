@@ -1,0 +1,27 @@
+# KaushalForge config — copy to config.yaml and fill. (YAML; comments start with #)
+
+person:
+  name: "Your Full Name"
+  pronouns: "He/Him"
+  location_display: "City, Country | Open to relocation"   # shown on résumés/letters; keep neutral
+
+contact:
+  email: "your.email@example.com"     # personal, not employer
+  phone: "+CC-XXXXXXXXXX"
+  linkedin: "linkedin.com/in/yourhandle"   # no https:// (scripts add it)
+  github: "github.com/yourhandle"
+  portfolio: "yourhandle.github.io"        # optional; omit if none
+
+targets:
+  geos: ["US", "Canada", "Australia", "NZ"]
+  diplomatic: true        # true => NOTHING public implies job-seeking (LinkedIn stays curiosity/impact framed)
+
+resume:
+  accent_hex: "1F4E79"    # heading/name colour for modern+twocol+letter styles (ATS style stays black)
+  two_page: "all"         # "all" => every role variant also gets a 2-page edition; or a list like ["05","06","07"]
+  cap_overrides:          # current-role bullet cap for dense (long-bullet) variants on the 1-pager
+    "05": 3
+
+verify:
+  # leak-scan terms: internal codenames, client names, manager/peer names that must NOT appear in outputs
+  forbidden_terms: []

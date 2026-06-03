@@ -1,0 +1,29 @@
+{
+  "_comment": "Illustrative, anonymized sample of ONE résumé variant object (Phase P4 output shape). Fictional persona — replace on a real run.",
+  "id": "03",
+  "key": "ai-genai-engineer",
+  "headline": "AI / GenAI Engineer | LLM Apps, Agents & RAG | Production Backend (Java/Python)",
+  "summary": "AI/GenAI engineer with 6 years shipping production systems and a track record of building practical LLM tooling. Built an internal AI test-generation agent (~20,000 lines of tests, ~70% less QA toil) and a multi-provider prompt toolkit adopted across three teams. Pairs applied LLM work with a solid Java/Spring + cloud foundation.",
+  "focus": "Applied LLM systems, agentic workflows, RAG, prompt engineering",
+  "skills_rows": [
+    {"label": "GenAI / LLM", "items": "LLM app dev, agentic workflows, RAG, prompt engineering, OpenAI/Gemini APIs, embeddings"},
+    {"label": "Languages", "items": "Python, Java, TypeScript, SQL"},
+    {"label": "Backend", "items": "Spring Boot, REST APIs, microservices, FastAPI"},
+    {"label": "Cloud / DevOps", "items": "GCP, AWS, Kubernetes, Docker, CI/CD"}
+  ],
+  "experience": [
+    {"role": "Senior Software Engineer", "org": "Acme Cloud Technologies", "dates": "Mar 2021 -- Present", "location": "Bengaluru, India (Hybrid)", "bullets": [
+      "Built an internal AI test-generation agent that produced ~20,000 lines of tests, cutting manual QA effort ~70% with zero production incidents.",
+      "Shipped a multi-provider LLM prompt toolkit adopted across three teams, standardizing model selection and prompt patterns.",
+      "Added retrieval-augmented (RAG) answers over an internal knowledge base, reducing support escalations ~25%.",
+      "Migrated a monolith to microservices on Kubernetes with zero downtime across two releases."]},
+    {"role": "Software Engineer", "org": "Globex Systems", "dates": "Jul 2018 -- Mar 2021", "location": "Bengaluru, India", "bullets": [
+      "Built Java/Spring backend services and REST APIs serving 40+ enterprise clients.",
+      "Cut CI build time ~55% and reduced cloud cost ~30% via right-sized autoscaling."]}
+  ],
+  "projects": [
+    {"name": "PromptForge", "meta": "Python; OpenAI/Gemini", "desc": "Open-source multi-provider LLM prompt toolkit; 300+ tests; standardizes LLM calls for small teams."},
+    {"name": "AgentKit", "meta": "TypeScript", "desc": "A small library of reusable AI-agent skills, with examples."}
+  ],
+  "guide_md": "# GUIDE.md - Variant 03 (illustrative sample)\n\n**Use when applying to:** AI / GenAI / LLM Application Engineer roles.\n\n**Foregrounds:** the AI test-gen agent, the prompt toolkit, and RAG work; backend/cloud as the production-grade credibility base.\n\n**Target-JD keywords:** LLM, GenAI, RAG, prompt engineering, agents, Python, Spring Boot, Kubernetes.\n\n**Best style:** Modern (clean, ATS-safe).\n\n**Tweak tips:** mirror the JD's exact AI vocabulary; lead with the most relevant project; trim a skills row if the 1-pager spills.\n\n*(Fictional, anonymized sample for reference only.)*"
+}

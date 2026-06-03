@@ -1,0 +1,79 @@
+% ============================================================================
+% dhruvin-twocol.tex  —  Shared STYLE 3: two-column (sidebar + main), compact
+% Load from a build driver:  \input{../_styles/dhruvin-twocol.tex}
+% Uses paracol so it page-breaks cleanly (master 2-page too).
+% ============================================================================
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[letterpaper,top=0.42in,bottom=0.42in,left=0.45in,right=0.45in]{geometry}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{paracol}
+\usepackage[hidelinks]{hyperref}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\definecolor{accent}{HTML}{1F4E79}
+\definecolor{accentlt}{HTML}{2E74B5}
+\definecolor{ink}{HTML}{222222}
+\color{ink}
+
+\newlist{Achvs}{itemize}{1}
+\setlist[Achvs]{leftmargin=1.1em,topsep=1pt,itemsep=1pt,parsep=0pt,%
+  before=\vspace{0pt},after=\vspace{0pt},label=\textcolor{accentlt}{\textbullet}}
+
+\long\def\Name#1{\def\resName{#1}}
+\long\def\Headline#1{\def\resHeadline{#1}}
+\long\def\Contact#1{\def\resContact{#1}}
+\long\def\Summary#1{\def\resSummary{#1}}
+\long\def\ExperienceData#1{\def\resExperience{#1}}
+\long\def\ProjectsData#1{\def\resProjects{#1}}
+\long\def\SkillsData#1{\def\resSkills{#1}}
+\long\def\EducationData#1{\def\resEducation{#1}}
+\long\def\ExtrasData#1{\def\resExtras{#1}}
+\long\def\FocusData#1{\def\resFocus{#1}}
+\def\resFocus{}\def\resProjects{}\def\resExtras{}\def\resSkills{}
+\def\resEducation{}\def\resSummary{}\def\resExperience{}
+
+\newcommand{\rsection}[1]{%
+  \vspace{5pt}{\normalsize\bfseries\color{accent}\MakeUppercase{#1}}\par\vspace{-3pt}%
+  {\color{accentlt}\rule{\linewidth}{0.6pt}}\par\vspace{2pt}}
+
+\newcommand{\Role}[4]{%
+  \vspace{2pt}\noindent{\bfseries #1}\par
+  {\color{accent}#2}\hfill{\itshape\small #3}\par
+  \ifx\relax#4\relax\else{\itshape\small #4}\par\fi\vspace{-1pt}}
+\newcommand{\Achv}[1]{\item #1}
+\newcommand{\Project}[3]{%
+  \vspace{1pt}\noindent{\bfseries\color{accent} #1}\par{\itshape\small #2}\par #3\par}
+\newcommand{\SkillRow}[2]{\noindent{\bfseries #1}\par #2\par\vspace{2pt}}
+\newcommand{\EduItem}[4]{%
+  \noindent{\bfseries #1}\par #2\par{\itshape\small #3}\par
+  \ifx\relax#4\relax\else{\small #4}\par\fi\vspace{2pt}}
+\newcommand{\Cred}[1]{\noindent #1\par\vspace{2pt}}
+
+\newcommand{\BuildResume}{%
+  \begin{center}
+    {\fontsize{19}{21}\selectfont\bfseries\color{accent} \resName}\\[1pt]
+    {\normalsize\color{ink} \resHeadline}\\[2pt]
+    {\small \resContact}
+  \end{center}
+  \vspace{3pt}
+  \columnratio{0.34}
+  \setlength{\columnsep}{5mm}
+  \begin{paracol}{2}
+    \ifx\resSkills\empty\else\rsection{Skills}\resSkills\fi
+    \rsection{Education}\resEducation
+    \ifx\resExtras\empty\else\rsection{Certifications \& Recognition}\resExtras\fi
+  \switchcolumn
+    \ifx\resSummary\empty\else\rsection{Summary}\resSummary\fi
+    \ifx\resFocus\empty\else\rsection{Focus}\resFocus\fi
+    \rsection{Experience}\resExperience
+    \ifx\resProjects\empty\else\rsection{Projects}\resProjects\fi
+  \end{paracol}
+}

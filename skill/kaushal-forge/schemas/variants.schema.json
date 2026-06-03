@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "variants.json — array of tailored role-variant résumés (output of P4)",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "key", "headline", "summary", "skills_rows", "experience", "guide_md"],
+    "properties": {
+      "id": {"type": "string", "description": "two-digit id, e.g. 01..08, 10 (09 is the auto-built Master)"},
+      "key": {"type": "string", "description": "kebab slug, e.g. ai-genai-engineer"},
+      "headline": {"type": "string"},
+      "summary": {"type": "string"},
+      "focus": {"type": "string", "description": "optional one-line focus; '' if unused"},
+      "skills_rows": {"type": "array", "items": {"type": "object",
+        "required": ["label", "items"],
+        "properties": {"label": {"type": "string"}, "items": {"type": "string"}}}},
+      "experience": {"type": "array", "items": {"type": "object",
+        "required": ["role", "org", "dates", "location", "bullets"],
+        "properties": {"role": {"type": "string"}, "org": {"type": "string"},
+          "dates": {"type": "string"}, "location": {"type": "string"},
+          "bullets": {"type": "array", "items": {"type": "string"}}}}},
+      "projects": {"type": "array", "items": {"type": "object",
+        "properties": {"name": {"type": "string"}, "meta": {"type": "string"}, "desc": {"type": "string"}}}},
+      "guide_md": {"type": "string", "description": "GUIDE.md: when to use, keywords, fit/odds, best style, tweak tips"}
+    }
+  }
+}

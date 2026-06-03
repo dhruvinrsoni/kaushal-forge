@@ -1,0 +1,200 @@
+#!/usr/bin/env python3
+"""KaushalForge — render resume .tex from config + structured JSON (model-agnostic).
+
+Inputs:
+  config.yaml              (person + resume settings)
+  work/profile.json        (the structured KB; used for the Master + education/certs/contact)
+  work/variants.json       (list of tailored role-variant objects from phase P4)
+
+Output:
+  output/Resumes/_styles/cf-*.tex         (styles, accent injected from config)
+  output/Resumes/<id>-<key>/              (1-page role variant: content.tex + 3 build-*.tex + GUIDE.md)
+  output/Resumes/<id>-<key>-2page/        (2-page edition, for ids in config.resume.two_page)
+  output/Resumes/09-master-2page/         (2-page Master, built from profile.json)
+
+Re-runnable. Hand-edit any content.tex afterwards; only re-run to regenerate from JSON.
+"""
+import json, os, sys, shutil
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)                      # kaushal-forge/
+STYLES_SRC = os.path.join(HERE, "templates", "styles")
+OUT = os.path.join(ROOT, "output", "Resumes")
+
+def load_config():
+    import yaml
+    with open(os.path.join(ROOT, "config.yaml"), encoding="utf-8") as f:
+        return yaml.safe_load(f)
+
+def esc(s):
+    s = str(s)
+    s = s.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&').replace('&#39;', "'").replace('&quot;', '"')
+    s = s.replace('\\', r'\textbackslash{}')
+    s = s.replace('&', r'\&').replace('%', r'\%').replace('#', r'\#').replace('_', r'\_')
+    s = s.replace('$', r'\$')
+    s = s.replace('->', r'$\rightarrow$')
+    s = s.replace('~', r'\textasciitilde{}')
+    out, openq = [], True
+    for ch in s:
+        if ch == '"':
+            out.append('``' if openq else "''"); openq = not openq
+        else:
+            out.append(ch)
+    return ''.join(out)
+
+def contact_line(cfg):
+    c = cfg.get("contact", {}); p = cfg.get("person", {})
+    parts = []
+    if c.get("email"):    parts.append(r"\href{mailto:%s}{%s}" % (c["email"], c["email"]))
+    if c.get("phone"):    parts.append(esc(c["phone"]))
+    if c.get("linkedin"): parts.append(r"\href{https://%s}{%s}" % (c["linkedin"], c["linkedin"]))
+    if c.get("github"):   parts.append(r"\href{https://%s}{%s}" % (c["github"], c["github"]))
+    if c.get("portfolio"):parts.append(r"\href{https://%s}{%s}" % (c["portfolio"], c["portfolio"]))
+    if p.get("location_display"): parts.append(esc(p["location_display"]))
+    return r" \textbullet{} ".join(parts)
+
+def edu_items(profile, full):
+    out = []
+    for e in profile.get("education", []):
+        detail = esc(e.get("detail", "")) if full else ""
+        out.append(r"\EduItem{%s}{%s}{%s}{%s}" % (esc(e.get("degree","")), esc(e.get("institution","")),
+                                                  esc(e.get("dates","")), detail))
+    return "\n".join(out) if out else r"\EduItem{}{}{}{}"
+
+def extras_block(profile, full):
+    certs = profile.get("certs", []); awards = profile.get("awards", []); langs = profile.get("languages", [])
+    if full:
+        lines = []
+        if certs:  lines.append(r"\Cred{\textbf{Certifications:} %s}" % esc("; ".join(certs)))
+        tail = []
+        if awards: tail.append(r"\textbf{Awards:} %s" % esc("; ".join(awards)))
+        if langs:  tail.append(r"\textbf{Languages:} %s" % esc(", ".join(langs)))
+        if tail:   lines.append(r"\Cred{%s}" % r" \textbullet{} ".join(tail))
+        return "\n".join(lines)
+    # compact (1-page): single line
+    bits = []
+    if certs:  bits.append(r"\textbf{Certifications:} %s" % esc("; ".join(certs[:3])))
+    if awards: bits.append(r"\textbf{Award:} %s" % esc(awards[0]))
+    if langs:  bits.append(r"\textbf{Languages:} %s" % esc(", ".join(langs)))
+    return r"\Cred{%s}" % r" \textbullet{} ".join(bits) if bits else ""
+
+def driver(style, pt):
+    return ("% Compile THIS file (set as main document on Overleaf) to get the PDF.\n"
+            "\\documentclass[letterpaper," + pt + "]{extarticle}\n"
+            "\\input{../_styles/cf-" + style + ".tex}\n"
+            "\\begin{document}\n\\input{content.tex}\n\\end{document}\n")
+
+def render_skills(rows):
+    return "\n".join(r"\SkillRow{%s}{%s}" % (esc(r["label"]), esc(r["items"])) for r in rows)
+
+def render_experience(exp, caps):
+    L = []
+    for ix, e in enumerate(exp):
+        cap = caps[ix] if ix < len(caps) else 1
+        bl = e["bullets"] if cap is None else e["bullets"][:cap]
+        L.append(r"\Role{%s}{%s}{%s}{%s}" % (esc(e["role"]), esc(e["org"]), esc(e["dates"]), esc(e["location"])))
+        L.append(r"\begin{Achvs}")
+        L += [r"\Achv{%s}" % esc(b) for b in bl]
+        L.append(r"\end{Achvs}")
+    return "\n".join(L)
+
+def render_projects(projs):
+    return "\n".join(r"\Project{%s}{%s}{%s}" % (esc(p["name"]), esc(p["meta"]), esc(p["desc"])) for p in projs)
+
+def assemble(headline, summary, focus, skills_tex, exp_tex, proj_tex, edu_tex, extras_tex, cfg):
+    L = [r"% Auto-generated by engine/render_resumes.py -- style-agnostic content; edit freely.",
+         r"\Name{%s}" % esc(cfg["person"]["name"]),
+         r"\Headline{%s}" % esc(headline),
+         r"\Contact{%s}" % contact_line(cfg),
+         r"\Summary{%s}" % esc(summary)]
+    if focus and str(focus).strip():
+        L.append(r"\FocusData{%s}" % esc(focus))
+    L += [r"\SkillsData{%", skills_tex, r"}",
+          r"\ExperienceData{%", exp_tex, r"}"]
+    if proj_tex.strip():
+        L += [r"\ProjectsData{%", proj_tex, r"}"]
+    L += [r"\EducationData{%", edu_tex, r"}",
+          r"\ExtrasData{%", extras_tex, r"}",
+          r"\BuildResume"]
+    return "\n".join(L) + "\n"
+
+def write_folder(folder, content, pt):
+    os.makedirs(folder, exist_ok=True)
+    with open(os.path.join(folder, "content.tex"), "w", encoding="utf-8") as f:
+        f.write(content)
+    for style in ("ats", "modern", "twocol"):
+        with open(os.path.join(folder, "build-%s.tex" % style), "w", encoding="utf-8") as f:
+            f.write(driver(style, pt))
+
+def copy_styles(accent_hex):
+    dst = os.path.join(OUT, "_styles"); os.makedirs(dst, exist_ok=True)
+    for name in ("cf-ats.tex", "cf-modern.tex", "cf-twocol.tex"):
+        txt = open(os.path.join(STYLES_SRC, name), encoding="utf-8").read()
+        if accent_hex:  # inject accent into modern/twocol
+            import re
+            txt = re.sub(r"(\\definecolor\{accent\}\{HTML\}\{)[0-9A-Fa-f]{6}(\})", r"\g<1>%s\g<2>" % accent_hex, txt)
+        open(os.path.join(dst, name), "w", encoding="utf-8").write(txt)
+
+def main():
+    cfg = load_config()
+    profile = json.load(open(os.path.join(ROOT, "work", "profile.json"), encoding="utf-8"))
+    variants = json.load(open(os.path.join(ROOT, "work", "variants.json"), encoding="utf-8"))
+    if isinstance(variants, dict):  # tolerate {"results":[...]} shape
+        variants = variants.get("results", variants.get("variants", []))
+    os.makedirs(OUT, exist_ok=True)
+    copy_styles(cfg.get("resume", {}).get("accent_hex", ""))
+
+    two_page = cfg.get("resume", {}).get("two_page", "all")
+    cap_over = cfg.get("resume", {}).get("cap_overrides", {}) or {}
+
+    # ---- Master (09) from profile.json: full content, 2-page ----
+    m_skills = render_skills(profile.get("skills_groups", []))
+    m_caps = [None] * len(profile.get("experience", []))   # all bullets
+    m_exp = render_experience(profile.get("experience", []), m_caps)
+    m_proj = render_projects(profile.get("projects", []))
+    m_head = profile.get("headline") or profile.get("identity", {}).get("tagline", "")
+    m_sum = profile.get("summary", "")
+    master = assemble(m_head, m_sum, profile.get("focus", ""), m_skills, m_exp, m_proj,
+                      edu_items(profile, True), extras_block(profile, True), cfg)
+    write_folder(os.path.join(OUT, "09-master-2page"), master, "10pt")
+    print("rendered: 09-master-2page")
+
+    # ---- role variants ----
+    role_ids = [v["id"] for v in variants if v.get("id") != "09"]
+    tp_set = set(role_ids) if two_page == "all" else set(str(x) for x in (two_page or []))
+    for v in variants:
+        vid = v.get("id")
+        if vid == "09":
+            continue
+        key = v.get("key", vid)
+        # 1-page (capped)
+        cap0 = int(cap_over.get(vid, 4))
+        caps_1p = [cap0, 2, 2] + [1] * 8
+        c1 = assemble(v["headline"], v["summary"], v.get("focus", ""),
+                      render_skills(v["skills_rows"][:4]),
+                      render_experience(v["experience"], caps_1p),
+                      render_projects(v.get("projects", [])[:2]),
+                      edu_items(profile, False), extras_block(profile, False), cfg)
+        folder = os.path.join(OUT, "%s-%s" % (vid, key))
+        write_folder(folder, c1, "9pt")
+        with open(os.path.join(folder, "GUIDE.md"), "w", encoding="utf-8") as f:
+            f.write(v.get("guide_md", "").rstrip() + "\n")
+        print("rendered:", "%s-%s" % (vid, key))
+        # 2-page (full)
+        if vid in tp_set:
+            caps_full = [None] * len(v["experience"])
+            c2 = assemble(v["headline"], v["summary"], v.get("focus", ""),
+                          render_skills(v["skills_rows"]),
+                          render_experience(v["experience"], caps_full),
+                          render_projects(v.get("projects", [])),
+                          edu_items(profile, True), extras_block(profile, True), cfg)
+            f2 = os.path.join(OUT, "%s-%s-2page" % (vid, key))
+            write_folder(f2, c2, "10pt")
+            with open(os.path.join(f2, "GUIDE.md"), "w", encoding="utf-8") as f:
+                f.write("# %s-%s-2page\n\nTwo-page full-depth edition of variant %s. See ../%s-%s/GUIDE.md for role strategy.\n"
+                        % (vid, key, vid, vid, key))
+            print("rendered:", "%s-%s-2page" % (vid, key))
+    print("DONE render_resumes")
+
+if __name__ == "__main__":
+    main()
