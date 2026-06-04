@@ -33,6 +33,23 @@ engine/.tectonic_path
 *.fdb_latexmk
 *.synctex.gz
 
+# Personal-data document formats — never tracked ANYWHERE (belt-and-suspenders on top
+# of the inbox/ work/ output/ rules above). Raw data belongs in the gitignored inbox/
+# or behind `intake_dump.py --data <path>`; the published résumés are the only exception.
+*.docx
+*.doc
+*.odt
+*.rtf
+*.pages
+*.xls
+*.xlsx
+*.ods
+*.numbers
+*.csv
+*.tsv
+*.vcf
+*.eml
+
 # ============================================================================
 # Python
 # ============================================================================
