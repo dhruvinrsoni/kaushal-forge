@@ -8,6 +8,8 @@ person:
 contact:
   # Leave any field blank ("") to OMIT it — KaushalForge never renders a placeholder/dummy
   # value (better to show nothing than a fake). Unset fields are reported when you render.
+  # Tip: github + portfolio often overlap (a *.github.io page links to GitHub) — keep
+  # whichever you prefer and blank the other to keep the contact line short.
   email: "your.email@example.com"     # personal, not employer
   phone: "+CC-XXXXXXXXXX"
   linkedin: "linkedin.com/in/yourhandle"   # no https:// (scripts add it)
