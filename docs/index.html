@@ -4,29 +4,65 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
+<meta property="og:title" content="Résumés — Dhruvin Rupesh Soni">
+<meta property="og:description" content="Résumé hub">
+<meta property="og:type" content="website">
 <title>Résumés — Dhruvin Rupesh Soni</title>
 <style>
-  :root { --bg:#0d1117; --card:#161b22; --ink:#e6edf3; --muted:#8b949e; --accent:#58a6ff; --border:#2a313c; }
+  :root { --bg:#0d1117; --elev:#11161d; --card:#161b22; --ink:#e6edf3; --muted:#8b949e; --accent:#58a6ff; --border:#2a313c; }
   * { box-sizing:border-box; }
-  body { margin:0; font:16px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink); }
-  main { max-width:720px; margin:0 auto; padding:48px 20px 96px; }
-  h1 { font-size:1.7rem; margin:0 0 16px; }
-  .note { background:var(--card); border:1px solid var(--border); border-left:3px solid var(--accent); padding:12px 16px; border-radius:8px; color:var(--muted); }
-  ul.resumes { list-style:none; padding:0; margin:28px 0; }
-  ul.resumes li { margin:0 0 12px; }
-  ul.resumes a { display:block; padding:16px 18px; background:var(--card); border:1px solid var(--border); border-radius:10px; color:var(--accent); text-decoration:none; font-weight:600; }
-  ul.resumes a:hover { border-color:var(--accent); }
-  footer { position:fixed; left:0; right:0; bottom:0; padding:12px 20px; text-align:center; font-size:.85rem; color:var(--muted); background:var(--bg); border-top:1px solid var(--border); }
+  body { margin:0; font:16px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink); }
+  header.hero { padding:56px 20px 8px; max-width:860px; margin:0 auto; }
+  header.hero h1 { font-size:2rem; margin:0; letter-spacing:-.01em; }
+  .subtitle { color:var(--muted); margin:6px 0 0; font-size:1.05rem; }
+  .toolbar { margin:18px 0 0; }
+  main { max-width:860px; margin:0 auto; padding:20px 20px 110px; }
+  .note { background:var(--elev); border:1px solid var(--border); border-left:3px solid var(--accent); padding:12px 16px; border-radius:8px; color:var(--muted); margin:0 0 22px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:16px; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 18px 14px; }
+  .card h2 { font-size:1.15rem; margin:0 0 12px; }
+  .fmt { color:var(--muted); font-size:.9rem; min-width:128px; }
+  .primary { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .actions { display:inline-flex; gap:6px; margin-left:auto; flex-wrap:wrap; }
+  .act { font:600 .82rem/1 inherit; padding:7px 11px; border-radius:8px; border:1px solid var(--border); background:var(--elev); color:var(--accent); text-decoration:none; cursor:pointer; }
+  .act:hover { border-color:var(--accent); }
+  details.alts { margin-top:12px; border-top:1px dashed var(--border); padding-top:8px; }
+  details.alts summary { cursor:pointer; color:var(--muted); font-size:.85rem; }
+  .alt { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
+  footer { position:fixed; left:0; right:0; bottom:0; padding:12px 20px; text-align:center; font-size:.82rem; color:var(--muted); background:var(--bg); border-top:1px solid var(--border); }
+  footer a { color:var(--accent); }
+  #toast { position:fixed; left:50%; bottom:64px; transform:translateX(-50%) translateY(20px); opacity:0; transition:.2s; background:var(--accent); color:#04101f; font-weight:700; padding:9px 16px; border-radius:999px; pointer-events:none; }
+  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
-<main>
+<header class="hero">
   <h1>Résumés — Dhruvin Rupesh Soni</h1>
-  <p class="note">These are anonymized <strong>placeholder</strong> samples. Catalog with <code>python engine/publish.py --scan</code>, flip <code>publish: true</code> in <code>publish.yaml</code>, then re-run <code>python engine/publish.py</code>.</p>
-  <ul class="resumes">
-      <li><a href="resumes/sample.pdf">Sample résumé — anonymized placeholder</a></li>
-  </ul>
+  <div class="toolbar"><button class="act copy" type="button" data-href="" title="Copy this page's link">Copy site link</button></div>
+</header>
+<main>
+  <p class="note">Anonymized <strong>placeholder</strong>. Catalog with <code>publish.py --scan</code>, flip <code>publish: 1</code> (and <code>live: 1</code>) in <code>publish.yaml</code>, then re-run <code>publish.py</code>.</p><div class="grid">
+  <article class="card">
+    <h2>Sample résumé</h2>
+    <div class="primary"><span class="fmt">anonymized placeholder</span><span class="actions"><a class="act" href="resumes/sample.pdf" target="_blank" rel="noopener" title="Open in browser">View</a><a class="act" href="resumes/sample.pdf" download title="Download the PDF">Download</a><button class="act copy" type="button" data-href="resumes/sample.pdf" title="Copy a direct link">Copy link</button></span></div>
+  </article>
+  </div>
 </main>
-<footer>KaushalForge © Dhruvin Rupesh Soni — github.com/dhruvinrsoni/kaushal-forge</footer>
+<footer>KaushalForge © Dhruvin Rupesh Soni — <a href="https://github.com/dhruvinrsoni/kaushal-forge" target="_blank" rel="noopener">github.com/dhruvinrsoni/kaushal-forge</a></footer>
+<div id="toast">Copied!</div>
+<script>
+  var toast = document.getElementById('toast'), t;
+  function flash() { toast.classList.add('show'); clearTimeout(t); t = setTimeout(function(){ toast.classList.remove('show'); }, 1400); }
+  document.querySelectorAll('.copy').forEach(function(b) {
+    b.addEventListener('click', function() {
+      var rel = b.getAttribute('data-href');
+      var url = rel ? new URL(rel, location.href).href : location.href;
+      (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(flash, function() {
+        var i = document.createElement('input'); i.value = url; document.body.appendChild(i); i.select();
+        try { document.execCommand('copy'); flash(); } catch (e) {} document.body.removeChild(i);
+      });
+    });
+  });
+</script>
 </body>
 </html>
