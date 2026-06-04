@@ -42,15 +42,37 @@ def esc(s):
             out.append(ch)
     return ''.join(out)
 
+# Tokens that mark a config value as an unset placeholder (from config.example.yaml etc.).
+PLACEHOLDERS = ("%fill%", "xxxx", "yourhandle", "yourusername", "yourname",
+                "your.email", "+cc-", "your full name", "city, country")
+
+def real(v):
+    """Stripped real value, or '' if empty/placeholder — never render a dummy contact value."""
+    s = str(v or "").strip()
+    return "" if (not s or any(b in s.lower() for b in PLACEHOLDERS)) else s
+
+def warn_contact(cfg):
+    c = cfg.get("contact", {}) or {}; p = cfg.get("person", {}) or {}
+    fields = [("contact.email", c.get("email")), ("contact.phone", c.get("phone")),
+              ("contact.linkedin", c.get("linkedin")), ("contact.github", c.get("github")),
+              ("contact.portfolio", c.get("portfolio")), ("person.location_display", p.get("location_display"))]
+    miss = [k for k, v in fields if not real(v)]
+    if miss:
+        print("NOTE: omitting unset/placeholder field(s): " + ", ".join(miss)
+              + "\n      Fill them in config.yaml — KaushalForge never renders dummy values.")
+
 def contact_line(cfg):
-    c = cfg.get("contact", {}); p = cfg.get("person", {})
+    c = cfg.get("contact", {}) or {}; p = cfg.get("person", {}) or {}
+    email, phone = real(c.get("email")), real(c.get("phone"))
+    linkedin, github, portfolio = real(c.get("linkedin")), real(c.get("github")), real(c.get("portfolio"))
+    loc = real(p.get("location_display"))
     parts = []
-    if c.get("email"):    parts.append(r"\href{mailto:%s}{%s}" % (c["email"], c["email"]))
-    if c.get("phone"):    parts.append(esc(c["phone"]))
-    if c.get("linkedin"): parts.append(r"\href{https://%s}{%s}" % (c["linkedin"], c["linkedin"]))
-    if c.get("github"):   parts.append(r"\href{https://%s}{%s}" % (c["github"], c["github"]))
-    if c.get("portfolio"):parts.append(r"\href{https://%s}{%s}" % (c["portfolio"], c["portfolio"]))
-    if p.get("location_display"): parts.append(esc(p["location_display"]))
+    if email:     parts.append(r"\href{mailto:%s}{%s}" % (email, email))
+    if phone:     parts.append(esc(phone))
+    if linkedin:  parts.append(r"\href{https://%s}{%s}" % (linkedin, linkedin))
+    if github:    parts.append(r"\href{https://%s}{%s}" % (github, github))
+    if portfolio: parts.append(r"\href{https://%s}{%s}" % (portfolio, portfolio))
+    if loc:       parts.append(esc(loc))
     return r" \textbullet{} ".join(parts)
 
 def edu_items(profile, full):
@@ -137,6 +159,7 @@ def copy_styles(accent_hex):
 
 def main():
     cfg = load_config()
+    warn_contact(cfg)
     profile = json.load(open(os.path.join(ROOT, "work", "profile.json"), encoding="utf-8"))
     variants = json.load(open(os.path.join(ROOT, "work", "variants.json"), encoding="utf-8"))
     if isinstance(variants, dict):  # tolerate {"results":[...]} shape

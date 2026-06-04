@@ -6,6 +6,8 @@ person:
   location_display: "City, Country | Open to relocation"   # shown on résumés/letters; keep neutral
 
 contact:
+  # Leave any field blank ("") to OMIT it — KaushalForge never renders a placeholder/dummy
+  # value (better to show nothing than a fake). Unset fields are reported when you render.
   email: "your.email@example.com"     # personal, not employer
   phone: "+CC-XXXXXXXXXX"
   linkedin: "linkedin.com/in/yourhandle"   # no https:// (scripts add it)
