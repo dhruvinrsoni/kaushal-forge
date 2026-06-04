@@ -10,9 +10,12 @@ cp config.example.yaml config.yaml    # fill person/contact/targets/forbidden_te
 
 ## 0b. Intake
 - Put the person's raw data in `inbox/` (best LinkedIn source = their own **"Get a copy of your data"** export; plus performance reviews, an existing resume, GitHub README/portfolio text). Anything unreadable (odd PDFs), paste as `.txt`.
+- **Keep confidential data out of the repo.** Instead of copying into `inbox/`, point intake at an external folder with `--data`:
 ```
-python engine/intake_dump.py          # -> work/00-raw-dump.txt
+python engine/intake_dump.py                       # -> work/00-raw-dump.txt  (reads inbox/)
+python engine/intake_dump.py --data ~/career-data  # or ingest an out-of-tree folder
 ```
+> **Never commit real data.** `config.yaml`, `inbox/`, `work/`, `output/`, and `*.pdf` are gitignored. The only thing ever made public is the résumés you select in `publish.yaml` (rendered into `docs/resumes/` by `engine/publish.py`) — never cover letters, strategy docs, the knowledge base, or raw inputs.
 
 ## 1–6. AI phases  (write JSON/MD to work/, then run the paired script)
 | Phase | Read | Produce | Then run |

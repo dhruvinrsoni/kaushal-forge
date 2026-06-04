@@ -3,6 +3,8 @@
 > ✅ **Status: built & verified.** A full end-to-end dry-run compiled **57 résumé PDFs + 10 cover-letter PDFs (67 total, 0 failures)** and passed `engine/verify.py` ("VERIFY OK"). To start a run, copy `config.example.yaml` → `config.yaml`, drop the person's data in `inbox/`, and follow the quickstart below. `config.yaml`, `inbox/`, `work/`, and `output/` are never tracked — clear them (keep the `.gitkeep`) to start fresh.
 >
 > 🔒 **Proprietary & private.** All-Rights-Reserved (see `LICENSE`); personal data, generated output, and PDFs are gitignored and never committed. The gold examples in `.github/skills/kaushal-forge/examples/` and the CI fixtures in `tests/fixtures/` are **fully fictional** ("Asha Verma / Acme Cloud") — safe to share. CI (`.github/workflows/ci.yml`) runs a render-smoke over the fixtures plus the `verify.py` gate on every push.
+>
+> 🔐 **Data safety.** Never put a real person's data in a tracked file. Feed raw data via `python engine/intake_dump.py --data <external/path>` (or the gitignored `inbox/`) and keep `config.yaml` local. The **only** public surface is the résumés you list in `publish.yaml` (copied to `docs/resumes/` by `engine/publish.py`) — cover letters, strategy docs, the knowledge base, and raw inputs are never published.
 
 A **repeatable, AI-powered career-toolkit generator.** Feed it a person's raw data; it produces a complete, tailored toolkit: a LinkedIn rewrite, multi-variant LaTeX résumés (compiled to PDF, 1- and 2-page), matching cover letters, and a strategy pack — reproducibly, **on any model** (Opus, Sonnet, or Haiku).
 
