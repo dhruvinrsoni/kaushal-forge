@@ -1,0 +1,13 @@
+#!/bin/sh
+# KaushalForge pre-commit leak gate — portable launcher.
+# Finds a WORKING Python 3 (skips the Windows "python3" Store stub) and runs leak_gate.py.
+# Installed by engine/bootstrap.py (git config core.hooksPath .githooks).
+dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+for c in python3 python py; do
+  if command -v "$c" >/dev/null 2>&1 && "$c" -c 'import sys; sys.exit(0 if sys.version_info[0]==3 else 1)' >/dev/null 2>&1; then
+    exec "$c" "$dir/leak_gate.py"
+  fi
+done
+echo "KaushalForge gate: no working Python 3 found; cannot scan staged content."
+echo "Install Python 3 (or run engine/bootstrap.py). Override only if certain: git commit --no-verify."
+exit 1

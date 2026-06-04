@@ -20,6 +20,7 @@
 *.properties text eol=lf
 *.gradle text eol=lf
 *.sh    text eol=lf
+.githooks/pre-commit text eol=lf
 
 # Force CRLF for Windows-only scripts
 *.cmd   text eol=crlf

@@ -27,5 +27,12 @@ resume:
     "05": 3
 
 verify:
-  # leak-scan terms: internal codenames, client names, manager/peer names that must NOT appear in outputs
-  forbidden_terms: []
+  # Masking map: sensitive term -> public-safe replacement. KEYS (internal codenames, client
+  # names, manager/peer names) are leak-scanned by engine/verify.py AND the pre-commit hook —
+  # they must never reach generated outputs OR any tracked file. VALUES say how to generalise.
+  # This is the single source of truth; add a term once and every gate uses it.
+  mask:
+    # "project-zeus": "an internal service"
+    # "BigBoxCo": "a Fortune-500 retailer"
+  # Legacy flat list is still honoured if you prefer it:
+  # forbidden_terms: ["codename-a", "ClientB"]

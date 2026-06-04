@@ -51,8 +51,25 @@ def download_tectonic():
                 return os.path.join(root, f)
     raise RuntimeError("tectonic binary not found after extraction")
 
+def install_hook():
+    """Activate the pre-commit leak gate (.githooks/pre-commit) for this clone."""
+    repo = os.path.dirname(HERE)
+    try:
+        subprocess.run(["git", "rev-parse", "--git-dir"], cwd=repo, capture_output=True, check=True)
+    except Exception:
+        return  # not a git checkout — skip
+    subprocess.run(["git", "config", "core.hooksPath", ".githooks"], cwd=repo)
+    hook = os.path.join(repo, ".githooks", "pre-commit")
+    try:
+        if os.path.exists(hook):
+            os.chmod(hook, 0o755)
+    except Exception:
+        pass
+    print("Installed pre-commit leak gate (core.hooksPath=.githooks).")
+
 def main():
     pip_install()
+    install_hook()
     tec = existing_tectonic()
     if not tec:
         try:

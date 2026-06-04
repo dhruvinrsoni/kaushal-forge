@@ -68,7 +68,7 @@ The fixtures are **deliberately sized** so the page-count gate is meaningful:
 
 - Each role variant (`01-...`, `03-...`) is capped on the 1-page edition to land at exactly **1 page**. The current-role bullet cap comes from `cap_overrides` (`01` → 4) defaulting to 4 (render_resumes.py:171), then `[cap0, 2, 2] + [1]*8` across the rest of the experience list.
 - Because `two_page: "all"`, every variant also gets a full-depth `-2page` edition that must land at exactly **2 pages**, and the master `09-master-2page` is always 2 pages. These 2-page editions exercise the dense **twocol** style, which uses `paracol` so it page-breaks cleanly across two columns (see [cf-twocol.tex](../engine/templates/styles/cf-twocol.tex)).
-- The three `forbidden_terms` (`project-bluefalcon`, `internal-codename-x`, `client-zzyzx`) do **not** appear in any fixture content, so the leak scan exercises its logic and passes cleanly.
+- The fixture's three placeholder leak-scan terms (fictional codenames defined in `tests/fixtures/config.yaml`) do **not** appear in any fixture content, so the scan exercises its logic and passes cleanly.
 
 The whole run must end in `VERIFY OK`. The fixture config carries an exception in [.gitignore](../.gitignore):L13 — `!tests/fixtures/config.yaml` — so this one config is tracked even though the live root `config.yaml` is ignored everywhere.
 
