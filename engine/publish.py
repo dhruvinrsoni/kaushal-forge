@@ -1,73 +1,106 @@
 #!/usr/bin/env python3
 """KaushalForge — publish chosen résumés to a static GitHub Pages hub.
 
-Reads publish.yaml (labels + paths ONLY — never personal data) and:
-  * copies ONLY the listed résumé PDFs into docs/resumes/,
-  * writes docs/index.html (title, download links, footer on the page).
+Two steps, both safe to re-run:
 
-If the publish list is empty or a listed file is missing, it falls back to the in-repo
-anonymized SAMPLE (docs/resumes/sample.pdf), clearly labeled as a PLACEHOLDER.
+    python engine/publish.py --scan   # catalog every generated résumé into publish.yaml (publish: false)
+    # ...edit publish.yaml: flip `publish: true` on the ones you want public...
+    python engine/publish.py          # copy the publish:true résumés into docs/resumes/ + build docs/index.html
 
-SAFETY: only .pdf files that live under output/Resumes/ may be published. Cover letters,
-strategy docs, the knowledge base (work/), and raw inputs (inbox/) are never copied.
+If nothing is flagged true (or a flagged file is missing in this checkout), the hub shows
+the in-repo anonymized SAMPLE (docs/resumes/sample.pdf) as a labeled placeholder.
 
-Run locally, then commit docs/index.html + docs/resumes/*.pdf. The .gitignore has a
-scoped exception (!docs/resumes/*.pdf); everything else PDF stays ignored.
+SAFETY: only .pdf files under output/Resumes/ are ever catalogued or published — never cover
+letters, strategy docs, the knowledge base (work/), or raw inputs (inbox/). Run locally, then
+commit publish.yaml + docs/index.html + docs/resumes/*.pdf (the .gitignore allows docs/resumes/*.pdf).
 """
-import os, re, glob, shutil, html
+import os, re, sys, glob, shutil, html
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 DOCS = os.path.join(ROOT, "docs"); RES_OUT = os.path.join(DOCS, "resumes")
-RES_SRC_ROOT = os.path.join(ROOT, "output", "Resumes")
+RES_SRC = os.path.join(ROOT, "output", "Resumes")
+PUB_YAML = os.path.join(ROOT, "publish.yaml")
 SAMPLE = "sample.pdf"
 
-def load_cfg():
+HEADER = """\
+# KaushalForge — publish switchboard. LABELS & PATHS ONLY; never put personal data here.
+#
+# 1. Generate résumés, then catalog them:   python engine/publish.py --scan
+# 2. Flip `publish: true` on the ones to make public (edit the list below).
+# 3. Build + copy them into docs/:           python engine/publish.py
+# 4. Commit publish.yaml + docs/index.html + docs/resumes/*.pdf, then push.
+#
+# Only résumé PDFs under output/Resumes/ can be published. Nothing flagged true
+# (or an empty list) shows the anonymized SAMPLE placeholder."""
+
+def load():
     import yaml
-    p = os.path.join(ROOT, "publish.yaml")
-    return (yaml.safe_load(open(p, encoding="utf-8")) or {}) if os.path.exists(p) else {}
+    return (yaml.safe_load(open(PUB_YAML, encoding="utf-8")) or {}) if os.path.exists(PUB_YAML) else {}
 
 def slug(s):
     return re.sub(r"[^a-z0-9]+", "-", str(s).lower()).strip("-") or "resume"
 
-def is_safe_resume(path):
-    """Allow ONLY a .pdf located under output/Resumes/ (never letters/strategy/work/inbox)."""
+def safe_resume(path):
+    """Return abs path iff `path` is a .pdf located under output/Resumes/, else None."""
     ap = os.path.abspath(os.path.join(ROOT, path))
     if not ap.lower().endswith(".pdf"):
-        return None, "not a .pdf"
-    try:
-        rel = os.path.relpath(ap, RES_SRC_ROOT)
-    except ValueError:
-        return None, "outside output/Resumes/"
-    if rel.startswith("..") or os.path.isabs(rel):
-        return None, "outside output/Resumes/ — only résumé PDFs may be published"
-    return ap, None
+        return None
+    rel = os.path.relpath(ap, RES_SRC)
+    return None if (rel.startswith("..") or os.path.isabs(rel)) else ap
 
-def gather(cfg):
-    chosen = []
-    for it in (cfg.get("publish") or []):
-        if not isinstance(it, dict):
+def auto_label(rel_in_resumes):
+    """'01-software-engineer-backend/build-ats.pdf' -> 'Software Engineer Backend (ATS)'."""
+    folder = rel_in_resumes.replace("\\", "/").split("/", 1)[0]
+    folder = re.sub(r"^\d+-", "", folder).replace("-", " ").strip().title()
+    m = re.search(r"build-([a-z]+)\.pdf$", rel_in_resumes)
+    return f"{folder} ({m.group(1).upper()})" if m else folder
+
+def yq(s):
+    return '"' + str(s).replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+def emit_yaml(site, resumes):
+    out = [HEADER, "", "site:",
+           f"  title: {yq(site.get('title', 'Résumés'))}",
+           f"  footer: {yq(site.get('footer', ''))}",
+           "", "resumes:"]
+    if not resumes:
+        out.append("  []   # run `python engine/publish.py --scan` after generating to auto-fill this")
+    for r in resumes:
+        out.append("  - { publish: %s, label: %s, file: %s }"
+                   % ("true" if r["publish"] else "false", yq(r["label"]), r["file"]))
+    open(PUB_YAML, "w", encoding="utf-8").write("\n".join(out) + "\n")
+
+def scan(cfg):
+    site = cfg.get("site") or {}
+    merged, seen = [], set()
+    for r in (cfg.get("resumes") or []):              # keep existing entries (and their flags/labels)
+        if isinstance(r, dict) and r.get("file"):
+            f = r["file"].replace("\\", "/")
+            merged.append({"publish": bool(r.get("publish")), "label": r.get("label") or "", "file": f})
+            seen.add(f)
+    found = sorted(glob.glob(os.path.join(RES_SRC, "*", "build-*.pdf")))
+    new = 0
+    for f in found:                                    # append newly-discovered résumés as publish: false
+        rel = os.path.relpath(f, ROOT).replace("\\", "/")
+        if rel in seen:
             continue
-        f, label = it.get("file"), it.get("label")
-        if not f or not label:
-            print(f"  skip (needs both file + label): {it}"); continue
-        ap, why = is_safe_resume(f)
-        if ap is None:
-            print(f"  REJECT '{f}': {why}"); continue
-        if not os.path.exists(ap):
-            print(f"  skip (not generated yet): {f}"); continue
-        chosen.append((label, ap))
-    return chosen
+        relres = os.path.relpath(f, RES_SRC).replace("\\", "/")
+        merged.append({"publish": False, "label": auto_label(relres), "file": rel})
+        seen.add(rel); new += 1
+    emit_yaml(site, merged)
+    print(f"Cataloged {len(found)} résumé PDF(s) under output/Resumes/ "
+          f"-> {len(merged)} entries in publish.yaml ({new} new).")
+    print("Flip `publish: true` on the ones to make public, then run: python engine/publish.py")
 
 def write_index(title, footer, entries, placeholder):
     rows = "\n".join(
         f'      <li><a href="resumes/{html.escape(fn)}">{html.escape(label)}</a></li>'
         for label, fn in entries
     ) or "      <li><em>No résumés published yet.</em></li>"
-    note = (
-        '<p class="note">These are anonymized <strong>placeholder</strong> samples. '
-        'Edit <code>publish.yaml</code> and run <code>python engine/publish.py</code> '
-        'to publish real résumés.</p>\n  ' if placeholder else ""
-    )
+    note = ('<p class="note">These are anonymized <strong>placeholder</strong> samples. '
+            'Catalog with <code>python engine/publish.py --scan</code>, flip '
+            '<code>publish: true</code> in <code>publish.yaml</code>, then re-run '
+            '<code>python engine/publish.py</code>.</p>\n  ' if placeholder else "")
     doc = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -103,34 +136,48 @@ def write_index(title, footer, entries, placeholder):
     os.makedirs(DOCS, exist_ok=True)
     open(os.path.join(DOCS, "index.html"), "w", encoding="utf-8").write(doc)
 
-def main():
-    cfg = load_cfg()
+def publish(cfg):
     site = cfg.get("site") or {}
-    title = site.get("title", "Résumés")
-    footer = site.get("footer", "")
+    title, footer = site.get("title", "Résumés"), site.get("footer", "")
     os.makedirs(RES_OUT, exist_ok=True)
-    # Idempotent: clear previously-published PDFs, keep the committed sample.
-    for old in glob.glob(os.path.join(RES_OUT, "*.pdf")):
+    for old in glob.glob(os.path.join(RES_OUT, "*.pdf")):      # idempotent: drop prior published, keep sample
         if os.path.basename(old) != SAMPLE:
             os.remove(old)
-    chosen = gather(cfg)
-    entries, placeholder = [], False
-    if chosen:
-        for label, src in chosen:
-            dest = slug(label) + ".pdf"
-            shutil.copy2(src, os.path.join(RES_OUT, dest))
-            entries.append((label, dest))
-        print(f"Published {len(entries)} résumé(s) to docs/resumes/.")
-    else:
-        placeholder = True
+    entries, used = [], set()
+    for r in (cfg.get("resumes") or []):
+        if not (isinstance(r, dict) and r.get("publish")):
+            continue
+        f = r.get("file")
+        ap = safe_resume(f) if f else None
+        if ap is None:
+            print(f"  REJECT (only résumé PDFs under output/Resumes/ may be published): {f}"); continue
+        if not os.path.exists(ap):
+            print(f"  skip (not generated in this checkout): {f}"); continue
+        label = r.get("label") or auto_label(os.path.relpath(ap, RES_SRC))
+        dest = slug(label) + ".pdf"
+        n = 2
+        while dest in used:
+            dest = f"{slug(label)}-{n}.pdf"; n += 1
+        used.add(dest)
+        shutil.copy2(ap, os.path.join(RES_OUT, dest))
+        entries.append((label, dest))
+    placeholder = not entries
+    if placeholder:
         if os.path.exists(os.path.join(RES_OUT, SAMPLE)):
             entries.append(("Sample résumé — anonymized placeholder", SAMPLE))
-        else:
-            print("  WARN: docs/resumes/sample.pdf is missing; the hub will list nothing.")
-        print("publish.yaml selects nothing -> showing the anonymized SAMPLE placeholder.")
-        print("Edit publish.yaml's `publish:` list (résumé PDFs under output/Resumes/) and re-run.")
+        print("Nothing flagged `publish: true` (or files missing) -> showing the SAMPLE placeholder.")
+        print("Run `python engine/publish.py --scan`, flip a flag to true, then re-run.")
+    else:
+        print(f"Published {len(entries)} résumé(s) to docs/resumes/.")
     write_index(title, footer, entries, placeholder)
-    print(f"Wrote {os.path.join('docs', 'index.html')} ({len(entries)} entr{'y' if len(entries)==1 else 'ies'}).")
+    print(f"Wrote docs/index.html ({len(entries)} entr{'y' if len(entries)==1 else 'ies'}).")
+
+def main():
+    cfg = load()
+    if "--scan" in sys.argv[1:]:
+        scan(cfg)
+    else:
+        publish(cfg)
 
 if __name__ == "__main__":
     main()

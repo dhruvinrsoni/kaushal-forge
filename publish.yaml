@@ -1,17 +1,16 @@
 # KaushalForge — publish switchboard. LABELS & PATHS ONLY; never put personal data here.
 #
-# Choose which generated résumé PDFs to make public, then run:
-#     python engine/publish.py
-# and commit the resulting docs/index.html + docs/resumes/*.pdf.
+# 1. Generate résumés, then catalog them:   python engine/publish.py --scan
+# 2. Flip `publish: true` on the ones to make public (edit the list below).
+# 3. Build + copy them into docs/:           python engine/publish.py
+# 4. Commit publish.yaml + docs/index.html + docs/resumes/*.pdf, then push.
 #
-# SAFETY: only .pdf files under output/Resumes/ can be published. Cover letters,
-# strategy docs, the knowledge base (work/), and raw inputs (inbox/) are never published.
-# Leave `publish:` empty (or all-commented) to show the anonymized SAMPLE placeholder.
+# Only résumé PDFs under output/Resumes/ can be published. Nothing flagged true
+# (or an empty list) shows the anonymized SAMPLE placeholder.
 
 site:
   title: "Résumés — Dhruvin Rupesh Soni"
   footer: "KaushalForge © Dhruvin Rupesh Soni — github.com/dhruvinrsoni/kaushal-forge"
 
-publish:
-  # - { file: output/Resumes/01-software-engineer-backend/build-ats.pdf, label: "Senior SWE (Backend)" }
-  # - { file: output/Resumes/10-counsellors-pick/build-modern.pdf,       label: "AI Engineer" }
+resumes:
+  []   # run `python engine/publish.py --scan` after generating to auto-fill this
