@@ -10,12 +10,12 @@
 # per role (a focused set reads as a portfolio; a 60-PDF buffet reads as spray-and-pray).
 # Nothing live/flagged (or an empty list) shows the anonymized SAMPLE placeholder.
 
-live: 0   # master switch: 0 takes ALL résumés down (shows the sample); 1 = publish flagged ones
+live: 1   # master switch: 0 takes ALL résumés down (shows the sample); 1 = publish flagged ones
 
 site:
   title: "Résumés — Dhruvin Rupesh Soni"
   footer: "KaushalForge © Dhruvin Rupesh Soni — github.com/dhruvinrsoni/kaushal-forge"
-  discoverable: 0   # 0 = noindex (share by link only); 1 = allow search engines
+  discoverable: 1   # 0 = noindex (share by link only); 1 = allow search engines
 
 resumes:
   - { publish: 1, label: "Software Engineer Backend 2Page (ATS)", file: output/Resumes/01-software-engineer-backend-2page/build-ats.pdf }
@@ -69,9 +69,9 @@ resumes:
   - { publish: 0, label: "Master 2Page (ATS)", file: output/Resumes/09-master-2page/build-ats.pdf }
   - { publish: 0, label: "Master 2Page (MODERN)", file: output/Resumes/09-master-2page/build-modern.pdf }
   - { publish: 0, label: "Master 2Page (TWOCOL)", file: output/Resumes/09-master-2page/build-twocol.pdf }
-  - { publish: 0, label: "Counsellors Pick 2Page (ATS)", file: output/Resumes/10-counsellors-pick-2page/build-ats.pdf }
+  - { publish: 1, label: "Counsellors Pick 2Page (ATS)", file: output/Resumes/10-counsellors-pick-2page/build-ats.pdf }
   - { publish: 0, label: "Counsellors Pick 2Page (MODERN)", file: output/Resumes/10-counsellors-pick-2page/build-modern.pdf }
   - { publish: 0, label: "Counsellors Pick 2Page (TWOCOL)", file: output/Resumes/10-counsellors-pick-2page/build-twocol.pdf }
-  - { publish: 0, label: "Counsellors Pick (ATS)", file: output/Resumes/10-counsellors-pick/build-ats.pdf }
+  - { publish: 1, label: "Counsellors Pick (ATS)", file: output/Resumes/10-counsellors-pick/build-ats.pdf }
   - { publish: 0, label: "Counsellors Pick (MODERN)", file: output/Resumes/10-counsellors-pick/build-modern.pdf }
   - { publish: 0, label: "Counsellors Pick (TWOCOL)", file: output/Resumes/10-counsellors-pick/build-twocol.pdf }
