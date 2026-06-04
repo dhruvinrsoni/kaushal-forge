@@ -173,7 +173,7 @@ Because `cf-ats.tex` has **no `\definecolor{accent}`** (see §6), the regex matc
 
 [engine/verify.py](../engine/verify.py). Accumulates failures into a `fails` list and, if non-empty, prints them and `sys.exit(1)` ([lines 61-65](../engine/verify.py)). This is the **gate**: non-zero exit is the contract.
 
-1. **Forbidden-terms leak scan** ([lines 22-34](../engine/verify.py)) — lowercases `config.verify.forbidden_terms` (internal codenames, client/manager/peer names that must never surface) and scans, case-insensitively, every `Resumes/*/content.tex`, `CoverLetters/*/letter.{tex,md}`, `LinkedIn/*.md`, and `Strategy/*.md`. Any hit → `LEAK '<term>' in <file>`.
+1. **Leak scan** — the keys of `config.verify.mask` (internal codenames, client/manager/peer names) are scanned case-insensitively across generated outputs **and every tracked source file** (`git ls-files`); a hit → `LEAK '<term>' ... -> mask as '<replacement>'`. The pre-commit hook (`.githooks/`) applies the same check to staged content. (Legacy `verify.forbidden_terms` list still honoured.)
 2. **HTML-entity scan** ([lines 23, 34-35](../engine/verify.py)) — over the same file set, flags any of `&gt; &lt; &amp; &#39; &quot;` that survived rendering → `ENTITY '<e>' in <file>`. This is the backstop for `esc()`/`deent()`.
 3. **LinkedIn char limits** ([lines 38-45](../engine/verify.py)) — read from `work/linkedin.json`: each `headline_variants[].text` must be **≤ 220**; `about.primary` and `about.alt` must each be **≤ 2600**.
 4. **PDF page counts** ([lines 48-57](../engine/verify.py)) via `pypdf` (skipped with a note if pypdf is missing, [lines 58-59](../engine/verify.py)):

@@ -27,7 +27,7 @@ Copy [config.example.yaml](../config.example.yaml) to `config.yaml` and fill. Ev
 | `resume.accent_hex` | str (6 hex, no `#`) | optional | Regex-injected into `\definecolor{accent}{HTML}{...}` of the modern/twocol résumé styles and the letter style. ATS style stays black. Default `""` = leave template's built-in color. |
 | `resume.two_page` | `"all"` \| list[str] | optional | Which role-variant ids also get a `-2page` edition. `"all"` (default) = every variant; a list like `["05","06","07"]` restricts it. The 09 Master is always 2-page regardless. |
 | `resume.cap_overrides` | map `id:int` | optional | Per-variant current-role bullet cap on the 1-pager. `int(cap_over.get(vid, 4))` — default cap is 4 ([render_resumes.py:171](../engine/render_resumes.py)). Use for dense variants whose 1-pager spills. |
-| `verify.forbidden_terms` | list[str] | optional | Leak-scan terms (codenames, client/manager names). [verify.py](../engine/verify.py) fails the build if any (case-insensitive) appears in generated output. |
+| `verify.mask` | map {term: replacement} | optional | Sensitive term → public-safe replacement. Keys are leak-scanned (case-insensitive) across generated output **and tracked source files**; [verify.py](../engine/verify.py) fails and a pre-commit hook blocks on a hit. (Legacy `forbidden_terms` list still honoured.) |
 
 ---
 
@@ -157,7 +157,7 @@ Each résumé folder ships three `build-*.tex` drivers (ATS / modern / twocol) t
 
 | Check | Rule |
 |---|---|
-| Leak scan | No `config.verify.forbidden_terms` (case-insensitive) in `content.tex`, `letter.{tex,md}`, `LinkedIn/*.md`, `Strategy/*.md`. |
+| Leak scan | No `config.verify.mask` term (case-insensitive) in generated outputs **or tracked source files** (a pre-commit hook also blocks staged content). |
 | HTML entities | None of `&gt; &lt; &amp; &#39; &quot;` may survive into output. |
 | LinkedIn chars | headline `text` ≤ 220; `about.primary`/`about.alt` ≤ 2600 (read from `work/linkedin.json`). |
 | PDF pages | role variants = 1; any `*-2page` folder or `09*` = 2; cover letters = 1. (Skipped with a note if `pypdf` is absent.) |

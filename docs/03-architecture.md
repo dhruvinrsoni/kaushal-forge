@@ -106,12 +106,12 @@ The render scripts also tolerate input drift: `render_resumes.py` and `render_co
 - **`resume.accent_hex`** → injected into `modern`/`twocol`/letter styles (ATS stays black).
 - **`resume.two_page`** → which variant ids also get a 2-page edition (`"all"` or a list).
 - **`resume.cap_overrides`** → per-variant current-role bullet cap on the 1-pager (default 4).
-- **`verify.forbidden_terms`** → the leak-scan list `verify.py` rejects across all output text (codenames, client names, manager/peer names).
+- **`verify.mask`** → map of sensitive term → safe replacement; `verify.py` (and a pre-commit hook) reject the terms across outputs **and tracked source files**.
 
-For a worked persona, a filled `config.yaml` for **Asha Verma** (with `verify.forbidden_terms` listing internal codenames like *PromptForge* and *QuickLog*, and clients *Globex Systems* / *Initech Labs* generalised to a category) drives every render and is checked by the gate — the same data never appears verbatim in `output/`.
+For a worked persona, a filled `config.yaml` for **Asha Verma** (with `verify.mask` listing internal codenames like *PromptForge* and *QuickLog*, and clients *Globex Systems* / *Initech Labs* generalised to a category) drives every render and is checked by the gate — the same data never appears verbatim in `output/`.
 
 ## The gate
 
-A run is not done until `verify.py` exits 0. It performs four checks ([verify.py](../engine/verify.py)): (1) leak scan for `config.verify.forbidden_terms` across `content.tex`, `letter.tex/.md`, and all LinkedIn/Strategy markdown; (2) no stray HTML entities (`&gt;` etc.); (3) LinkedIn char limits read from `work/linkedin.json` (Headline ≤220, About ≤2600); (4) PDF page counts via `pypdf` (role folders = 1 page; `*-2page` and `09-*` = 2; letters = 1). Any failure prints the offending item and exits non-zero. Fix the flagged `work/*.json` field (or `config.verify.forbidden_terms` for a false positive) and re-run the paired render + build + verify.
+A run is not done until `verify.py` exits 0. It performs four checks ([verify.py](../engine/verify.py)): (1) leak scan for `config.verify.mask` across `content.tex`, `letter.tex/.md`, and all LinkedIn/Strategy markdown; (2) no stray HTML entities (`&gt;` etc.); (3) LinkedIn char limits read from `work/linkedin.json` (Headline ≤220, About ≤2600); (4) PDF page counts via `pypdf` (role folders = 1 page; `*-2page` and `09-*` = 2; letters = 1). Any failure prints the offending item and exits non-zero. Fix the flagged `work/*.json` field (or `config.verify.mask` for a false positive) and re-run the paired render + build + verify.
 
 **Next:** [04-engine.md](04-engine.md) for the deterministic scripts in depth, then [05-ai-layer.md](05-ai-layer.md) for the Claude skill and portable prompts, and [06-data-contracts.md](06-data-contracts.md) for the JSON schemas that bind them.

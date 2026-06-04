@@ -68,7 +68,7 @@ For an actual person you work in the **repo root** (no scratch dir). `inbox/`, `
 ```text
 bootstrap.py            once: deps + Tectonic
    │
-cp config.example.yaml config.yaml      fill person / contact / targets / verify.forbidden_terms
+cp config.example.yaml config.yaml      fill person / contact / targets / verify.mask
    │
 inbox/                  drop raw data (LinkedIn "Get a copy of your data" export, reviews, old resume, GitHub text)
    │

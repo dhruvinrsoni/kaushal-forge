@@ -57,7 +57,7 @@ Everything under [tests/fixtures/](../tests/fixtures/) is a fully fictional pers
 
 | Fixture | Feeds | Role |
 |---|---|---|
-| [config.yaml](../tests/fixtures/config.yaml) | staged to `./config.yaml` | person/contact, `accent_hex: 1F4E79`, `two_page: "all"`, `cap_overrides: {"01": 4}`, and three `verify.forbidden_terms` |
+| [config.yaml](../tests/fixtures/config.yaml) | staged to `./config.yaml` | person/contact, `accent_hex: 1F4E79`, `two_page: "all"`, `cap_overrides: {"01": 4}`, and three `verify.mask` |
 | [profile.json](../tests/fixtures/profile.json) | `work/profile.json` | master KB → the `09-master-2page` résumé + education/certs/contact |
 | [variants.json](../tests/fixtures/variants.json) | `work/variants.json` | two role variants, **ids `01` and `03`** (backend, AI/GenAI) |
 | [letters.json](../tests/fixtures/letters.json) | `work/letters.json` | matching cover letters for ids `01` and `03` |
@@ -178,14 +178,14 @@ You rarely touch code for fit; tune [config.yaml](../config.example.yaml) instea
 This is the contributor's view of an end-to-end run (the operator's steps live in [RUNBOOK.md](../RUNBOOK.md); the why is in [MASTER-PLAN.md](../MASTER-PLAN.md)). Do this in a **clean** working tree:
 
 1. `python engine/bootstrap.py` — deps + Tectonic.
-2. `cp config.example.yaml config.yaml` and fill `person` / `contact` / `targets` / `verify.forbidden_terms`.
+2. `cp config.example.yaml config.yaml` and fill `person` / `contact` / `targets` / `verify.mask`.
 3. Drop the person's raw data into `inbox/`, then `python engine/intake_dump.py` → `work/00-raw-dump.txt`.
 4. Run phases P1→P6 (skill or `prompts/`) → `work/{profile,linkedin,variants,letters}.json` + `work/strategy/`.
 5. `python engine/render_{resumes,coverletters,linkedin,strategy}.py`.
 6. `python engine/build_pdfs.py` (page-count table), then `python engine/verify.py` (must print `VERIFY OK`).
 7. Outputs land in `output/`. **Never commit** any of `config.yaml`, `work/`, `output/`, or `*.pdf`.
 
-**Refresh later:** the renderers are re-runnable. Update the relevant `work/*.json` (or hand-edit a `content.tex`) and re-run renderers → build → verify. Set `forbidden_terms` *before* re-running so the leak gate covers any newly added employer/client/codename.
+**Refresh later:** the renderers are re-runnable. Update the relevant `work/*.json` (or hand-edit a `content.tex`) and re-run renderers → build → verify. Set `config.verify.mask` *before* re-running so the leak gate covers any newly added employer/client/codename.
 
 ---
 
@@ -197,7 +197,7 @@ This is the contributor's view of an end-to-end run (the operator's steps live i
 
 | Failure | Meaning | Fix |
 |---|---|---|
-| `LEAK '<term>' in ...` | a `verify.forbidden_terms` string appears (case-insensitive) in a rendered output / `content.tex` | remove the term from the source JSON/content and re-render; or remove it from `forbidden_terms` only if it was a false positive |
+| `LEAK '<term>' in ...` | a `verify.mask` string appears (case-insensitive) in a rendered output / `content.tex` | remove the term from the source JSON/content and re-render; or remove it from `forbidden_terms` only if it was a false positive |
 | `ENTITY '&gt;' / '&amp;' / ...` | a raw HTML entity leaked into output text | fix the source JSON — the renderers' `esc()`/`deent()` already un-escape entities, so a leak means the entity reached a path that wasn't sanitized; correct the JSON value |
 | `HEADLINE N>220` / `ABOUT[...] N>2600` | a LinkedIn headline >220 chars, or `about.primary`/`about.alt` >2600 chars (read from `work/linkedin.json`) | shorten the offending field in `linkedin.json` and re-render |
 | `PAGES <folder>/build-*.pdf = N (want M)` | a résumé PDF has the wrong page count (role/2-page editions expect 1; `*-2page` and `09-master-*` expect 2) | adjust content volume or `cap_overrides`/`two_page` so the page count matches |
@@ -219,8 +219,10 @@ If a 1-pager spills, lower its `cap_overrides[id]`; if a 2-page edition under/ov
 
 **Never commit:**
 - `config.yaml`, `inbox/*`, `work/*`, `output/*`, or any `*.pdf` — all gitignored (see [.gitignore](../.gitignore); folders kept via `.gitkeep`).
-- Any real personal/career data, employer/client names, or internal codenames — these belong in `forbidden_terms`, not in tracked files.
+- Any real personal/career data, employer/client names, or internal codenames — these belong in `config.verify.mask` (gitignored), not in tracked files.
 - The Tectonic binary (`engine/.bin/`) or `engine/.tectonic_path` (machine-specific, gitignored).
+
+**Leak gate (defense-in-depth):** `config.verify.mask` (term → replacement) is the single source of truth. `verify.py` scans outputs **and tracked source** for those terms; a pre-commit hook (`.githooks/`, installed by `bootstrap.py`) blocks any commit that stages one (text or PDF). So a sensitive term can't reach a commit or an output.
 
 **Always:**
 - Keep every example (`.github/skills/kaushal-forge/examples/`) and fixture (`tests/fixtures/`) **fully fictional** — Asha Verma / Acme Cloud / Globex / Initech / PromptForge / QuickLog / AgentKit only.

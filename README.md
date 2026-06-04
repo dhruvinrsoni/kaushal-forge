@@ -18,7 +18,7 @@ The person's LinkedIn *"Get a copy of your data"* export, performance reviews, a
 ### 2 · Set up (once)
 ```bash
 python engine/bootstrap.py              # installs deps + Tectonic
-cp config.example.yaml config.yaml      # fill name / contact / targets / verify.forbidden_terms
+cp config.example.yaml config.yaml      # fill name / contact / targets / verify.mask
 ```
 
 ### 3 · Ingest → write → build → verify
@@ -90,7 +90,7 @@ https://dhruvinrsoni.github.io/kaushal-forge/
 
 - **Never put real data in a tracked file.** Feed it via `--data <folder>` or the gitignored `inbox/`; keep `config.yaml` local.
 - Gitignored: `config.yaml`, `inbox/`, `work/`, `output/`, and **every common data format** (`*.pdf *.docx *.xlsx *.csv *.vcf …`). The **only** public artifacts are the résumés you flag in `publish.yaml` (→ `docs/resumes/`).
-- `engine/verify.py` leak-scans every output against `config.verify.forbidden_terms` (codenames, client/manager names) and fails on a hit. Details in [SECURITY.md](SECURITY.md).
+- `engine/verify.py` leak-scans `config.verify.mask` terms across outputs **and tracked source files**, and a **pre-commit hook** (installed by `bootstrap.py`) blocks staged leaks. Details in [SECURITY.md](SECURITY.md).
 
 ---
 

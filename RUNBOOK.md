@@ -5,7 +5,7 @@ Follow top to bottom. Each AI phase is a small, bounded "fill this schema like t
 ## 0. Setup (once)
 ```
 python engine/bootstrap.py            # installs pypdf + pyyaml; downloads/locates Tectonic
-cp config.example.yaml config.yaml    # fill person/contact/targets/forbidden_terms
+cp config.example.yaml config.yaml    # fill person/contact/targets/verify.mask
 ```
 
 ## 0b. Intake
@@ -37,7 +37,7 @@ python engine/intake_dump.py --data ~/career-data  # or ingest an out-of-tree fo
 python engine/build_pdfs.py           # compiles every résumé + letter; prints page counts
 python engine/verify.py               # GATE: leaks, stray entities, char limits, page counts. Must print "VERIFY OK".
 ```
-If `verify.py` fails, fix the flagged `work/*.json` field (or `config.forbidden_terms`) and re-run the paired render + build + verify.
+If `verify.py` fails, fix the flagged `work/*.json` field (or `config.verify.mask`) and re-run the paired render + build + verify.
 
 ## 8. Use the output
 `output/Resumes/` (1- & 2-page × 3 styles), `output/CoverLetters/`, `output/LinkedIn/`, `output/Strategy/`.

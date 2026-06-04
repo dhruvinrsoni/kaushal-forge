@@ -33,7 +33,7 @@ A weak model will still slip. The design's answer is not a stronger model — it
 
 It checks four things, all mechanical:
 
-1. **Leak scan** — every term in `config.verify.forbidden_terms` (codenames, client names, manager/peer names) is searched, case-insensitively, across résumé `content.tex`, cover-letter `letter.tex`/`letter.md`, LinkedIn `*.md`, and Strategy `*.md` ([verify.py:22-34](../engine/verify.py)). Any hit is a `LEAK` failure.
+1. **Leak scan** — the keys of `config.verify.mask` (codenames, client/manager/peer names) are searched case-insensitively across the generated outputs **and every tracked source file** ([verify.py](../engine/verify.py)); any hit is a `LEAK` failure (with the mask suggested). A pre-commit hook applies the same gate to staged content before it can be committed.
 2. **Stray HTML entities** — the same files are scanned for `&gt; &lt; &amp; &#39; &quot;` ([verify.py:23](../engine/verify.py)); these signal an escaping miss and fail the build.
 3. **LinkedIn char limits** — read from `work/linkedin.json`: each headline variant must be ≤ 220 chars and `about.primary` / `about.alt` ≤ 2600 ([verify.py:38-45](../engine/verify.py)).
 4. **PDF page counts** — via `pypdf`: role résumés must be 1 page; any `*-2page` folder or the `09`-master must be 2; every cover letter must be 1 ([verify.py:48-57](../engine/verify.py)). (If `pypdf` is absent, this single check is skipped with a printed note.)
@@ -46,7 +46,7 @@ This is why the engine can stay dumb: the judgement layer is allowed to be imper
 
 These principles are enforced at the judgement layer and re-checked at the gate. They are summarized from [.github/skills/kaushal-forge/rules/confidentiality.md](../.github/skills/kaushal-forge/rules/confidentiality.md).
 
-**Confidentiality.** Client names are generalized to a category (e.g. a real retailer becomes "Fortune-500 retail & pharmacy clients"); internal codenames and system names are stripped **while the metrics are kept** (e.g. a named internal service's coverage figure stays, the name goes); AI-assisted work is framed professionally as "AI-augmented engineering"; GPA/CGPA is omitted on experienced résumés. Crucially, the person's actual codenames, client names, and manager/peer names go into `config.verify.forbidden_terms` so the gate hard-fails if any leak through.
+**Confidentiality.** Client names are generalized to a category (e.g. a real retailer becomes "Fortune-500 retail & pharmacy clients"); internal codenames and system names are stripped **while the metrics are kept** (e.g. a named internal service's coverage figure stays, the name goes); AI-assisted work is framed professionally as "AI-augmented engineering"; GPA/CGPA is omitted on experienced résumés. Crucially, the person's actual codenames, client names, and manager/peer names go into `config.verify.mask` so the gate hard-fails if any leak through.
 
 **Diplomatic model.** When `config.targets.diplomatic` is true, nothing *public* — LinkedIn above all — may imply job-seeking, leaving the employer, or relocating out. Public content is framed as curiosity, craft, and impact; the tone rule in [.github/skills/kaushal-forge/rules/linkedin-limits.md](../.github/skills/kaushal-forge/rules/linkedin-limits.md) forbids words like "seeking / open to / relocating / available." The asymmetry is deliberate: cover letters are *private* documents sent to a target employer, so there expressing interest in the role and openness to relocation is fine.
 

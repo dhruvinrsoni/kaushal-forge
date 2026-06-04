@@ -27,7 +27,7 @@ For each phase: open the phase file, follow it exactly (it contains the schema, 
 python engine/build_pdfs.py     # compiles every résumé + letter; prints page counts
 python engine/verify.py         # GATE — must print "VERIFY OK"
 ```
-**Do not consider the job done until `verify.py` exits 0.** If it fails, fix the flagged `work/*.json` field (or add the leaked term to `config.verify.forbidden_terms` only if it's a false positive), then re-run the paired render + build + verify.
+**Do not consider the job done until `verify.py` exits 0.** If it fails, fix the flagged `work/*.json` field (or add the leaked term to `config.verify.mask` only if it's a false positive), then re-run the paired render + build + verify.
 
 ## Non-negotiable rules (full text in `rules/`)
 - **Confidentiality/honesty** (`rules/confidentiality.md`): omit GPA; generalise client names to a category; strip internal codenames (keep the metrics); frame AI-assisted work as "AI-augmented engineering"; if `targets.diplomatic` is true, **nothing public may imply job-seeking**; **never fabricate** — every claim must trace to `work/00-raw-dump.txt`.
