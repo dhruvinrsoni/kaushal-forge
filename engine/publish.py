@@ -171,8 +171,16 @@ def write_index(cfg, groups, placeholder):
 <meta property="og:description" content="{html.escape(subtitle or 'Résumé hub')}">
 <meta property="og:type" content="website">
 <title>{html.escape(title)}</title>
+<script>(function(){{try{{var t=localStorage.getItem('kf-theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t);}}catch(e){{}}}})();</script>
 <style>
-  :root {{ --bg:#0d1117; --elev:#11161d; --card:#161b22; --ink:#e6edf3; --muted:#8b949e; --accent:#58a6ff; --border:#2a313c; }}
+  /* Light tokens (default + forced light) */
+  :root, :root[data-theme="light"] {{ color-scheme:light; --bg:#ffffff; --elev:#f6f8fa; --card:#ffffff; --ink:#1f2328; --muted:#59636e; --accent:#0969da; --border:#d0d7de; }}
+  /* Auto-dark: OS is dark and the user hasn't forced light */
+  @media (prefers-color-scheme: dark) {{
+    :root:not([data-theme="light"]) {{ color-scheme:dark; --bg:#0d1117; --elev:#11161d; --card:#161b22; --ink:#e6edf3; --muted:#8b949e; --accent:#58a6ff; --border:#2a313c; }}
+  }}
+  /* Forced dark */
+  :root[data-theme="dark"] {{ color-scheme:dark; --bg:#0d1117; --elev:#11161d; --card:#161b22; --ink:#e6edf3; --muted:#8b949e; --accent:#58a6ff; --border:#2a313c; }}
   * {{ box-sizing:border-box; }}
   body {{ margin:0; font:16px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink); }}
   header.hero {{ padding:56px 20px 8px; max-width:860px; margin:0 auto; }}
@@ -194,14 +202,14 @@ def write_index(cfg, groups, placeholder):
   .alt {{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; }}
   footer {{ position:fixed; left:0; right:0; bottom:0; padding:12px 20px; text-align:center; font-size:.82rem; color:var(--muted); background:var(--bg); border-top:1px solid var(--border); }}
   footer a {{ color:var(--accent); }}
-  #toast {{ position:fixed; left:50%; bottom:64px; transform:translateX(-50%) translateY(20px); opacity:0; transition:.2s; background:var(--accent); color:#04101f; font-weight:700; padding:9px 16px; border-radius:999px; pointer-events:none; }}
+  #toast {{ position:fixed; left:50%; bottom:64px; transform:translateX(-50%) translateY(20px); opacity:0; transition:.2s; background:var(--ink); color:var(--bg); font-weight:700; padding:9px 16px; border-radius:999px; pointer-events:none; }}
   #toast.show {{ opacity:1; transform:translateX(-50%) translateY(0); }}
 </style>
 </head>
 <body>
 <header class="hero">
   <h1>{html.escape(title)}</h1>{sub}
-  <div class="toolbar"><button class="act copy" type="button" data-href="" title="Copy this page's link">Copy site link</button></div>
+  <div class="toolbar"><button class="act" id="theme-toggle" type="button" title="Switch theme: auto / light / dark">◐ Auto</button> <button class="act copy" type="button" data-href="" title="Copy this page's link">Copy site link</button></div>
 </header>
 <main>
   {note}<div class="grid">
@@ -223,6 +231,11 @@ def write_index(cfg, groups, placeholder):
       }});
     }});
   }});
+  var root = document.documentElement, tbtn = document.getElementById('theme-toggle'), modes = ['auto','light','dark'], icons = {{ auto:'◐ Auto', light:'☀ Light', dark:'☾ Dark' }};
+  function applyTheme(m) {{ if (m === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', m); try {{ localStorage.setItem('kf-theme', m); }} catch (e) {{}} if (tbtn) tbtn.textContent = icons[m]; }}
+  var cur = 'auto'; try {{ cur = localStorage.getItem('kf-theme') || 'auto'; }} catch (e) {{}}
+  applyTheme(modes.indexOf(cur) >= 0 ? cur : 'auto');
+  if (tbtn) tbtn.addEventListener('click', function() {{ cur = modes[(modes.indexOf(cur) + 1) % modes.length]; applyTheme(cur); }});
 </script>
 </body>
 </html>
