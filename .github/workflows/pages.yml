@@ -1,0 +1,34 @@
+name: Deploy résumé hub (Pages)
+
+# Requires (owner action): repo is public AND Settings → Pages → Source = "GitHub Actions".
+# docs/ is built locally with `python engine/publish.py` and committed — the selected
+# résumé PDFs live in gitignored output/, so this workflow deploys the committed docs/
+# rather than rebuilding it here.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - id: deployment
+        uses: actions/deploy-pages@v4
