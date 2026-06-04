@@ -59,16 +59,17 @@ Fill any `[Company]` / `[Role]` / `%FILL%` placeholders before sending. Re-run a
 
 ## Publish chosen résumés to the web
 
-A static [GitHub Pages](https://pages.github.com/) hub lists **only the résumés you choose** — never cover letters, strategy, or raw data.
+A polished static [GitHub Pages](https://pages.github.com/) hub — **grouped by role**, with **View / Download / Copy-link** on every résumé and a Copy-site-link button — listing **only the résumés you choose** (never cover letters, strategy, or raw data).
 
 ```bash
-python engine/publish.py --scan    # 1. auto-catalog every generated résumé into publish.yaml (all OFF)
-#                                    2. edit publish.yaml: flip `publish: true` on the ones to publish (tweak labels)
+python engine/publish.py --scan    # 1. auto-catalog every generated résumé into publish.yaml (all 0)
+#                                    2. edit publish.yaml: flip `publish: 1` on the ones to publish;
+#                                       set `live: 1` to go public (labels/order optional)
 python engine/publish.py           # 3. copies those PDFs into docs/resumes/ + rebuilds docs/index.html
 git add publish.yaml docs && git commit -m "publish: update résumé hub" && git push
 ```
 
-You only ever toggle `true`/`false` — `--scan` fills the list for you. Until you flag anything, the hub shows an anonymized sample.
+You only toggle `1`/`0` (or `true`/`false`) — `--scan` fills the list for you, and the hub groups a role's formats under one card (primary download + "Other formats"), so even several variants read as a curated portfolio rather than a buffet. The top-level **`live:` is a master switch** — set `live: 0` to take *everything* down at once (the hub reverts to the anonymized sample). Until you go live, the hub shows that sample.
 
 ### Going public + turning the website on (one time)
 In the repo's **Settings**:
