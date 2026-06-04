@@ -1,64 +1,107 @@
 # KaushalForge
 
-> ✅ **Status: built & verified.** A full end-to-end dry-run compiled **57 résumé PDFs + 10 cover-letter PDFs (67 total, 0 failures)** and passed `engine/verify.py` ("VERIFY OK"). To start a run, copy `config.example.yaml` → `config.yaml`, drop the person's data in `inbox/`, and follow the quickstart below. `config.yaml`, `inbox/`, `work/`, and `output/` are never tracked — clear them (keep the `.gitkeep`) to start fresh.
->
-> 🔒 **Proprietary & private.** All-Rights-Reserved (see `LICENSE`); personal data, generated output, and PDFs are gitignored and never committed. The gold examples in `.github/skills/kaushal-forge/examples/` and the CI fixtures in `tests/fixtures/` are **fully fictional** ("Asha Verma / Acme Cloud") — safe to share. CI (`.github/workflows/ci.yml`) runs a render-smoke over the fixtures plus the `verify.py` gate on every push.
->
-> 🔐 **Data safety.** Never put a real person's data in a tracked file. Feed raw data via `python engine/intake_dump.py --data <external/path>` (or the gitignored `inbox/`) and keep `config.yaml` local. The **only** public surface is the résumés you list in `publish.yaml` (copied to `docs/resumes/` by `engine/publish.py`) — cover letters, strategy docs, the knowledge base, and raw inputs are never published.
+> 🔒 **Proprietary — All Rights Reserved** (see [LICENSE](LICENSE)). Personal data, generated output, and PDFs are **never committed** — only the résumés you explicitly choose get published. All examples are fully fictional ("Asha Verma / Acme Cloud").
 
-A **repeatable, AI-powered career-toolkit generator.** Feed it a person's raw data; it produces a complete, tailored toolkit: a LinkedIn rewrite, multi-variant LaTeX résumés (compiled to PDF, 1- and 2-page), matching cover letters, and a strategy pack — reproducibly, **on any model** (Opus, Sonnet, or Haiku).
+**Turn one folder of a person's career history into a complete, tailored job-search toolkit** — a LinkedIn rewrite, multi-variant LaTeX résumés (PDF: 1- & 2-page × 3 styles), matching cover letters, and a strategy pack — reproducibly, **on any AI model** (Opus → Haiku). Then publish the résumés you pick to a GitHub Pages website.
 
-## Documentation
-New here? **[docs/](docs/README.md)** is a guided, top-to-bottom walkthrough — from a 15-minute local run to a line-by-line engine reading:
-- **[Onboarding](docs/01-onboarding.md)** — get a green pipeline locally, fast.
-- **[Concepts](docs/02-concepts.md)** · **[Architecture](docs/03-architecture.md)** — why it works and how it's shaped.
-- **[Engine internals](docs/04-engine.md)** · **[AI layer](docs/05-ai-layer.md)** · **[Data contracts](docs/06-data-contracts.md)** — code-level depth.
-- **[CI & extending](docs/07-ci-and-extending.md)** — testing and adding styles / phases / variants.
+It runs on cheap models because the work is split: the exact, boring parts (render LaTeX, compile PDFs, count characters, scan for leaks, check page counts) are **deterministic Python in `engine/`**; the judgement (writing tailored content) is the **AI, confined to filling rigid JSON schemas** with a worked example beside each. `engine/verify.py` is a hard gate that catches slips. Full tour in **[docs/](docs/README.md)**.
 
-Operators can also jump to the step-by-step [RUNBOOK.md](RUNBOOK.md); the full design rationale lives in [MASTER-PLAN.md](MASTER-PLAN.md).
+---
 
-## Why it works on cheap models
-Two kinds of work are split cleanly:
-- **Mechanical** (render LaTeX, compile PDFs, count characters, scan for leaks, check page counts) → **deterministic Python in `engine/`**. Zero intelligence required; identical on any machine.
-- **Judgement** (write tailored content) → the AI, but **confined to filling rigid JSON schemas** with a worked example beside each (`.github/skills/kaushal-forge/` or `prompts/`). A weak model pattern-matches instead of inventing, and **`engine/verify.py` is a hard gate** that catches slips.
+## Quick start
 
-So the quality floor is high even with a small model.
+**Prerequisites:** Python 3.10+ and git. Tectonic (the LaTeX engine) installs itself.
 
-## 60-second quickstart
+### 1 · Put ALL the raw data in one folder
+The person's LinkedIn *"Get a copy of your data"* export, performance reviews, an old résumé, GitHub/portfolio text — any mix of `.pdf .docx .txt .md .csv`. Keep it **outside the repo** (it's confidential).
+
+### 2 · Set up (once)
 ```bash
-python engine/bootstrap.py                 # install deps + LaTeX engine (Tectonic)
-cp config.example.yaml config.yaml         # fill in name/contact/targets
-# put the person's data in inbox/  (LinkedIn "Get a copy of your data" export, reviews, resume, GitHub text…)
-python engine/intake_dump.py               # -> work/00-raw-dump.txt
+python engine/bootstrap.py              # installs deps + Tectonic
+cp config.example.yaml config.yaml      # fill name / contact / targets / verify.forbidden_terms
 ```
-Then run the **AI phases** (each writes one JSON/MD file to `work/`):
-- **In Claude Code:** invoke the **`kaushal-forge`** skill (see `.github/skills/kaushal-forge/SKILL.md`) — it orchestrates P1→P6. To make it loadable, **symlink or copy `.github/skills/kaushal-forge/` into `~/.claude/skills/`** (or a project-level `.claude/skills/`).
-- **In any other model (ChatGPT/Gemini/Sonnet/Haiku):** use the copy-paste prompts in `prompts/` (see `prompts/00-how-to-use.md`).
 
-Finally, render + build + verify:
+### 3 · Ingest → write → build → verify
 ```bash
-python engine/render_linkedin.py
+python engine/intake_dump.py --data /path/to/that/folder   # -> work/00-raw-dump.txt
+```
+Now the **AI phases (P1→P6)** turn that dump into structured JSON in `work/`. Pick one:
+- **Claude Code** — invoke the **`kaushal-forge`** skill; it walks all six phases.
+  Install it once: `ln -s "$PWD/.github/skills/kaushal-forge" ~/.claude/skills/kaushal-forge`
+- **Any other model** (ChatGPT / Gemini / …) — paste the prompts from `prompts/`, one at a time. See [prompts/00-how-to-use.md](prompts/00-how-to-use.md).
+
+Then render everything and run the gate — one block:
+```bash
 python engine/render_resumes.py
 python engine/render_coverletters.py
+python engine/render_linkedin.py
 python engine/render_strategy.py
-python engine/build_pdfs.py                # compiles every PDF, prints page-count table
-python engine/verify.py                    # GATE — must exit 0
+python engine/build_pdfs.py     # compiles every PDF, prints a page-count table
+python engine/verify.py         # GATE — must print "VERIFY OK"
 ```
-Output lands in `output/` (LinkedIn / Resumes / CoverLetters / Strategy). Re-run anytime to refresh.
 
-## Layout
-- `MASTER-PLAN.md` — the full spec/rationale (how & why it's built).
-- `RUNBOOK.md` — the operator's step-by-step.
-- `engine/` — deterministic scripts + the 4 LaTeX styles.
-- `.github/skills/kaushal-forge/` — the AI orchestrator skill (phases + schemas + rules + gold examples).
-- `.github/` — CI (`workflows/ci.yml` render-smoke + security scan), issue/PR templates, and the shared `repo-maintenance` / `systematic-debugging` / `testing` skills.
-- `prompts/` — portable copy-paste prompt pack for non-Claude models.
-- `tests/fixtures/` — fully fictional sample run that the CI render-smoke exercises end to end.
-- `CLAUDE.md` · `pyproject.toml` · `Makefile` — project context + Python tooling.
-- `config.yaml` · `inbox/` · `work/` · `output/` — runtime I/O (gitignored).
+> **Automated, but yours to steer.** Every step is re-runnable and nothing is hidden: hand-edit any `work/*.json` or a generated `content.tex`, then re-run the step above. The AI only ever writes JSON/markdown — the scripts do all rendering, escaping, and checking.
 
-See `MASTER-PLAN.md` for the complete design.
+---
+
+## What you get — `output/` (gitignored)
+
+| Folder | Contents |
+|---|---|
+| `output/Resumes/` | every role variant × {1-page, 2-page} × {ATS, modern, two-column} — `.tex` + `.pdf` + a `GUIDE.md` on when to use it |
+| `output/CoverLetters/` | one tailored letter per variant (`.tex` PDF + paste-ready `.md`) |
+| `output/LinkedIn/` | 8 paste-ready sections (headline, about, experience, skills, …) |
+| `output/Strategy/` | career plan, target companies, interview prep, and more |
+
+Fill any `[Company]` / `[Role]` / `%FILL%` placeholders before sending. Re-run any step anytime to refresh.
+
+---
+
+## Publish chosen résumés to the web
+
+A static [GitHub Pages](https://pages.github.com/) hub lists **only the résumés you choose** — never cover letters, strategy, or raw data.
+
+```bash
+python engine/publish.py --scan    # 1. auto-catalog every generated résumé into publish.yaml (all OFF)
+#                                    2. edit publish.yaml: flip `publish: true` on the ones to publish (tweak labels)
+python engine/publish.py           # 3. copies those PDFs into docs/resumes/ + rebuilds docs/index.html
+git add publish.yaml docs && git commit -m "publish: update résumé hub" && git push
+```
+
+You only ever toggle `true`/`false` — `--scan` fills the list for you. Until you flag anything, the hub shows an anonymized sample.
+
+### Going public + turning the website on (one time)
+In the repo's **Settings**:
+1. **Make the repository public.** (The proprietary LICENSE still applies — *source-available*, not open source.)
+2. **Settings → Pages → Source → "GitHub Actions".**
+
+Done. From then on **every push to `main` auto-deploys the hub** ([.github/workflows/pages.yml](.github/workflows/pages.yml)) to:
+
+```
+https://dhruvinrsoni.github.io/kaushal-forge/
+```
+
+**To reflect new or updated résumés:** re-run the two `publish.py` steps, commit `docs/`, and push — Pages redeploys in about a minute.
+
+---
+
+## Safety (please read)
+
+- **Never put real data in a tracked file.** Feed it via `--data <folder>` or the gitignored `inbox/`; keep `config.yaml` local.
+- Gitignored: `config.yaml`, `inbox/`, `work/`, `output/`, and **every common data format** (`*.pdf *.docx *.xlsx *.csv *.vcf …`). The **only** public artifacts are the résumés you flag in `publish.yaml` (→ `docs/resumes/`).
+- `engine/verify.py` leak-scans every output against `config.verify.forbidden_terms` (codenames, client/manager names) and fails on a hit. Details in [SECURITY.md](SECURITY.md).
+
+---
+
+## More
+
+| | |
+|---|---|
+| **Guided docs & deep dives** | [docs/](docs/README.md) |
+| **Operator runbook (phase by phase)** | [RUNBOOK.md](RUNBOOK.md) |
+| **Design & rationale** | [MASTER-PLAN.md](MASTER-PLAN.md) |
+| **Contributing / security** | [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md) |
 
 ## License
 
-🔒 **Proprietary — All Rights Reserved.** See [`LICENSE`](LICENSE). KaushalForge is **not** open source: no use, reproduction, modification, or distribution is permitted without the author's prior written permission.
+🔒 **Proprietary — All Rights Reserved.** See [LICENSE](LICENSE). KaushalForge is **not** open source: no use, reproduction, modification, or distribution without the author's prior written permission.
