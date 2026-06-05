@@ -24,7 +24,7 @@ resumes:
   - { publish: 1, label: "Software Engineer Backend (ATS)", file: output/Resumes/01-software-engineer-backend/build-ats.pdf }
   - { publish: 1, label: "Software Engineer Backend (MODERN)", file: output/Resumes/01-software-engineer-backend/build-modern.pdf }
   - { publish: 1, label: "Software Engineer Backend (TWOCOL)", file: output/Resumes/01-software-engineer-backend/build-twocol.pdf }
-  - { publish: 1, label: "Cloud Devops Platform 2Page (ATS)", file: output/Resumes/02-cloud-devops-platform-2page/build-ats.pdf }
+  - { publish: 0, label: "Cloud Devops Platform 2Page (ATS)", file: output/Resumes/02-cloud-devops-platform-2page/build-ats.pdf }
   - { publish: 0, label: "Cloud Devops Platform 2Page (MODERN)", file: output/Resumes/02-cloud-devops-platform-2page/build-modern.pdf }
   - { publish: 0, label: "Cloud Devops Platform 2Page (TWOCOL)", file: output/Resumes/02-cloud-devops-platform-2page/build-twocol.pdf }
   - { publish: 0, label: "Cloud Devops Platform (ATS)", file: output/Resumes/02-cloud-devops-platform/build-ats.pdf }
@@ -36,7 +36,7 @@ resumes:
   - { publish: 0, label: "Ai Genai Engineer (ATS)", file: output/Resumes/03-ai-genai-engineer/build-ats.pdf }
   - { publish: 0, label: "Ai Genai Engineer (MODERN)", file: output/Resumes/03-ai-genai-engineer/build-modern.pdf }
   - { publish: 0, label: "Ai Genai Engineer (TWOCOL)", file: output/Resumes/03-ai-genai-engineer/build-twocol.pdf }
-  - { publish: 1, label: "Ai Devtools Agentic 2Page (ATS)", file: output/Resumes/04-ai-devtools-agentic-2page/build-ats.pdf }
+  - { publish: 0, label: "Ai Devtools Agentic 2Page (ATS)", file: output/Resumes/04-ai-devtools-agentic-2page/build-ats.pdf }
   - { publish: 0, label: "Ai Devtools Agentic 2Page (MODERN)", file: output/Resumes/04-ai-devtools-agentic-2page/build-modern.pdf }
   - { publish: 0, label: "Ai Devtools Agentic 2Page (TWOCOL)", file: output/Resumes/04-ai-devtools-agentic-2page/build-twocol.pdf }
   - { publish: 0, label: "Ai Devtools Agentic (ATS)", file: output/Resumes/04-ai-devtools-agentic/build-ats.pdf }
@@ -72,6 +72,6 @@ resumes:
   - { publish: 1, label: "Counsellors Pick 2Page (ATS)", file: output/Resumes/10-counsellors-pick-2page/build-ats.pdf }
   - { publish: 0, label: "Counsellors Pick 2Page (MODERN)", file: output/Resumes/10-counsellors-pick-2page/build-modern.pdf }
   - { publish: 0, label: "Counsellors Pick 2Page (TWOCOL)", file: output/Resumes/10-counsellors-pick-2page/build-twocol.pdf }
-  - { publish: 1, label: "Counsellors Pick (ATS)", file: output/Resumes/10-counsellors-pick/build-ats.pdf }
+  - { publish: 0, label: "Counsellors Pick (ATS)", file: output/Resumes/10-counsellors-pick/build-ats.pdf }
   - { publish: 0, label: "Counsellors Pick (MODERN)", file: output/Resumes/10-counsellors-pick/build-modern.pdf }
   - { publish: 0, label: "Counsellors Pick (TWOCOL)", file: output/Resumes/10-counsellors-pick/build-twocol.pdf }
