@@ -281,7 +281,7 @@ def publish(cfg):
         print(f"Published {n} résumé(s) across {len(groups)} role(s) to docs/resumes/.")
     write_index(cfg, groups, placeholder)
     print("Wrote docs/index.html.")
-    print("Next: git add publish.yaml docs && git commit -m \"publish: update résumé hub\" && git push")
+    print("Next: \ngit add publish.yaml docs && git commit -m \"publish: update résumé hub\" && git push")
 
 def main():
     cfg = load()
