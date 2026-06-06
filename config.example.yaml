@@ -25,6 +25,9 @@ resume:
   two_page: "all"         # "all" => every role variant also gets a 2-page edition; or a list like ["05","06","07"]
   cap_overrides:          # current-role bullet cap for dense (long-bullet) variants on the 1-pager
     "05": 3
+  fill:                   # page-2 fill target for 2-page editions; verify.py warns (non-blocking)
+    target_min: 0.40      # warn when page 2 is < 40% full — consider the 1-page edition or add depth
+    target_max: 0.70      # a 40-70% page 2 reads as intentional (advisory only; never blocks a build)
 
 verify:
   # Masking map: sensitive term -> public-safe replacement. KEYS (internal codenames, client

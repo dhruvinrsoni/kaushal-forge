@@ -169,9 +169,9 @@ Because `cf-ats.tex` has **no `\definecolor{accent}`** (see §6), the regex matc
 - **Compile loop** ([lines 33-44](../engine/build_pdfs.py)) — globs `output/Resumes/*/build-*.tex` + `output/CoverLetters/*/letter.tex`, and for each runs `subprocess.run([tec, basename], cwd=folder, capture_output=True)`. Success requires both `returncode == 0` **and** the `.pdf` exists. Prints a `file / exit / pages` table; `pages()` ([lines 21-26](../engine/build_pdfs.py)) uses `pypdf` and degrades to `"?"` on error.
 - **Exit code** ([lines 45-46](../engine/build_pdfs.py)) — `sys.exit(1 if fail else 0)`, so a single failed compile fails the run.
 
-### 5.4 `verify.py` — the gate (four checks)
+### 5.4 `verify.py` — the gate (four fatal checks + one advisory)
 
-[engine/verify.py](../engine/verify.py). Accumulates failures into a `fails` list and, if non-empty, prints them and `sys.exit(1)` ([lines 61-65](../engine/verify.py)). This is the **gate**: non-zero exit is the contract.
+[engine/verify.py](../engine/verify.py). Accumulates failures into a `fails` list and, if non-empty, prints them and `sys.exit(1)`. This is the **gate**: non-zero exit is the contract.
 
 1. **Leak scan** — the keys of `config.verify.mask` (internal codenames, client/manager/peer names) are scanned case-insensitively across generated outputs **and every tracked source file** (`git ls-files`); a hit → `LEAK '<term>' ... -> mask as '<replacement>'`. The pre-commit hook (`.githooks/`) applies the same check to staged content. (Legacy `verify.forbidden_terms` list still honoured.)
 2. **HTML-entity scan** ([lines 23, 34-35](../engine/verify.py)) — over the same file set, flags any of `&gt; &lt; &amp; &#39; &quot;` that survived rendering → `ENTITY '<e>' in <file>`. This is the backstop for `esc()`/`deent()`.
@@ -180,7 +180,9 @@ Because `cf-ats.tex` has **no `\definecolor{accent}`** (see §6), the regex matc
    - Resume PDFs: `want = 2 if folder.endswith("2page") or folder.startswith("09") else 1` — so role variants must be exactly **1 page**, and every `*-2page` plus the `09` Master must be exactly **2 pages**.
    - Cover letters: `letter.pdf` must be exactly **1 page**.
 
-If everything passes it prints `VERIFY OK ...`.
+**Advisory (non-fatal) — page-2 fill.** For every 2-page edition, `page2_fill()` measures how far down page 2 the content reaches: it composes each text run's matrix with the CTM (`tm[4]*cm[1] + tm[5]*cm[3] + cm[5]`) via the `pypdf` `visitor_text` hook, takes the lowest y across **both** paracol columns, and reports `(page_height - lowest_y) / page_height` (0–1, margin-agnostic). When fill `< config.resume.fill.target_min` (default `0.40`) it prints a `FILL ...` note suggesting the 1-page edition or more depth — but this **never changes the exit code** (decision: warn-only, no auto-demote). All measurements are written to `output/fill-report.json` (`{target_min, target_max, page2_fill:{<rel-pdf>: fraction}}`). Missing `pypdf` skips both the page-count and fill checks with a note.
+
+If everything passes it prints `VERIFY OK ...` (any `FILL` notes are printed first, regardless of pass/fail).
 
 ---
 

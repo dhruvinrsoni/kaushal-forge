@@ -27,6 +27,7 @@ Copy [config.example.yaml](../config.example.yaml) to `config.yaml` and fill. Ev
 | `resume.accent_hex` | str (6 hex, no `#`) | optional | Regex-injected into `\definecolor{accent}{HTML}{...}` of the modern/twocol résumé styles and the letter style. ATS style stays black. Default `""` = leave template's built-in color. |
 | `resume.two_page` | `"all"` \| list[str] | optional | Which role-variant ids also get a `-2page` edition. `"all"` (default) = every variant; a list like `["05","06","07"]` restricts it. The 09 Master is always 2-page regardless. |
 | `resume.cap_overrides` | map `id:int` | optional | Per-variant current-role bullet cap on the 1-pager. `int(cap_over.get(vid, 4))` — default cap is 4 ([render_resumes.py:171](../engine/render_resumes.py)). Use for dense variants whose 1-pager spills. |
+| `resume.fill.target_min` / `target_max` | float 0–1 | optional | Page-2 fill band for 2-page editions. [verify.py](../engine/verify.py) prints a **non-blocking** `FILL` note when page 2 is below `target_min` (default `0.40`); `target_max` (default `0.70`) is the upper end of "reads as intentional". Advisory only — never fails the build. |
 | `verify.mask` | map {term: replacement} | optional | Sensitive term → public-safe replacement. Keys are leak-scanned (case-insensitive) across generated output **and tracked source files**; [verify.py](../engine/verify.py) fails and a pre-commit hook blocks on a hit. (Legacy `forbidden_terms` list still honoured.) |
 
 ---
@@ -149,6 +150,7 @@ output/
     00-overview.md … 07-misc-settings.md
   Strategy/
     00-index.md + copied work/strategy/*.md
+  fill-report.json              page-2 fill fraction per 2-page edition (written by verify.py)
 ```
 
 Each résumé folder ships three `build-*.tex` drivers (ATS / modern / twocol) that all `\input{content.tex}` — one content file, three compiled looks.
@@ -161,6 +163,7 @@ Each résumé folder ships three `build-*.tex` drivers (ATS / modern / twocol) t
 | HTML entities | None of `&gt; &lt; &amp; &#39; &quot;` may survive into output. |
 | LinkedIn chars | headline `text` ≤ 220; `about.primary`/`about.alt` ≤ 2600 (read from `work/linkedin.json`). |
 | PDF pages | role variants = 1; any `*-2page` folder or `09*` = 2; cover letters = 1. (Skipped with a note if `pypdf` is absent.) |
+| Page-2 fill | **Advisory only** — warns (never fails) when a 2-page edition's page 2 is `< resume.fill.target_min`. Reported to `output/fill-report.json`. |
 
 ---
 
