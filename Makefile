@@ -22,12 +22,7 @@ validate:
 
 # Full pipeline against a staged config.yaml + work/ (render -> build -> verify gate)
 smoke:
-	python engine/render_resumes.py
-	python engine/render_coverletters.py
-	python engine/render_linkedin.py
-	python engine/render_strategy.py
-	python engine/build_pdfs.py
-	python engine/verify.py
+	python engine/run.py --from render --to verify --yes
 
 # Just the verify gate (assumes output/ already built)
 verify:

@@ -63,12 +63,7 @@ jobs:
           mkdir -p work
           cp tests/fixtures/*.json work/
           [ -d tests/fixtures/strategy ] && cp -r tests/fixtures/strategy work/strategy || true
-      - name: Render + build + verify
+      - name: Render + build + verify (via the orchestrator)
         run: |
-          python engine/render_resumes.py
-          python engine/render_coverletters.py
-          python engine/render_linkedin.py
-          python engine/render_strategy.py
           export CAREERFORGE_TECTONIC="$(which tectonic)"
-          python engine/build_pdfs.py
-          python engine/verify.py
+          python engine/run.py --from render --to verify --yes

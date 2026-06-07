@@ -57,6 +57,8 @@ Read it left to right: raw files in `inbox/` get concatenated into a single dump
 
 Between render and build sits an optional **human review checkpoint**: `review.py` writes `work/review.yaml` + `work/REVIEW.md` (schema status, page-2 fill, per-variant `approve` flags); the operator fixes content and deselects variants, then `build_pdfs.py --approved` builds only the approved ids. It's non-blocking — the default `build_pdfs.py` (no flag) still builds everything, so CI never pauses.
 
+The deterministic tail (render → build → verify → review) has a single front door, **`engine/run.py`** — a thin sequencer that shells the scripts in order with stage banners and `--from/--to/--approved/--yes`. The AI phases are *not* in it (they need a model); `run.py` is the deterministic glue, and the `kaushal-forge` skill drives the AI phases that precede it. CI runs `python engine/run.py --from render --to verify --yes`, which is byte-for-byte the same sequence as running the four renderers + `build_pdfs.py` + `verify.py` by hand.
+
 ## The phase pipeline
 
 Phases alternate **AI (fills a `work/` file)** then **script (renders/checks)**. Each AI phase is paired with exactly one render script that consumes its `work/` file and writes one `output/` subtree.

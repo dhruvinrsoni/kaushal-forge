@@ -77,14 +77,25 @@ intake_dump.py          -> work/00-raw-dump.txt
 P1..P6  (the AI)        each phase fills ONE rigid schema -> work/*.json | work/strategy/*.md
    │  P1 profile.json · P2 targeting.json · P3 linkedin.json · P4 variants.json · P5 letters.json · P6 strategy/*.md
    │
+P1..P6 done? Everything below is one command:
+   │
+run.py --from render --to verify    render(4) -> build_pdfs -> verify  (the deterministic span)
+   │     (or step through them individually, as below)
 render_{resumes,coverletters,linkedin,strategy}.py    work/*.json -> output/*
    │
 build_pdfs.py           compile every .tex with Tectonic (prints page table)
    │
+review.py               -> work/REVIEW.md : read it, flip approve, then build_pdfs.py --approved
+   │
 verify.py               GATE — must print "VERIFY OK"
 ```
 
-The AI phases are the only non-deterministic step, and they are confined to **emitting valid JSON / templated markdown** — never raw LaTeX, never prose outside the schema (the scripts do all rendering and escaping). See [RUNBOOK.md](../RUNBOOK.md) for the phase-by-phase table (which file each phase reads and produces) and the refresh-later loop, and [05-ai-layer.md](05-ai-layer.md) for how the phases and schemas are structured.
+Once the AI has written `work/*.json`, the whole deterministic tail is a single command:
+```bash
+python engine/run.py                       # render -> build -> verify -> review checkpoint
+python engine/run.py --from render --to verify --yes   # exactly what CI runs (no pause)
+```
+Each underlying script still runs alone, so you can re-do just one step. The AI phases are the only non-deterministic step, and they are confined to **emitting valid JSON / templated markdown** — never raw LaTeX, never prose outside the schema (the scripts do all rendering and escaping). See [RUNBOOK.md](../RUNBOOK.md) for the phase-by-phase table and the refresh-later loop, and [05-ai-layer.md](05-ai-layer.md) for how the phases and schemas are structured.
 
 ---
 

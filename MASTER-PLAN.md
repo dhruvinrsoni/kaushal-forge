@@ -34,8 +34,13 @@ kaushal-forge/
 │   ├── render_coverletters.py# work/letters.json + config -> CoverLetters/**
 │   ├── render_linkedin.py    # work/linkedin.json -> LinkedIn/*.md (paste-ready)
 │   ├── render_strategy.py    # work/strategy/*.md passthrough -> output/Strategy/ (+ index)
-│   ├── build_pdfs.py         # compile every build-*.tex / letter.tex; report pass/fail + page counts
-│   ├── verify.py             # char-limit + leak-scan + page-count + consistency gate (exit !=0 on fail)
+│   ├── build_pdfs.py         # compile every build-*.tex / letter.tex; report pass/fail + page counts (--approved)
+│   ├── verify.py             # char-limit + leak-scan + page-count + page-2-fill gate (exit !=0 on fail)
+│   ├── review.py             # -> work/review.yaml + work/REVIEW.md (human approve checkpoint)
+│   ├── run.py                # one-command orchestrator for the deterministic span (render->build->verify->review)
+│   ├── publish.py            # selected résumés -> docs/ GitHub Pages hub (Full-Name-Resume-Role-Style.pdf)
+│   ├── kf_lib.py             # shared paths/config/mask/limits (verify + tools import it)
+│   ├── tools/                # deterministic guardrails: validate.py · rulecheck.py · achievements.py
 │   └── templates/
 │       └── styles/           # the 4 proven LaTeX styles (copied, de-personalised)
 │           ├── cf-ats.tex  cf-modern.tex  cf-twocol.tex  cf-letter.tex
