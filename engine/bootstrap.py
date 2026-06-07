@@ -8,7 +8,7 @@ BIN = os.path.join(HERE, ".bin")
 PATHFILE = os.path.join(HERE, ".tectonic_path")
 
 def pip_install():
-    for pkg in ("pypdf", "pyyaml"):
+    for pkg in ("pypdf", "pyyaml", "jsonschema"):
         try:
             __import__("yaml" if pkg == "pyyaml" else pkg)
         except ImportError:

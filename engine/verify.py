@@ -7,32 +7,8 @@ file (a leak in a skill/doc is caught, not just in outputs); on a hit it suggest
 (4) PDF page counts (role=1, *-2page & 09-master=2, letters=1).
 Also emits a NON-FATAL page-2 fill report for 2-page editions (warns when page 2 is
 < config.resume.fill.target_min, default 0.40) and writes output/fill-report.json."""
-import os, sys, glob, json, subprocess
-HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
-OUT = os.path.join(ROOT, "output")
-SRC_EXTS = (".md", ".tex", ".json", ".yaml", ".yml", ".py", ".txt", ".html", ".toml", ".cfg", ".ini")
-CONFIG_FILES = ("config.yaml", "config.example.yaml")   # the term list lives here — don't self-flag
-
-def load_cfg():
-    try:
-        import yaml
-        return yaml.safe_load(open(os.path.join(ROOT, "config.yaml"), encoding="utf-8")) or {}
-    except Exception:
-        return {}
-
-def get_mask(cfg):
-    """{lowercased term: replacement} from verify.mask (dict) + legacy verify.forbidden_terms (list)."""
-    v = cfg.get("verify", {}) or {}
-    terms = {}
-    m = v.get("mask", {})
-    if isinstance(m, dict):
-        for t, repl in m.items():
-            if t:
-                terms[str(t).lower()] = str(repl or "")
-    for t in (v.get("forbidden_terms", []) or []):
-        if t:
-            terms.setdefault(str(t).lower(), "")
-    return terms
+import os, sys, glob, json
+from kf_lib import ROOT, OUT, ENTITIES, load_cfg, get_mask, tracked_text_files
 
 def page2_fill(reader):
     """Fraction of the page height the LAST page's content spans, top->lowest text (0..1).
@@ -56,25 +32,23 @@ def page2_fill(reader):
         return None
     return max(0.0, min(1.0, (ph - min(ys)) / ph))
 
-def tracked_text_files():
-    """Tracked, committable text files (so a sensitive term in a skill/doc is caught). None if not git."""
-    try:
-        out = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True, check=True).stdout
-    except Exception:
-        return None
-    files = []
-    for rel in out.splitlines():
-        if os.path.basename(rel) in CONFIG_FILES:        # the mask/term list legitimately lives here
-            continue
-        if rel.lower().endswith(SRC_EXTS):
-            files.append(os.path.join(ROOT, rel))
-    return files
-
 def main():
     cfg = load_cfg()
     fails = []
     mask = get_mask(cfg)
-    ents = ["&gt;", "&lt;", "&amp;", "&#39;", "&quot;"]
+    ents = ENTITIES
+    # Pre-check: work/*.json must conform to the schemas before we trust the gate (Stage 2).
+    try:
+        from tools.validate import validate_work
+    except Exception:
+        try:
+            sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools"))
+            from validate import validate_work
+        except Exception:
+            validate_work = None
+    if validate_work:
+        for e in validate_work():
+            fails.append("SCHEMA " + e)
     def sugg(k):
         return " -> mask as '%s'" % mask[k] if mask.get(k) else ""
 

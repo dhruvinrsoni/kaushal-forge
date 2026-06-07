@@ -12,16 +12,16 @@ CI runs on every push and pull request to `main`. Permissions are read-only (`co
 
 ### Job 1 — `lint-validate` (fast, mostly advisory)
 
-Runs on `ubuntu-latest`, Python 3.12, installs `ruff pyyaml pypdf`, then three steps:
+Runs on `ubuntu-latest`, Python 3.12, installs `ruff pyyaml pypdf jsonschema`, then four steps:
 
-1. **Compile-check the engine** — `python -m py_compile engine/*.py`. This is a hard failure: any syntax error in an engine script fails the job.
+1. **Compile-check the engine + tools** — `python -m py_compile engine/*.py engine/tools/*.py`. This is a hard failure: any syntax error fails the job.
 2. **Lint (non-blocking for now)** — `ruff check engine || true`. The `|| true` means lint findings are **advisory** and will not fail CI today. Treat clean `ruff` output as a courtesy, not a gate; see [pyproject.toml](../pyproject.toml) for the rule set (`E, F, I, N, UP, B, SIM, TCH`, line length 100, target py310).
-3. **Validate JSON** — an inline Python heredoc `json.load`s every file matched by three globs and exits non-zero if any is invalid:
-   - `.github/skills/kaushal-forge/schemas/*.json`
-   - `.github/skills/kaushal-forge/examples/*.json`
-   - `tests/fixtures/**/*.json` (recursive)
+3. **JSON parses** — an inline Python heredoc `json.load`s every schema, example, and fixture (`tests/fixtures/**/*.json` recursive) and exits non-zero on any trailing-comma / bad-JSON breakage.
+4. **Fixtures CONFORM** — runs the bundled guardrails against the fixtures (a real conformance check, not just "it parses"):
+   - `python engine/tools/validate.py tests/fixtures/{profile,variants,letters,linkedin}.json` — schema conformance via `jsonschema` (built-in shape check if absent).
+   - `python engine/tools/rulecheck.py ...` — content hygiene (ASCII, no leaks/entities/GPA, LinkedIn limits).
 
-   So if you edit a schema, a gold example, or a fixture and leave trailing-comma / bad-JSON breakage, this step catches it.
+   So if you change a schema or a fixture in a way that violates the contract, this step fails — not just on broken JSON, but on the wrong shape or unsafe content. See [The bundled tools](#the-bundled-tools-enginetools) below.
 
 ### Job 2 — `render-smoke` (the real gate)
 
@@ -112,16 +112,31 @@ The [Makefile](../Makefile) is the canonical local entry point:
 
 | Target | What it does |
 |---|---|
-| `make dev` | `pip install pyyaml pypdf ruff` — engine runtime deps + lint tooling |
+| `make dev` | `pip install pyyaml pypdf ruff jsonschema` — engine runtime deps + lint tooling |
 | `make lint` | `ruff check engine` (here it is *not* `\|\| true`, so it returns non-zero locally) |
 | `make format` | `ruff format engine` |
-| `make compile` | `python -m py_compile engine/*.py` — fast byte-compile sanity check |
+| `make compile` | `python -m py_compile engine/*.py engine/tools/*.py` — fast byte-compile sanity check |
+| `make validate` | `validate.py` + `rulecheck.py` over `work/*.json` — schema + hygiene guardrails |
 | `make smoke` | full pipeline: four renderers → `build_pdfs.py` → `verify.py` |
 | `make verify` | just the `verify.py` gate (assumes `output/` already built) |
 | `make clean` | remove `.ruff_cache .mypy_cache __pycache__ engine/__pycache__` |
 | `make all` | `compile lint` |
 
 Note: `make smoke` does **not** stage fixtures or set `CAREERFORGE_TECTONIC` for you — do steps 2-3 above first.
+
+---
+
+## The bundled tools (`engine/tools/`)
+
+Deterministic guardrails the AI phases (and you) invoke. They share `engine/kf_lib.py` (paths, `load_cfg`, `get_mask`, limits) with `verify.py`, so the leak/limit rules live in exactly one place. Optional dep `jsonschema`: present → full validation; absent → a built-in shape check (`type`/`required`/`properties`/`items`/`maxLength`/`maxItems`).
+
+| Tool | Purpose |
+|---|---|
+| `validate.py [files...]` | Validate `work/*.json` against `schemas/*.json`; prints the exact offending field path. `verify.py` also runs this as a pre-check (`SCHEMA ...` failures). |
+| `rulecheck.py [files...]` | Content hygiene over `work/*.json`: non-ASCII, `config.verify.mask` leaks, HTML entities, GPA, LinkedIn char limits. |
+| `achievements.py <keywords>` | Rank `profile.achievements_bank` entries by keyword — select real bullets, never fabricate. |
+
+The point: the **judge is a script**. A phase writes JSON, runs `validate` + `rulecheck`, and fixes exactly what they name — so even a small/local model converges (see [05-ai-layer.md](05-ai-layer.md)).
 
 ---
 

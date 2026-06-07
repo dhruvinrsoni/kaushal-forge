@@ -35,7 +35,18 @@ That last point is not just convention — it is *enforced*. [engine/verify.py](
 | **P5** Cover letters | variants (+profile) | `work/letters.json` | `render_coverletters.py` |
 | **P6** Strategy | profile + targeting | `work/strategy/*.md` | `render_strategy.py` |
 
-For each phase the loop is identical: open the phase file, follow it exactly, validate the JSON parses, write it to the named path, run the paired script, and confirm it printed `DONE`.
+For each phase the loop is identical: open the phase file, follow it exactly, write it to the named path, **run the deterministic guardrails and fix exactly what they name**, then run the paired script and confirm it printed `DONE`.
+
+### The validate-and-retry loop (why it works on weak models)
+
+After writing each `work/*.json`, the phase runs:
+
+```
+python engine/tools/validate.py    # schema conformance — exact offending field path
+python engine/tools/rulecheck.py   # ASCII, no mask-leaks/entities/GPA, LinkedIn limits
+```
+
+The **judge is a script, not the model's own judgement.** A weak/local model doesn't have to be reliably correct in one shot — it writes JSON, reads the precise field errors ("`0/skills_rows` is not of type array"), and fixes only those, repeating until both tools pass. Determinism upstream is what lets the whole pipeline run on cheap models. (`verify.py` runs `validate.py` again as a pre-check, so a malformed `work/*.json` surfaces as a `SCHEMA ...` failure even if a phase skipped the loop.) See [07-ci-and-extending.md](07-ci-and-extending.md#the-bundled-tools-enginetools).
 
 ### The gate: "don't finish until verify.py exits 0"
 

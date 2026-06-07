@@ -20,7 +20,18 @@ Confirm setup is done: `python engine/bootstrap.py` ran, `config.yaml` is filled
 | P5 Cover letters | `phases/P5-coverletters.md` | variants (+profile) | `work/letters.json` | `python engine/render_coverletters.py` |
 | P6 Strategy | `phases/P6-strategy.md` | profile + targeting | `work/strategy/*.md` | `python engine/render_strategy.py` |
 
-For each phase: open the phase file, follow it exactly (it contains the schema, the rules, and a gold example), validate your JSON parses, write it to the named path, run the paired script, and confirm it printed `DONE`.
+For each phase: open the phase file, follow it exactly (it contains the schema, the rules, and a gold example), write it to the named path, then **run the deterministic guardrails and fix any field they name before moving on**:
+```
+python engine/tools/validate.py    # work/*.json conforms to the schemas (exact field errors)
+python engine/tools/rulecheck.py   # ASCII-only, no leaks/HTML-entities/GPA, LinkedIn limits
+```
+Then run the paired render script and confirm it printed `DONE`.
+
+## Deterministic tools (your guardrails — `engine/tools/`)
+The judge is a script, not your own judgement — so even a small/local model converges by fixing exactly what the tool reports. Loop: **write JSON -> validate -> rulecheck -> fix the named fields -> repeat until both pass.**
+- `validate.py [files...]` — schema conformance (missing/extra/wrong-typed fields). Uses `jsonschema` if present, else a built-in shape check.
+- `rulecheck.py [files...]` — content hygiene: non-ASCII, `config.verify.mask` leaks, HTML entities, GPA, LinkedIn char limits.
+- `achievements.py <keywords>` — search `profile.achievements_bank` for real bullets to **select** when tailoring (never fabricate).
 
 ## Finish
 ```
