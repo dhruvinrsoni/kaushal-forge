@@ -16,4 +16,18 @@
 
 **Output:** valid JSON only, to `work/profile.json`. ASCII text (no LaTeX).
 
-**Self-check before finishing:** JSON parses · every bullet traces to the dump · no GPA · no real client names · no codenames · numbers exact · persona captured.
+## Work in small, validated passes (this is how a tiny/local model succeeds)
+Don't write the whole file in one shot. Fill it in fragments, copying the example's shape exactly, and let the **scripts be the judge** after each pass:
+1. **identity + headline + summary** -> write `work/profile.json` with just those keys.
+2. **experience** (exact titles/orgs/dates/location + bullets) -> add the array.
+3. **education, skills_groups, certs, awards, languages, projects, persona** -> add them.
+4. **achievements_bank** -> mine every quantified, safe bullet last.
+
+After each pass, run the guardrails and **fix only the fields they name** — repeat until both are clean:
+```
+python engine/tools/validate.py work/profile.json     # missing/wrong-typed fields, with exact path
+python engine/tools/rulecheck.py work/profile.json    # non-ASCII, mask leaks, HTML entities, GPA
+```
+Output ONLY JSON (no prose, no LaTeX, no markdown fences). If a tool reports `[2].bullets: expected array`, fix exactly that and re-run — you don't have to be right first try, you have to converge.
+
+**Self-check before finishing:** `validate.py` + `rulecheck.py` both pass · every bullet traces to the dump · no GPA · no real client names · no codenames · numbers exact · persona captured.

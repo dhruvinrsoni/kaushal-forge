@@ -11,10 +11,26 @@ Use this when you don't have Claude Code / the skill — e.g. ChatGPT, Gemini, a
    - Run the paired script: `python engine/render_linkedin.py` / `render_resumes.py` / `render_coverletters.py` / `render_strategy.py`.
 3. **Build + gate:** `python engine/build_pdfs.py` then `python engine/verify.py` (must print `VERIFY OK`).
 
+## The validate-and-retry loop (makes even a ~1B local model work)
+After you save each `work/*.json`, run the deterministic guardrails and feed their output straight back to the model:
+```
+python engine/tools/validate.py    # does the JSON conform to the schema? (exact field paths)
+python engine/tools/rulecheck.py   # ASCII only? no mask-leaks / HTML entities / GPA? LinkedIn limits?
+```
+If either prints errors, paste them to the model with **"fix only these fields, return the whole JSON again,"** and re-save. Repeat until both print `OK`. The script is the judge, so the model only has to *converge* — it doesn't have to be right first try. `verify.py` runs `validate.py` again at the end as a backstop.
+
 ## Tips for weaker models
-- Feed **one phase at a time**; don't ask for everything at once.
+- Feed **one phase at a time**, and within a phase fill the file in **small passes** (e.g. P1: identity+summary, then experience, then the rest, then `achievements_bank`) — validate after each pass.
 - If the model adds prose around the JSON, tell it "return ONLY valid JSON, nothing else," then re-save.
-- If `verify.py` flags a leak/length, paste the flagged item back and ask the model to fix just that field.
+- Use `python engine/tools/achievements.py <keywords>` to find the real bullets to reuse — never let the model invent numbers.
 - The schemas + a filled example are inside each prompt, so even a small model can pattern-match.
+
+## Reword one field, conversationally (full control, no drift)
+To tweak a single field afterward, ask the model for new text for just that field, then apply it safely (it validates the new text and re-renders only that feed):
+```
+python engine/tools/reword.py get variants 03 summary
+python engine/tools/reword.py set variants 03 summary "Your punchier one-line summary."
+```
+It blocks the change if the new text leaks a masked term or contains an HTML entity. Then rebuild: `python engine/build_pdfs.py && python engine/verify.py`.
 
 The 6 prompts: `P1-structure`, `P2-targeting`, `P3-linkedin`, `P4-resumes`, `P5-coverletters`, `P6-strategy`. Each is self-contained.

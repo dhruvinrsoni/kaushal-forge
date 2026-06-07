@@ -48,6 +48,10 @@ python engine/tools/rulecheck.py   # ASCII, no mask-leaks/entities/GPA, LinkedIn
 
 The **judge is a script, not the model's own judgement.** A weak/local model doesn't have to be reliably correct in one shot — it writes JSON, reads the precise field errors ("`0/skills_rows` is not of type array"), and fixes only those, repeating until both tools pass. Determinism upstream is what lets the whole pipeline run on cheap models. (`verify.py` runs `validate.py` again as a pre-check, so a malformed `work/*.json` surfaces as a `SCHEMA ...` failure even if a phase skipped the loop.) See [07-ci-and-extending.md](07-ci-and-extending.md#the-bundled-tools-enginetools).
 
+**Small passes for tiny models.** P1 and P2 explicitly tell the model to fill the file in fragments (P1: identity+summary → experience → the rest → `achievements_bank`) and validate after each, rather than emitting the whole document at once. A ~1B local model pattern-matches a small fragment against the inline example far more reliably than a 200-line file. The same micro-step + paste-the-error-back guidance is mirrored into `prompts/00-how-to-use.md` for non-Claude models.
+
+**Conversational reword (`engine/tools/reword.py`).** To change one field on request, the model proposes new text for just that field and `reword.py set <file> <id> <dotpath> "..."` applies it: it validates the *new text* (blocking a mask-leak or HTML entity, warning on non-ASCII), writes it back, and re-renders only that feed. Because the edit is field-scoped, a small model can't drift the rest of the document — the user keeps full control, one field at a time.
+
 ### The gate: "don't finish until verify.py exits 0"
 
 The finish step is non-negotiable ([SKILL.md](../.github/skills/kaushal-forge/SKILL.md):26-30):

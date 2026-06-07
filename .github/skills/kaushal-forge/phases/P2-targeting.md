@@ -23,4 +23,11 @@
 
 **Gold example:** `examples/role-targeting-and-counsel.md`.
 
-**Self-check:** JSON parses · odds are honest · variant_list ids match the role ids · counsel names a concrete sequence.
+## Small passes + let the script judge (weak-model friendly)
+Write `summary_read` + `roles` first, then `counsel` + `variant_list`. Output ONLY JSON, copying the shape above exactly. Then run the hygiene guardrail and fix only what it names (there is no schema for `targeting.json`, so `validate.py` skips it — `rulecheck` still applies):
+```
+python engine/tools/rulecheck.py work/targeting.json   # non-ASCII, mask leaks, HTML entities, GPA
+```
+Use `python engine/tools/achievements.py <keywords>` to pull the REAL bullets behind each role's `emphasise` — select, never invent.
+
+**Self-check:** `rulecheck.py` passes · odds are honest · variant_list ids match the role ids · counsel names a concrete sequence.

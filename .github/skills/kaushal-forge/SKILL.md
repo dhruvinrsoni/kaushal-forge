@@ -32,6 +32,9 @@ The judge is a script, not your own judgement — so even a small/local model co
 - `validate.py [files...]` — schema conformance (missing/extra/wrong-typed fields). Uses `jsonschema` if present, else a built-in shape check.
 - `rulecheck.py [files...]` — content hygiene: non-ASCII, `config.verify.mask` leaks, HTML entities, GPA, LinkedIn char limits.
 - `achievements.py <keywords>` — search `profile.achievements_bank` for real bullets to **select** when tailoring (never fabricate).
+- `reword.py get|set <file> <id> <dotpath> [text]` — reword ONE field on request (e.g. `set variants 03 summary "..."`). Validates the new text (blocks a mask-leak/entity), writes it, and re-renders only that feed. Field-scoped so a small model can't drift the document. After a `set`, rebuild + verify.
+
+**Working on a tiny/local model:** fill each `work/*.json` in **small passes** (P1: identity+summary → experience → rest → `achievements_bank`), run `validate.py`+`rulecheck.py` after each, and fix only the fields they name. The deterministic judge is what lets a weak model converge — see the per-phase files and `prompts/00-how-to-use.md`.
 
 ## Review checkpoint (after render, before you finish — STOP for the human)
 Once `render_resumes.py` has written `content.tex`, run the review step and **pause for the operator**:
