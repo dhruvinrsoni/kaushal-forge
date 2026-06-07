@@ -13,3 +13,6 @@ You curate the public résumé hub by toggling flags in `publish.yaml` and runni
 - Publish **résumés only** — only `.pdf` under `output/Resumes/` is accepted; `publish.py` rejects cover letters, strategy docs, the knowledge base (`work/`), and raw inputs (`inbox/`).
 - Nothing flagged `1`, or `live: 0`, or an empty list → the anonymized **sample** placeholder.
 - The owner decides what is public; default to publishing nothing unless explicitly asked.
+
+## Filenames
+Published PDFs are auto-named `Full-Name-Resume-Role[-2page]-Style.pdf` (e.g. `Dhruvin-Rupesh-Soni-Resume-AI-GenAI-Engineer-ATS.pdf`) from `config.person.name`; if the name is unset/placeholder it falls back to the legacy role-only name. You don't set filenames — `publish.py` derives them. The name appears in the **public URL** (it's already visible in the résumé itself); renaming the person or roles changes the URLs, so re-share links after a rename.

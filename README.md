@@ -71,6 +71,8 @@ git add publish.yaml docs && git commit -m "publish: update résumé hub" && git
 
 You only toggle `1`/`0` (or `true`/`false`) — `--scan` fills the list for you, and the hub groups a role's formats under one card (primary download + "Other formats"), so even several variants read as a curated portfolio rather than a buffet. The top-level **`live:` is a master switch** — set `live: 0` to take *everything* down at once (the hub reverts to the anonymized sample). Until you go live, the hub shows that sample.
 
+Published PDFs are named for recruiters: **`Full-Name-Resume-Role[-2page]-Style.pdf`** (e.g. `Dhruvin-Rupesh-Soni-Resume-AI-GenAI-Engineer-ATS.pdf`) — the name comes from `config.person.name` and falls back to a role-only name if that's unset. A downloaded file is self-describing on a recruiter's disk, and every edition stays unique.
+
 ### Going public + turning the website on (one time)
 In the repo's **Settings**:
 1. **Make the repository public.** (The proprietary LICENSE still applies — *source-available*, not open source.)

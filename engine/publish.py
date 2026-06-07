@@ -26,6 +26,8 @@ RES_SRC = os.path.join(ROOT, "output", "Resumes")
 PUB_YAML = os.path.join(ROOT, "publish.yaml")
 SAMPLE = "sample.pdf"
 STYLE_NAMES = {"ats": "ATS", "modern": "Modern", "twocol": "Two-column"}
+STYLE_FILE = {"ats": "ATS", "modern": "Modern", "twocol": "TwoCol"}  # filename-friendly
+PLACEHOLDERS = ("%fill%", "your full name", "yourname")             # an unset config name
 ACRONYMS = {"Ai": "AI", "Genai": "GenAI", "Ml": "ML", "Llm": "LLM", "Devops": "DevOps",
             "Devtools": "DevTools", "Sre": "SRE", "Mts": "MTS", "Api": "API", "Ui": "UI",
             "Ux": "UX", "Ci": "CI", "Cd": "CD", "Qa": "QA"}
@@ -56,6 +58,22 @@ def load():
 def slug(s):
     return re.sub(r"[^a-z0-9]+", "-", str(s).lower()).strip("-") or "resume"
 
+def fileslug(s):
+    """Hyphenate but PRESERVE case (so 'AI GenAI Engineer' -> 'AI-GenAI-Engineer')."""
+    return re.sub(r"[^A-Za-z0-9]+", "-", str(s)).strip("-")
+
+_NAME_CACHE = []
+def person_name():
+    """config.person.name, or '' if unset/placeholder (then we fall back to role-only names)."""
+    if not _NAME_CACHE:
+        try:
+            from kf_lib import load_cfg
+            n = str(((load_cfg().get("person") or {}).get("name") or "")).strip()
+            _NAME_CACHE.append("" if (not n or any(b in n.lower() for b in PLACEHOLDERS)) else n)
+        except Exception:
+            _NAME_CACHE.append("")
+    return _NAME_CACHE[0]
+
 def safe_resume(path):
     """abs path iff `path` is a .pdf under output/Resumes/, else None."""
     ap = os.path.abspath(os.path.join(ROOT, path))
@@ -75,7 +93,12 @@ def derive(file):
     m = re.search(r"build-([a-z0-9]+)\.pdf$", file)
     sty = m.group(1) if m else "x"
     fmt = f"{STYLE_NAMES.get(sty, sty.upper())} · {'2-page' if twopage else '1-page'}"
-    dest = f"{slug(base)}-{sty}.pdf"
+    # Recruiter-friendly, unique filename: Full-Name-Resume-Role[-2page]-Style.pdf
+    # Falls back to role-only (legacy) when the config name is unset/placeholder.
+    style_file = STYLE_FILE.get(sty, sty.upper())
+    core = f"{fileslug(role_title)}{'-2page' if twopage else ''}-{style_file}"
+    name = fileslug(person_name())
+    dest = f"{name}-Resume-{core}.pdf" if name else f"{slug(base)}-{sty}.pdf"
     return role_title, role_key, fmt, dest, sty == "ats"
 
 def auto_label(file):
