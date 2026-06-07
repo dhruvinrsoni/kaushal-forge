@@ -50,6 +50,8 @@ python engine/verify.py         # GATE — must print "VERIFY OK"
 ```
 **Do not consider the job done until `verify.py` exits 0.** If it fails, fix the flagged `work/*.json` field (or add the leaked term to `config.verify.mask` only if it's a false positive), then re-run the paired render + build + verify.
 
+> The whole deterministic tail (render → build → verify → review) is also one command — `python engine/run.py` — for when you're driving it end-to-end rather than phase-by-phase. Each script still runs alone.
+
 ## Non-negotiable rules (full text in `rules/`)
 - **Confidentiality/honesty** (`rules/confidentiality.md`): omit GPA; generalise client names to a category; strip internal codenames (keep the metrics); frame AI-assisted work as "AI-augmented engineering"; if `targets.diplomatic` is true, **nothing public may imply job-seeking**; **never fabricate** — every claim must trace to `work/00-raw-dump.txt`.
 - **LinkedIn limits** (`rules/linkedin-limits.md`): Headline ≤220, About ≤2600, Experience ≤2000/role, ≤50 skills (pin 3), title ≤100.
