@@ -22,9 +22,13 @@ import os, re, sys, glob, shutil, html
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 DOCS = os.path.join(ROOT, "docs"); RES_OUT = os.path.join(DOCS, "resumes")
+LET_OUT = os.path.join(DOCS, "letters")
 RES_SRC = os.path.join(ROOT, "output", "Resumes")
+LET_SRC = os.path.join(ROOT, "output", "CoverLetters")
 PUB_YAML = os.path.join(ROOT, "publish.yaml")
 SAMPLE = "sample.pdf"
+# The ONLY cover letter that may ever be published: the generic, company-agnostic master letter.
+LETTER_SAMPLE_FILE = "output/CoverLetters/09-master-general/letter.pdf"
 STYLE_NAMES = {"ats": "ATS", "modern": "Modern", "twocol": "Two-column"}
 STYLE_FILE = {"ats": "ATS", "modern": "Modern", "twocol": "TwoCol"}  # filename-friendly
 PLACEHOLDERS = ("%fill%", "your full name", "yourname")             # an unset config name
@@ -43,7 +47,10 @@ HEADER = """\
 #
 # Only résumé PDFs under output/Resumes/ can be published. Tip: publish ONE primary format
 # per role (a focused set reads as a portfolio; a 60-PDF buffet reads as spray-and-pray).
-# Nothing live/flagged (or an empty list) shows the anonymized SAMPLE placeholder."""
+# Nothing live/flagged (or an empty list) shows the anonymized SAMPLE placeholder.
+#
+# letter_sample: 1 additionally publishes the ONE generic master cover letter (09-master-general)
+# as a writing sample -> docs/letters/. Per-company cover letters are NEVER publishable."""
 
 def to_bool(v):
     if isinstance(v, bool): return v
@@ -82,6 +89,19 @@ def safe_resume(path):
     rel = os.path.relpath(ap, RES_SRC)
     return None if (rel.startswith("..") or os.path.isabs(rel)) else ap
 
+def safe_letter_sample(path):
+    """abs path iff `path` is the ONE generic, company-agnostic master letter PDF.
+    Deliberately strict + separate from safe_resume: per-company letters are NEVER publishable.
+    Accepts only output/CoverLetters/*-general/letter.pdf (the generic master letter)."""
+    ap = os.path.abspath(os.path.join(ROOT, path))
+    if not ap.lower().endswith("letter.pdf"):
+        return None
+    rel = os.path.relpath(ap, LET_SRC)
+    if rel.startswith("..") or os.path.isabs(rel):
+        return None
+    folder = rel.replace("\\", "/").split("/")[0]
+    return ap if folder.endswith("-general") else None
+
 def derive(file):
     """Role title, role key, format label, stable dest filename, is_ats — from the path."""
     parts = file.replace("\\", "/").split("/")
@@ -119,6 +139,9 @@ def emit_yaml(cfg, resumes):
     out += [f"  footer: {yq(site.get('footer', ''))}",
             f"  discoverable: {1 if to_bool(site.get('discoverable', False)) else 0}"
             "   # 0 = noindex (share by link only); 1 = allow search engines",
+            "",
+            f"letter_sample: {1 if to_bool(cfg.get('letter_sample', False)) else 0}"
+            "   # 1 = also publish the ONE generic master cover letter as a writing sample (per-company letters NEVER)",
             "", "resumes:"]
     if not resumes:
         out.append("  []   # run `python engine/publish.py --scan` after generating to auto-fill this")
@@ -172,7 +195,7 @@ def card_html(role_title, items):
     h.append('  </article>')
     return "\n".join(h)
 
-def write_index(cfg, groups, placeholder):
+def write_index(cfg, groups, placeholder, letter=None):
     site = cfg.get("site") or {}
     title = site.get("title", "Résumés")
     subtitle = site.get("subtitle", "")
@@ -185,6 +208,10 @@ def write_index(cfg, groups, placeholder):
             'in <code>publish.yaml</code>, then re-run <code>publish.py</code>.</p>' if placeholder else "")
     robots = "" if discoverable else '\n<meta name="robots" content="noindex">'
     sub = f'\n  <p class="subtitle">{html.escape(subtitle)}</p>' if subtitle else ""
+    letter_html = ("" if not letter else
+                   '\n  <section class="letter"><h2>Cover letter (sample)</h2>'
+                   '<p class="fmt">A generic, company-agnostic writing sample.</p>'
+                   + actions_html(letter["dest"]).replace("resumes/", "letters/") + "</section>")
     doc = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -223,6 +250,8 @@ def write_index(cfg, groups, placeholder):
   details.alts {{ margin-top:12px; border-top:1px dashed var(--border); padding-top:8px; }}
   details.alts summary {{ cursor:pointer; color:var(--muted); font-size:.85rem; }}
   .alt {{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; }}
+  .letter {{ margin-top:22px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }}
+  .letter h2 {{ font-size:1.05rem; margin:0; }} .letter .actions {{ margin-left:auto; }}
   footer {{ position:fixed; left:0; right:0; bottom:0; padding:12px 20px; text-align:center; font-size:.82rem; color:var(--muted); background:var(--bg); border-top:1px solid var(--border); }}
   footer a {{ color:var(--accent); }}
   #toast {{ position:fixed; left:50%; bottom:64px; transform:translateX(-50%) translateY(20px); opacity:0; transition:.2s; background:var(--ink); color:var(--bg); font-weight:700; padding:9px 16px; border-radius:999px; pointer-events:none; }}
@@ -237,7 +266,7 @@ def write_index(cfg, groups, placeholder):
 <main>
   {note}<div class="grid">
 {cards}
-  </div>
+  </div>{letter_html}
 </main>
 <footer>{linkify(footer)}</footer>
 <div id="toast">Copied!</div>
@@ -302,7 +331,28 @@ def publish(cfg):
     else:
         n = sum(len(items) for _, items in groups)
         print(f"Published {n} résumé(s) across {len(groups)} role(s) to docs/resumes/.")
-    write_index(cfg, groups, placeholder)
+
+    # Opt-in: publish ONE generic, company-agnostic cover letter as a writing sample.
+    # Strictly additive and separate from the résumé whitelist — per-company letters are never published.
+    letter = None
+    for old in glob.glob(os.path.join(LET_OUT, "*.pdf")):
+        os.remove(old)
+    if live and to_bool(cfg.get("letter_sample", False)):
+        ap = safe_letter_sample(LETTER_SAMPLE_FILE)
+        if ap is None:
+            print("  REJECT letter_sample (only the generic *-general master letter may be published).")
+        elif not os.path.exists(ap):
+            print("  letter_sample on but the generic letter isn't built yet — skipping. "
+                  "Run render_coverletters.py + build_pdfs.py.")
+        else:
+            name = fileslug(person_name())
+            dest = f"{name}-Cover-Letter-Sample.pdf" if name else "cover-letter-sample.pdf"
+            os.makedirs(LET_OUT, exist_ok=True)
+            shutil.copy2(ap, os.path.join(LET_OUT, dest))
+            letter = {"dest": dest}
+            print(f"Published the generic cover-letter sample to docs/letters/{dest}.")
+
+    write_index(cfg, groups, placeholder, letter)
     print("Wrote docs/index.html.")
     print("Next: \ngit add publish.yaml docs && git commit -m \"publish: update résumé hub\" && git push")
 

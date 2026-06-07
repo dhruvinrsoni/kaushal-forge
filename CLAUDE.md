@@ -37,7 +37,8 @@ Navigate here first — don't broad-search when the location is known:
 
 | What | Where |
 |------|-------|
-| Engine (mechanical) | `engine/` — `bootstrap.py`, `intake_dump.py`, `render_{resumes,coverletters,linkedin,strategy}.py`, `build_pdfs.py`, `verify.py` |
+| Engine (mechanical) | `engine/` — `bootstrap.py`, `intake_dump.py`, `render_{resumes,coverletters,linkedin,strategy}.py`, `build_pdfs.py`, `verify.py`, `review.py`, `run.py`, `publish.py`, `kf_lib.py` (shared paths/config/mask/limits) |
+| Engine tools (guardrails) | `engine/tools/` — `validate.py` (schema), `rulecheck.py` (hygiene), `achievements.py` (bank search), `reword.py` (field-scoped reword) |
 | LaTeX styles | `engine/templates/styles/cf-{ats,modern,twocol,letter}.tex` |
 | Claude skill (judgement) | `.github/skills/kaushal-forge/` — `SKILL.md`, `phases/P1–P6`, `schemas/`, `rules/`, `examples/` (anonymized gold) |
 | Portable prompt pack | `prompts/` — `00-how-to-use.md`, `P1`–`P6` (for non-Claude models) |
@@ -56,11 +57,17 @@ Navigate here first — don't broad-search when the location is known:
 | `python engine/render_coverletters.py` | `work/letters.json` → `output/CoverLetters/` |
 | `python engine/render_linkedin.py` | `work/linkedin.json` → `output/LinkedIn/` |
 | `python engine/render_strategy.py` | `work/strategy/*.md` → `output/Strategy/` |
-| `python engine/build_pdfs.py` | compile every `.tex` with Tectonic |
-| `python engine/verify.py` | the gate: leaks, entities, char limits, page counts |
+| `python engine/build_pdfs.py [--approved]` | compile every `.tex` with Tectonic (or only review-approved ids) |
+| `python engine/verify.py` | the gate: leaks, entities, char limits, page counts (+ advisory page-2 fill) |
+| `python engine/run.py [--from/--to/--approved/--yes]` | orchestrate the deterministic span (render→build→verify→review) |
+| `python engine/review.py` | → `work/review.yaml` + `work/REVIEW.md` (human approve checkpoint) |
+| `python engine/tools/{validate,rulecheck}.py` | schema + content-hygiene guardrails over `work/*.json` |
+| `python engine/tools/reword.py set <file> <id> <path> "…"` | reword one field safely, re-render that feed |
+| `python engine/publish.py [--scan]` | selected résumés → `docs/` GitHub Pages hub |
 
 Pipeline order: intake → P1 `profile.json` → P2 `targeting.json` → P3 `linkedin.json` →
-P4 `variants.json` → P5 `letters.json` → P6 `strategy/*.md`; each AI phase is paired with a render script.
+P4 `variants.json` → P5 `letters.json` → P6 `strategy/*.md`; each AI phase is paired with a render script,
+then review → build → verify. `run.py` chains the deterministic tail; the AI phases stay in the skill/prompts.
 
 ---
 

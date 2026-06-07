@@ -4,6 +4,16 @@ Follow top to bottom. Each AI phase is a small, bounded "fill this schema like t
 
 > **One-command shortcut:** after the AI phases (P1-P6) have written `work/*.json`, the entire deterministic tail — render → build → verify → review — is just `python engine/run.py`. Steps 1-7 below explain what it runs; each script still works on its own.
 
+## The whole path at a glance (zero to published)
+1. **Setup once** — `bootstrap.py`; `cp config.example.yaml config.yaml` and fill it (step 0).
+2. **Drop raw data** in `inbox/`, then `intake_dump.py` -> `work/00-raw-dump.txt` (step 0b).
+3. **AI phases P1-P6** (the `kaushal-forge` skill, or `prompts/` on any model) write `work/*.json`; after each, `tools/validate.py` + `tools/rulecheck.py` and fix what they name (steps 1-6).
+4. **Render -> build -> verify -> review** in one command: `python engine/run.py` (steps 6.5-7).
+5. **Review** `work/REVIEW.md`, fix/reword fields, flip `approve` in `work/review.yaml`, then `build_pdfs.py --approved` (steps 6.5, 8.5).
+6. **Publish** the picks: `publish.py --scan`, flip `publish: 1`/`live: 1`, `publish.py`, commit `docs/`, push (step 9).
+
+Everything below is the same path, expanded. Each script runs alone, so you can redo any single step.
+
 ## 0. Setup (once)
 ```
 python engine/bootstrap.py            # installs pypdf + pyyaml; downloads/locates Tectonic
@@ -52,6 +62,18 @@ If `verify.py` fails, fix the flagged `work/*.json` field (or `config.verify.mas
 ## 8. Use the output
 `output/Resumes/` (1- & 2-page × 3 styles), `output/CoverLetters/`, `output/LinkedIn/`, `output/Strategy/`.
 Fill any `%FILL%` / `[bracket]` placeholders (email/phone in résumé `content.tex`; company/role in letters). Compile manually anytime: `tectonic <build-file>.tex` from inside the folder, or upload the folder to Overleaf.
+
+## 8.5 Reword a field (optional, conversational)
+Want one field punchier? `python engine/tools/reword.py get variants 03 summary` to see it, then `... set variants 03 summary "new text"` — it validates the new text and re-renders that feed. Rebuild + verify after.
+
+## 9. Publish (optional)
+```
+python engine/publish.py --scan       # catalog résumés into publish.yaml (all publish: 0)
+#   edit publish.yaml: flip publish: 1 on the ones to share; set live: 1; (optional) letter_sample: 1
+python engine/publish.py              # -> docs/index.html + docs/resumes/*.pdf (+ docs/letters/ if letter_sample)
+git add publish.yaml docs && git commit -m "publish: update résumé hub" && git push
+```
+The hub groups by role, names files `Full-Name-Resume-Role-Style.pdf`, and offers a light/dark/auto **theme toggle**. `letter_sample: 1` additionally publishes the ONE generic master cover letter as a writing sample; per-company letters are never publishable.
 
 ## Refresh later (6 months on)
 Update `inbox/`, re-run P1 (or hand-edit `work/*.json`), then re-render + build + verify. A cheap model handles every phase.

@@ -14,6 +14,7 @@ KaushalForge processes a real person's confidential career data. The design keep
 - A **pre-commit hook** (`.githooks/`, installed by `engine/bootstrap.py`) blocks any commit whose staged content (text or PDF visible-text) contains a term — the leak is stopped before it's committed.
 - `engine/publish.py` only ever publishes `.pdf` files under `output/Resumes/` — never cover letters, strategy docs, the knowledge base, or raw inputs.
 - Published résumé **filenames embed `config.person.name`** (e.g. `Dhruvin-Rupesh-Soni-Resume-...pdf`), so the name is visible in the public URL — by design (the name is already on the résumé), and only for résumés the owner explicitly flagged. Falls back to a role-only name when the config name is unset.
+- **Cover letters are not publishable, with one explicit exception:** `publish.yaml: letter_sample: 1` may publish the SINGLE generic, company-agnostic master letter (`output/CoverLetters/09-master-general/letter.pdf`) to `docs/letters/` as a writing sample. This is enforced by a separate `safe_letter_sample()` allowlist that accepts only a `*-general` letter — it never relaxes the résumé whitelist, and **per-company letters can never be published**. Default is off.
 - All examples and CI fixtures are fully fictional (Asha Verma / Acme Cloud).
 
 **If real personal data is ever committed**, treat it as an exposure: scrub history (e.g. `git filter-repo`), force-push, rotate anything sensitive, and review the repository's visibility.

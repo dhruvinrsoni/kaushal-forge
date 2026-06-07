@@ -27,6 +27,8 @@ engine/.tectonic_path
 # Exception: only publish.yaml-selected résumés (and the fictional sample) are tracked,
 # under docs/resumes/, for the public GitHub Pages hub. No other PDF is ever committed.
 !docs/resumes/*.pdf
+# Exception: the ONE opt-in generic cover-letter sample (publish.yaml: letter_sample), if enabled.
+!docs/letters/*.pdf
 *.aux
 *.out
 *.fls

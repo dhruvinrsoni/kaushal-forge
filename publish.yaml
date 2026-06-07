@@ -12,6 +12,8 @@
 
 live: 1   # master switch: 0 takes ALL résumés down (shows the sample); 1 = publish flagged ones
 
+letter_sample: 0   # 1 = also publish the ONE generic master cover letter as a writing sample (per-company letters NEVER)
+
 site:
   title: "Résumés — Dhruvin Rupesh Soni"
   footer: "KaushalForge © Dhruvin Rupesh Soni — github.com/dhruvinrsoni/kaushal-forge"

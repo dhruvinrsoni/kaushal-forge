@@ -59,7 +59,7 @@ Fill any `[Company]` / `[Role]` / `%FILL%` placeholders before sending. Re-run a
 
 ## Publish chosen résumés to the web
 
-A polished static [GitHub Pages](https://pages.github.com/) hub — **grouped by role**, with **View / Download / Copy-link** on every résumé and a Copy-site-link button — listing **only the résumés you choose** (never cover letters, strategy, or raw data).
+A polished static [GitHub Pages](https://pages.github.com/) hub — **grouped by role**, with **View / Download / Copy-link** on every résumé, a Copy-site-link button, and a light/dark/auto **theme toggle** — listing **only the résumés you choose** (never cover letters, strategy, or raw data).
 
 ```bash
 python engine/publish.py --scan    # 1. auto-catalog every generated résumé into publish.yaml (all 0)
@@ -72,6 +72,8 @@ git add publish.yaml docs && git commit -m "publish: update résumé hub" && git
 You only toggle `1`/`0` (or `true`/`false`) — `--scan` fills the list for you, and the hub groups a role's formats under one card (primary download + "Other formats"), so even several variants read as a curated portfolio rather than a buffet. The top-level **`live:` is a master switch** — set `live: 0` to take *everything* down at once (the hub reverts to the anonymized sample). Until you go live, the hub shows that sample.
 
 Published PDFs are named for recruiters: **`Full-Name-Resume-Role[-2page]-Style.pdf`** (e.g. `Dhruvin-Rupesh-Soni-Resume-AI-GenAI-Engineer-ATS.pdf`) — the name comes from `config.person.name` and falls back to a role-only name if that's unset. A downloaded file is self-describing on a recruiter's disk, and every edition stays unique.
+
+Cover letters stay private by default. The one exception: `publish.yaml: letter_sample: 1` publishes the **generic master cover letter** (`09-master-general`) as a company-agnostic writing sample to `docs/letters/`, shown as a "Cover letter (sample)" link on the hub. Per-company letters are never publishable.
 
 ### Going public + turning the website on (one time)
 In the repo's **Settings**:
