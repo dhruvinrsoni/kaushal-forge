@@ -55,6 +55,8 @@ output/  product    — the finished toolkit: LinkedIn/ Resumes/ CoverLetters/ S
 
 Read it left to right: raw files in `inbox/` get concatenated into a single dump, the AI mines that dump into structured `work/` files, the matching render script turns each `work/` file into an `output/` subtree, then `build_pdfs.py` compiles and `verify.py` gates. `config.yaml` feeds the render and verify steps but never the AI's judgement.
 
+Between render and build sits an optional **human review checkpoint**: `review.py` writes `work/review.yaml` + `work/REVIEW.md` (schema status, page-2 fill, per-variant `approve` flags); the operator fixes content and deselects variants, then `build_pdfs.py --approved` builds only the approved ids. It's non-blocking — the default `build_pdfs.py` (no flag) still builds everything, so CI never pauses.
+
 ## The phase pipeline
 
 Phases alternate **AI (fills a `work/` file)** then **script (renders/checks)**. Each AI phase is paired with exactly one render script that consumes its `work/` file and writes one `output/` subtree.

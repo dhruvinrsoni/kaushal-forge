@@ -166,8 +166,9 @@ Because `cf-ats.tex` has **no `\definecolor{accent}`** (see §6), the regex matc
   3. `shutil.which("tectonic")` (PATH),
   4. `engine/.bin/tectonic.exe` then `engine/.bin/tectonic`.
   Returns `None` if none found → `main()` prints an error pointing at `bootstrap.py`/Overleaf and `sys.exit(2)` ([lines 30-32](../engine/build_pdfs.py)).
-- **Compile loop** ([lines 33-44](../engine/build_pdfs.py)) — globs `output/Resumes/*/build-*.tex` + `output/CoverLetters/*/letter.tex`, and for each runs `subprocess.run([tec, basename], cwd=folder, capture_output=True)`. Success requires both `returncode == 0` **and** the `.pdf` exists. Prints a `file / exit / pages` table; `pages()` ([lines 21-26](../engine/build_pdfs.py)) uses `pypdf` and degrades to `"?"` on error.
-- **Exit code** ([lines 45-46](../engine/build_pdfs.py)) — `sys.exit(1 if fail else 0)`, so a single failed compile fails the run.
+- **Compile loop** — globs `output/Resumes/*/build-*.tex` + `output/CoverLetters/*/letter.tex`, and for each runs `subprocess.run([tec, basename], cwd=folder, capture_output=True)`. Success requires both `returncode == 0` **and** the `.pdf` exists. Prints a `file / exit / pages` table; `pages()` uses `pypdf` and degrades to `"?"` on error.
+- **`--approved` (opt-in)** — when passed, reads `work/review.yaml` (Stage 4) and builds only résumé/letter folders whose leading id is flagged `approve: 1` (id-based, so it covers both the 1-page and 2-page editions of an approved variant). No flag = build everything (CI default, unchanged). If `review.yaml` is absent/empty it falls back to building all with a note — so it can never silently build nothing.
+- **Exit code** — `sys.exit(1 if fail else 0)`, so a single failed compile fails the run.
 
 ### 5.4 `verify.py` — the gate (four fatal checks + one advisory)
 

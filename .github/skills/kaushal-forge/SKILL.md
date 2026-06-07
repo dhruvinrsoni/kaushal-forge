@@ -33,9 +33,16 @@ The judge is a script, not your own judgement — so even a small/local model co
 - `rulecheck.py [files...]` — content hygiene: non-ASCII, `config.verify.mask` leaks, HTML entities, GPA, LinkedIn char limits.
 - `achievements.py <keywords>` — search `profile.achievements_bank` for real bullets to **select** when tailoring (never fabricate).
 
+## Review checkpoint (after render, before you finish — STOP for the human)
+Once `render_resumes.py` has written `content.tex`, run the review step and **pause for the operator**:
+```
+python engine/review.py         # -> work/review.yaml + work/REVIEW.md
+```
+Tell the operator to read `work/REVIEW.md` (schema status, page-2 fill, headlines, hygiene advisories), fix any `work/*.json`, and flip `approve: 0` on variants they don't want. Don't proceed to build the final set on their behalf without their go-ahead. Schema-clean variants default to `approve: 1`; the gate is non-interactive-friendly (no flag = build all), so CI is unaffected.
+
 ## Finish
 ```
-python engine/build_pdfs.py     # compiles every résumé + letter; prints page counts
+python engine/build_pdfs.py     # compiles every résumé + letter (or --approved to build only approved ids)
 python engine/verify.py         # GATE — must print "VERIFY OK"
 ```
 **Do not consider the job done until `verify.py` exits 0.** If it fails, fix the flagged `work/*.json` field (or add the leaked term to `config.verify.mask` only if it's a false positive), then re-run the paired render + build + verify.

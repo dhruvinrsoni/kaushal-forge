@@ -32,9 +32,17 @@ python engine/intake_dump.py --data ~/career-data  # or ingest an out-of-tree fo
 
 > Rule for the model: **emit only valid JSON / templated markdown** — never raw LaTeX, never prose outside the schema. The scripts do all rendering & escaping. Keep text ASCII.
 
+## 6.5 Review (human checkpoint — recommended)
+```
+python engine/review.py               # -> work/review.yaml + work/REVIEW.md
+```
+Open **work/REVIEW.md**: it lists every variant with schema status, page-2 fill, and headline, and flags hygiene advisories. Fix any `work/*.json`, then flip `approve: 0` in `work/review.yaml` on variants you don't want. Schema-clean variants default to `approve: 1`; re-running `review.py` keeps your flips. This never blocks — skip it to build everything.
+
 ## 7. Build & verify
 ```
 python engine/build_pdfs.py           # compiles every résumé + letter; prints page counts
+#   ...or build only what you approved in step 6.5:
+python engine/build_pdfs.py --approved
 python engine/verify.py               # GATE: leaks, stray entities, char limits, page counts. Must print "VERIFY OK".
 ```
 If `verify.py` fails, fix the flagged `work/*.json` field (or `config.verify.mask`) and re-run the paired render + build + verify.
