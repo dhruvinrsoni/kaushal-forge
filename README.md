@@ -2,6 +2,8 @@
 
 > 🔒 **Proprietary — All Rights Reserved** (see [LICENSE](LICENSE)). Personal data, generated output, and PDFs are **never committed** — only the résumés you explicitly choose get published. All examples are fully fictional ("Asha Verma / Acme Cloud").
 
+> ⚠️ **AI-assisted output.** Everything KaushalForge generates (résumés, cover letters, LinkedIn, strategy) is an **AI draft, not verified fact**. A human must review, correct, and **own every claim** before it is sent, published, or relied upon — you are accountable for its accuracy and honesty. The pipeline enforces this: the approved build and all publishing **refuse** until you sign off (`reviewed: 1` in `work/review.yaml`).
+
 **Turn one folder of a person's career history into a complete, tailored job-search toolkit** — a LinkedIn rewrite, multi-variant LaTeX résumés (PDF: 1- & 2-page × 3 styles), matching cover letters, and a strategy pack — reproducibly, **on any AI model** (Opus → Haiku). Then publish the résumés you pick to a GitHub Pages website.
 
 It runs on cheap models because the work is split: the exact, boring parts (render LaTeX, compile PDFs, count characters, scan for leaks, check page counts) are **deterministic Python in `engine/`**; the judgement (writing tailored content) is the **AI, confined to filling rigid JSON schemas** with a worked example beside each. `engine/verify.py` is a hard gate that catches slips. Full tour in **[docs/](docs/README.md)**.

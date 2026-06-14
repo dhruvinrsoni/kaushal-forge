@@ -2,7 +2,9 @@
 """KaushalForge — render cover letters from config + work/letters.json (model-agnostic).
 Output: output/CoverLetters/_styles/cf-letter.tex + <id>-<key>/{letter.tex,letter.md}.
 """
-import json, os, re
+import json, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # engine/ (for kf_lib)
+from kf_lib import AI_DISCLAIMER
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -98,7 +100,7 @@ def letter_md(v, cfg):
             f"{v['opening']}\n\n{body}\n\n> {v['why_company_prompt']}\n\n{v['closing']}\n\n"
             f"Sincerely,  \n**{cfg['person']['name']}**  \n[email] · [phone] · "
             f"{real(cfg.get('contact',{}).get('linkedin'))}\n\n---\n\n"
-            f"### Notes (delete before sending)\n{v['notes_md']}\n\n"
+            f"### Notes (delete before sending)\n_{AI_DISCLAIMER}_\n\n{v['notes_md']}\n\n"
             f"**Fill before sending:** [Company], [Role], [Hiring Manager], the [why-this-company] line, the date, your email/phone.\n")
 
 def main():

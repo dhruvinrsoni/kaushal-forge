@@ -1,5 +1,7 @@
 # Security & data-handling policy
 
+> ⚠️ **AI-assisted output.** KaushalForge generates AI drafts of a real person's résumés/letters/profile. They are **not verified fact** — a human must review, correct, and **own every claim** before anything is sent or published. The engine enforces a review sign-off (`reviewed: 1`) before the approved build or any publish; see "Human review gate" below / `engine/review.py`.
+
 🔒 KaushalForge is proprietary (All Rights Reserved). This covers vulnerability reporting and the data-confidentiality model that matters most for this project.
 
 ## Reporting a vulnerability or data exposure

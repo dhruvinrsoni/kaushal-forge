@@ -5,7 +5,9 @@ linkedin.json shape:
 { headline_variants:[{label,text}], about:{primary,alt}, experience:[{title,org,dates,location,bullets:[],skills_line}],
   skills:{ordered:[],pin3:[]}, featured:[{title,note}], certs_order:[], misc:[] }
 """
-import json, os
+import json, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # engine/ (for kf_lib)
+from kf_lib import AI_DISCLAIMER_MD
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 OUT = os.path.join(ROOT, "output", "LinkedIn")
 
@@ -14,7 +16,7 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     def w(name, text): open(os.path.join(OUT, name), "w", encoding="utf-8").write(text)
 
-    w("00-overview.md", "# LinkedIn rewrite — paste-ready, with rationale\n\n"
+    w("00-overview.md", AI_DISCLAIMER_MD + "\n# LinkedIn rewrite — paste-ready, with rationale\n\n"
       "Apply order: settings (07) → headline (01) → about (02) → experience (03) → skills (04) → featured (05) → certs/edu (06).\n"
       "Limits: Headline ≤220 · About ≤2600 · Experience ≤2000/role · Skills 50 (pin 3) · Title ≤100.\n")
 

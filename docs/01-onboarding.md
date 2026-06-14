@@ -4,6 +4,8 @@
 
 > 🔒 Proprietary & private — All-Rights-Reserved (see [LICENSE](../LICENSE)). Every example below uses the fictional CI persona **Asha Verma / Acme Cloud** baked into [tests/fixtures/](../tests/fixtures). Real personal data, generated PDFs, and your `config.yaml`/`inbox/`/`work/`/`output/` are gitignored and never committed.
 
+> ⚠️ **AI-assisted output.** What you generate is an **AI draft representing a real person**, not verified fact. You review, correct, and own every claim. The engine enforces it: the approved build and all publishing refuse until you set `reviewed: 1` in `work/review.yaml` (the review checkpoint).
+
 ---
 
 ## Prerequisites

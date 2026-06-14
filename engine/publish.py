@@ -139,6 +139,8 @@ def emit_yaml(cfg, resumes):
     out += [f"  footer: {yq(site.get('footer', ''))}",
             f"  discoverable: {1 if to_bool(site.get('discoverable', False)) else 0}"
             "   # 0 = noindex (share by link only); 1 = allow search engines",
+            f"  ai_disclaimer: {1 if to_bool(site.get('ai_disclaimer', False)) else 0}"
+            "   # 1 = show a small 'AI-assisted, reviewed by the candidate' note on the hub (default 0/off)",
             "",
             f"letter_sample: {1 if to_bool(cfg.get('letter_sample', False)) else 0}"
             "   # 1 = also publish the ONE generic master cover letter as a writing sample (per-company letters NEVER)",
@@ -201,6 +203,8 @@ def write_index(cfg, groups, placeholder, letter=None):
     subtitle = site.get("subtitle", "")
     footer = site.get("footer", "")
     discoverable = to_bool(site.get("discoverable", False))
+    ai_note = ('<div class="ai">Generated with AI assistance; reviewed by the candidate.</div>'
+               if to_bool(site.get("ai_disclaimer", False)) else "")
     cards = "\n".join(card_html(rt, items) for rt, items in groups) or \
         '  <article class="card"><h2>No résumés published yet</h2></article>'
     note = ('<p class="note">Anonymized <strong>placeholder</strong>. Catalog with '
@@ -254,6 +258,7 @@ def write_index(cfg, groups, placeholder, letter=None):
   .letter h2 {{ font-size:1.05rem; margin:0; }} .letter .actions {{ margin-left:auto; }}
   footer {{ position:fixed; left:0; right:0; bottom:0; padding:12px 20px; text-align:center; font-size:.82rem; color:var(--muted); background:var(--bg); border-top:1px solid var(--border); }}
   footer a {{ color:var(--accent); }}
+  footer .ai {{ font-size:.78rem; opacity:.85; margin-bottom:3px; }}
   #toast {{ position:fixed; left:50%; bottom:64px; transform:translateX(-50%) translateY(20px); opacity:0; transition:.2s; background:var(--ink); color:var(--bg); font-weight:700; padding:9px 16px; border-radius:999px; pointer-events:none; }}
   #toast.show {{ opacity:1; transform:translateX(-50%) translateY(0); }}
 </style>
@@ -268,7 +273,7 @@ def write_index(cfg, groups, placeholder, letter=None):
 {cards}
   </div>{letter_html}
 </main>
-<footer>{linkify(footer)}</footer>
+<footer>{ai_note}{linkify(footer)}</footer>
 <div id="toast">Copied!</div>
 <script>
   var toast = document.getElementById('toast'), t;

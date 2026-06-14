@@ -15,6 +15,8 @@ Output:
 Re-runnable. Hand-edit any content.tex afterwards; only re-run to regenerate from JSON.
 """
 import json, os, sys, shutil
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # engine/ (for kf_lib)
+from kf_lib import AI_DISCLAIMER_MD
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)                      # kaushal-forge/
@@ -201,7 +203,7 @@ def main():
         folder = os.path.join(OUT, "%s-%s" % (vid, key))
         write_folder(folder, c1, "9pt")
         with open(os.path.join(folder, "GUIDE.md"), "w", encoding="utf-8") as f:
-            f.write(v.get("guide_md", "").rstrip() + "\n")
+            f.write(AI_DISCLAIMER_MD + "\n" + v.get("guide_md", "").rstrip() + "\n")
         print("rendered:", "%s-%s" % (vid, key))
         # 2-page (full)
         if vid in tp_set:
@@ -214,7 +216,7 @@ def main():
             f2 = os.path.join(OUT, "%s-%s-2page" % (vid, key))
             write_folder(f2, c2, "10pt")
             with open(os.path.join(f2, "GUIDE.md"), "w", encoding="utf-8") as f:
-                f.write("# %s-%s-2page\n\nTwo-page full-depth edition of variant %s. See ../%s-%s/GUIDE.md for role strategy.\n"
+                f.write(AI_DISCLAIMER_MD + "\n# %s-%s-2page\n\nTwo-page full-depth edition of variant %s. See ../%s-%s/GUIDE.md for role strategy.\n"
                         % (vid, key, vid, vid, key))
             print("rendered:", "%s-%s-2page" % (vid, key))
     print("DONE render_resumes")

@@ -18,6 +18,7 @@ site:
   title: "Résumés — Dhruvin Rupesh Soni"
   footer: "KaushalForge © Dhruvin Rupesh Soni — github.com/dhruvinrsoni/kaushal-forge"
   discoverable: 1   # 0 = noindex (share by link only); 1 = allow search engines
+  ai_disclaimer: 0   # 1 = show a small 'AI-assisted, reviewed by the candidate' note on the hub (default 0/off)
 
 resumes:
   - { publish: 1, label: "Software Engineer Backend 2Page (ATS)", file: output/Resumes/01-software-engineer-backend-2page/build-ats.pdf }

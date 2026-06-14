@@ -4,6 +4,8 @@
 
 🔒 Proprietary, author-owned. Examples here use only the repo's fictional persona (Asha Verma / Acme Cloud Technologies / Globex Systems / Initech Labs).
 
+> ⚠️ **AI-assisted output.** The model only drafts; a human must review and own every claim. Outputs carry an AI-assisted disclaimer (operator drafts: `GUIDE.md`, LinkedIn overview, Strategy index, the cover-letter `.md` notes), and the engine gates the approved build + publish on a `reviewed: 1` sign-off. The résumé/letter PDFs themselves stay clean (no stamp).
+
 ---
 
 ## The hard line: the model only fills schemas

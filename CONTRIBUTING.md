@@ -2,6 +2,8 @@
 
 🔒 **KaushalForge is proprietary — All Rights Reserved** (see [LICENSE](LICENSE)). It is *source-available*, **not** open source: no use, copying, modification, or distribution without the author's prior written permission. Contributions are accepted **only by prior arrangement** with the author (Dhruvin Rupesh Soni); by submitting any change you agree it is assigned to the author under the same proprietary terms. This guide is for the author and expressly authorized collaborators.
 
+> ⚠️ **AI-assisted output.** This tool generates AI drafts that represent a real person. Never weaken the human-review gate (`reviewed: 1` in `engine/review.py` / `build_pdfs.py --approved` / `publish.py`) or the disclaimers without the author's explicit sign-off.
+
 ## Golden rule: never commit real data
 - `config.yaml`, `inbox/`, `work/`, `output/`, and `*.pdf` are gitignored — keep it that way.
 - Feed raw career data via `python engine/intake_dump.py --data <external/path>`, or the gitignored `inbox/`.

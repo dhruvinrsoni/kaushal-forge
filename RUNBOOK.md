@@ -1,5 +1,7 @@
 # RUNBOOK — operating KaushalForge end-to-end
 
+> ⚠️ **AI-assisted output.** Every artifact here is an **AI draft, not verified fact**. You must review, correct, and **own every claim** before it's sent or published. The approved build (`build_pdfs.py --approved`) and publishing **refuse** until you set `reviewed: 1` in `work/review.yaml` (step 6.5).
+
 Follow top to bottom. Each AI phase is a small, bounded "fill this schema like this example" task; each script is deterministic. Don't finish until `verify.py` exits 0.
 
 > **One-command shortcut:** after the AI phases (P1-P6) have written `work/*.json`, the entire deterministic tail — render → build → verify → review — is just `python engine/run.py`. Steps 1-7 below explain what it runs; each script still works on its own.
