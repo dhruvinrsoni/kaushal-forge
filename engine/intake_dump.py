@@ -46,7 +46,10 @@ def main(src=INBOX):
         out.append(f"\n\n=== FILE: {rel} ===\n{txt}")
     dump = os.path.join(WORK, "00-raw-dump.txt")
     open(dump, "w", encoding="utf-8").write("".join(out))
-    print(f"Wrote {dump} from {len(files)-len(skipped)} files (source: {src}).")
+    nread = len(files) - len(skipped)
+    print(f"Wrote {dump} from {nread} files (source: {src}).")
+    print(f"CONFIRM: this ingested {nread} file(s) for ONE person from {src} — make sure that's the "
+          "right person's data before running the AI phases (this becomes their résumés).")
     if skipped:
         print("COULD NOT READ (paste their text into a .txt and re-run):")
         for s in skipped: print("  -", s)

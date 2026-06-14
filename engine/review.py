@@ -23,7 +23,11 @@ HEADER = """\
 # KaushalForge review switchboard. Flip `approve: 0` on anything you DON'T want built/shipped.
 # Then build only the approved set:  python engine/build_pdfs.py --approved
 # (No flag = build all.) Re-running review.py refreshes this list but keeps your flips.
-# Read work/REVIEW.md alongside this for headlines, validation status, and page-2 fill."""
+# Read work/REVIEW.md alongside this for headlines, validation status, and page-2 fill.
+#
+# GATE: `reviewed` starts at 0 and is reset to 0 every time review.py runs. The approved build
+# (build_pdfs.py --approved) and ALL publishing refuse until you set `reviewed: 1` below --
+# your signature that you read REVIEW.md and own this content. This represents a real person."""
 
 def to_bool(v):
     if isinstance(v, bool): return v
@@ -126,8 +130,10 @@ def build():
             return prev[vid]
         return bool(file_ok)
 
-    # write review.yaml
-    lines = [HEADER, "", "resumes:"]
+    # write review.yaml (reviewed resets to 0 every run -> forces fresh sign-off after any regen)
+    lines = [HEADER, "",
+             "reviewed: 0   # <- set to 1 ONLY after you have read REVIEW.md and own this content",
+             "", "resumes:"]
     for r in res_rows:
         ap = approve_default(r["id"], prev_r, v_ok)
         lines.append("  - { approve: %d, id: %s, label: %s }" % (1 if ap else 0, yq(r["id"]), yq(r["label"])))
@@ -146,8 +152,11 @@ def build():
             return "(not present)"
         return "OK" if ok else "**%d schema error(s)** — these default to approve: 0" % len(errs)
     md = ["# Review — KaushalForge", "",
-          "Edit `work/*.json` to fix anything below, then flip `approve` in `work/review.yaml`.",
-          "Build only what you approved: `python engine/build_pdfs.py --approved`.", "",
+          "> **This represents a real person.** Nothing is built-as-final or published until *you* sign off.",
+          "",
+          "1. Read everything below and open the draft `output/` files; fix any `work/*.json`.",
+          "2. Flip `approve: 0` in `work/review.yaml` on anything you don't want.",
+          "3. **Set `reviewed: 1`** in `work/review.yaml` — this unlocks `build_pdfs.py --approved` and all publishing. Until then they refuse.", "",
           "## Schema (blocking — drives the default approve flag)", "",
           "- variants.json: " + vstat(v_ok, v_errs),
           "- letters.json: " + vstat(l_ok, l_errs)]
@@ -181,7 +190,8 @@ def build():
     if v_warn or l_warn:
         print("NOTE: %d hygiene advisory(ies) (non-ASCII etc.) — listed in REVIEW.md, non-blocking."
               % (len(v_warn) + len(l_warn)))
-    print("Read work/REVIEW.md, flip approve in work/review.yaml, then: python engine/build_pdfs.py --approved")
+    print("ACTION REQUIRED: read work/REVIEW.md, then set `reviewed: 1` in work/review.yaml to unlock")
+    print("the approved build + publish (they refuse until then). Then: python engine/build_pdfs.py --approved")
 
 if __name__ == "__main__":
     build()

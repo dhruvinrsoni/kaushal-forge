@@ -296,6 +296,24 @@ def write_index(cfg, groups, placeholder, letter=None):
     open(os.path.join(DOCS, "index.html"), "w", encoding="utf-8").write(doc)
 
 def publish(cfg):
+    # GATE: publishing is the "goes public" boundary -> require an explicit human review sign-off
+    # whenever real content would go live (flagged résumés or the letter sample). The sample/empty
+    # placeholder path needs no review. No --yes bypass here on purpose: publishing a real person.
+    wants_real = to_bool(cfg.get("live", True)) and (
+        any(isinstance(r, dict) and to_bool(r.get("publish")) for r in (cfg.get("resumes") or []))
+        or to_bool(cfg.get("letter_sample", False)))
+    if wants_real:
+        try:
+            from kf_lib import review_state
+            exists, ok = review_state()
+        except Exception:
+            exists, ok = (False, False)
+        if not ok:
+            print("BLOCKED: cannot publish a real person's résumés without a review sign-off.")
+            if not exists:
+                print("  Run: python engine/review.py   (then read work/REVIEW.md)")
+            print("  Set `reviewed: 1` in work/review.yaml after reviewing, then re-run publish.")
+            sys.exit(3)
     os.makedirs(RES_OUT, exist_ok=True)
     for old in glob.glob(os.path.join(RES_OUT, "*.pdf")):       # idempotent: drop prior published, keep sample
         if os.path.basename(old) != SAMPLE:

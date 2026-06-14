@@ -14,6 +14,32 @@ SRC_EXTS = (".md", ".tex", ".json", ".yaml", ".yml", ".py", ".txt", ".html", ".t
 CONFIG_FILES = ("config.yaml", "config.example.yaml")      # the mask/term list legitimately lives here
 ENTITIES = ("&gt;", "&lt;", "&amp;", "&#39;", "&quot;")
 LINKEDIN_LIMITS = {"headline": 220, "about": 2600}
+REVIEW_YAML = os.path.join(WORK, "review.yaml")
+
+# AI-generated disclaimer (ASCII, leak-free). Operator/repo-facing only; never printed on the
+# resume/letter PDFs. One source of truth, imported by every renderer.
+_DISCLAIMER_BODY = ("NOT verified fact. A human must review, correct, and own every claim "
+                    "before it is sent, published, or relied upon.")
+AI_DISCLAIMER = "AI-assisted draft (KaushalForge): " + _DISCLAIMER_BODY
+AI_DISCLAIMER_MD = "> **AI-assisted draft.** " + _DISCLAIMER_BODY + "\n"
+
+def to_bool(v):
+    if isinstance(v, bool): return v
+    if isinstance(v, (int, float)): return v != 0
+    if isinstance(v, str): return v.strip().lower() in ("1", "true", "yes", "on", "y")
+    return False
+
+def review_state():
+    """(exists, approved) for work/review.yaml. approved == top-level `reviewed` flag is truthy.
+    Missing file => (False, False): no review was generated (draft/CI context), so callers don't block."""
+    if not os.path.exists(REVIEW_YAML):
+        return (False, False)
+    try:
+        import yaml
+        d = yaml.safe_load(open(REVIEW_YAML, encoding="utf-8")) or {}
+    except Exception:
+        return (True, False)
+    return (True, to_bool(d.get("reviewed", 0)))
 
 def load_cfg():
     """Parse config.yaml (repo root). {} if missing or PyYAML unavailable."""

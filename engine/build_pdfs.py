@@ -61,7 +61,21 @@ def main():
         sys.exit(2)
     res_texs = sorted(glob.glob(os.path.join(OUT, "Resumes", "*", "build-*.tex")))
     let_texs = sorted(glob.glob(os.path.join(OUT, "CoverLetters", "*", "letter.tex")))
-    if "--approved" in sys.argv[1:]:
+    approved = "--approved" in sys.argv[1:]
+    bypass = "--yes" in sys.argv[1:]
+    if approved and not bypass:
+        # The approved build is the "final" set -> require an explicit human sign-off.
+        try:
+            from kf_lib import review_state
+            exists, ok = review_state()
+        except Exception:
+            exists, ok = (False, False)
+        if exists and not ok:
+            print("BLOCKED: review not approved. This builds the set you'll actually use.")
+            print("  Read work/REVIEW.md, set `reviewed: 1` in work/review.yaml, then re-run.")
+            print("  (CI/automation may pass --yes to bypass.)")
+            sys.exit(3)
+    if approved:
         res_ok, let_ok = approved_ids()
         if res_ok is None:
             print("note: --approved given but work/review.yaml has no items; building all. "
