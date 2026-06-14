@@ -31,3 +31,6 @@ python engine/tools/rulecheck.py work/targeting.json   # non-ASCII, mask leaks, 
 Use `python engine/tools/achievements.py <keywords>` to pull the REAL bullets behind each role's `emphasise` — select, never invent.
 
 **Self-check:** `rulecheck.py` passes · odds are honest · variant_list ids match the role ids · counsel names a concrete sequence.
+
+## STOP — hand to the human (mandatory)
+Targeting decides which roles this person is presented for — their direction. After it passes, **STOP**: show the operator the recommended roles, the counsellor's pick, and the honest gaps you named. **Wait for their explicit "continue"** before P3-P6. Do not proceed on your own.

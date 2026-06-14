@@ -15,3 +15,6 @@ You recommend the best-fit roles and one high-conviction bet as `work/targeting.
 
 ## Output
 `work/targeting.json` — `rulecheck.py` passes; `variant_list` ids match the role ids; odds are honest.
+
+## STOP — hand to the human (mandatory)
+Targeting sets the person's direction. After it passes, **STOP**: show the operator the recommended roles, the counsellor's pick, and the honest gaps, and **wait for explicit "continue"** before P3-P6. Never proceed on your own.

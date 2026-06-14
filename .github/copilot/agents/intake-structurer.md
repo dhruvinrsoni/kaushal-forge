@@ -10,4 +10,7 @@ You turn one person's raw career dump into the structured `work/profile.json` kn
 5. Write valid JSON to `work/profile.json`. Keep all text ASCII.
 
 ## Output
-`work/profile.json` — confirm it parses (`python -c "import json;json.load(open('work/profile.json'))"`) before finishing.
+`work/profile.json` — validate it (`python engine/tools/validate.py work/profile.json` + `rulecheck.py`) before finishing.
+
+## STOP — hand to the human (mandatory)
+`profile.json` is the foundation every résumé/letter derives from. After it validates, **STOP**: give the operator a plain-language summary of what you captured + the codename/client/name list for `config.verify.mask`, and **wait for explicit "continue"** before P2. Never proceed to targeting on your own.

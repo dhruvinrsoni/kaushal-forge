@@ -11,6 +11,12 @@ Use this when you don't have Claude Code / the skill — e.g. ChatGPT, Gemini, a
    - Run the paired script: `python engine/render_linkedin.py` / `render_resumes.py` / `render_coverletters.py` / `render_strategy.py`.
 3. **Build + gate:** `python engine/build_pdfs.py` then `python engine/verify.py` (must print `VERIFY OK`).
 
+## Human checkpoints — don't skip (this is a real person)
+Everything the model returns is an **AI draft you must review and own**. Stop and read before moving on:
+- **After P1 (`profile.json`)** — the foundation. Read it; fix anything wrong before P2 (a bad profile poisons every résumé).
+- **After P2 (`targeting.json`)** — confirm the roles/direction are right before drafting content.
+- **Before the final build / publishing** — run `python engine/review.py`, read `work/REVIEW.md`, fix any `work/*.json`, then set **`reviewed: 1`** in `work/review.yaml`. `build_pdfs.py --approved` and `publish.py` **refuse until you do** — that flag is your sign-off that you own this content.
+
 ## The validate-and-retry loop (makes even a ~1B local model work)
 After you save each `work/*.json`, run the deterministic guardrails and feed their output straight back to the model:
 ```

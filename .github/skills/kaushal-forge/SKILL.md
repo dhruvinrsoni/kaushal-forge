@@ -10,11 +10,19 @@ You turn one person's raw data into a full career toolkit. **Your only job is to
 ## Before you start
 Confirm setup is done: `python engine/bootstrap.py` ran, `config.yaml` is filled, and `work/00-raw-dump.txt` exists (from `python engine/intake_dump.py`). If not, tell the operator to do that first.
 
+## STOP for the human at these gates (this represents a real person)
+Do **not** run all six phases and present a finished toolkit. The content is an AI draft the operator must review and own. Halt at these checkpoints and **wait for the operator's explicit "continue"**:
+- **After P1 (`profile.json`)** — the foundation everything else derives from. Show a plain-language summary (who this says they are, the experience/skills you captured, the achievements bank) + the `validate.py`/`rulecheck.py` result. Wait.
+- **After P2 (`targeting.json`)** — the roles you're aiming at. Show the recommended roles + the counsellor's pick and the honest gaps. Wait.
+- **After the P3-P6 content batch, before any final build** — direct the operator to `python engine/review.py`, read `work/REVIEW.md`, fix any `work/*.json`, and set `reviewed: 1`. The approved build + publishing refuse until they do.
+
+Never set `reviewed: 1`, flip `approve`, or publish on the operator's behalf — those are the human's signature.
+
 ## The loop (run phases in order; each writes one file to work/, then run its script)
 | Phase | Open this prompt | Read | Write | Then run |
 |---|---|---|---|---|
-| P1 Structure | `phases/P1-structure.md` | `work/00-raw-dump.txt` | `work/profile.json` | — |
-| P2 Targeting | `phases/P2-targeting.md` | `work/profile.json` | `work/targeting.json` | — |
+| P1 Structure | `phases/P1-structure.md` | `work/00-raw-dump.txt` | `work/profile.json` | **STOP, show the human, wait** |
+| P2 Targeting | `phases/P2-targeting.md` | `work/profile.json` | `work/targeting.json` | **STOP, show the human, wait** |
 | P3 LinkedIn | `phases/P3-linkedin.md` | profile (+targeting) | `work/linkedin.json` | `python engine/render_linkedin.py` |
 | P4 Résumés | `phases/P4-resumes.md` | profile + targeting | `work/variants.json` | `python engine/render_resumes.py` |
 | P5 Cover letters | `phases/P5-coverletters.md` | variants (+profile) | `work/letters.json` | `python engine/render_coverletters.py` |

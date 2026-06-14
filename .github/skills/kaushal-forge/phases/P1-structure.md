@@ -31,3 +31,6 @@ python engine/tools/rulecheck.py work/profile.json    # non-ASCII, mask leaks, H
 Output ONLY JSON (no prose, no LaTeX, no markdown fences). If a tool reports `[2].bullets: expected array`, fix exactly that and re-run — you don't have to be right first try, you have to converge.
 
 **Self-check before finishing:** `validate.py` + `rulecheck.py` both pass · every bullet traces to the dump · no GPA · no real client names · no codenames · numbers exact · persona captured.
+
+## STOP — hand to the human (mandatory)
+`profile.json` is the foundation every résumé/letter is built from, so a mistake here poisons everything. After it validates, **STOP**: give the operator a short plain-language summary (who this says they are; the experience, skills, and achievements you captured; anything you generalised or dropped) and the codename/client/name list to add to `config.verify.mask`. **Wait for their explicit "continue"** before starting P2. Do not proceed on your own.
