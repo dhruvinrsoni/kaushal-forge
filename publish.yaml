@@ -33,7 +33,7 @@ resumes:
   - { publish: 0, label: "Cloud Devops Platform (ATS)", file: output/Resumes/02-cloud-devops-platform/build-ats.pdf }
   - { publish: 0, label: "Cloud Devops Platform (MODERN)", file: output/Resumes/02-cloud-devops-platform/build-modern.pdf }
   - { publish: 0, label: "Cloud Devops Platform (TWOCOL)", file: output/Resumes/02-cloud-devops-platform/build-twocol.pdf }
-  - { publish: 1, label: "Ai Genai Engineer 2Page (ATS)", file: output/Resumes/03-ai-genai-engineer-2page/build-ats.pdf }
+  - { publish: 0, label: "Ai Genai Engineer 2Page (ATS)", file: output/Resumes/03-ai-genai-engineer-2page/build-ats.pdf }
   - { publish: 0, label: "Ai Genai Engineer 2Page (MODERN)", file: output/Resumes/03-ai-genai-engineer-2page/build-modern.pdf }
   - { publish: 0, label: "Ai Genai Engineer 2Page (TWOCOL)", file: output/Resumes/03-ai-genai-engineer-2page/build-twocol.pdf }
   - { publish: 0, label: "Ai Genai Engineer (ATS)", file: output/Resumes/03-ai-genai-engineer/build-ats.pdf }
@@ -57,7 +57,7 @@ resumes:
   - { publish: 0, label: "Staff Ai First Engineer (ATS)", file: output/Resumes/06-staff-ai-first-engineer/build-ats.pdf }
   - { publish: 0, label: "Staff Ai First Engineer (MODERN)", file: output/Resumes/06-staff-ai-first-engineer/build-modern.pdf }
   - { publish: 0, label: "Staff Ai First Engineer (TWOCOL)", file: output/Resumes/06-staff-ai-first-engineer/build-twocol.pdf }
-  - { publish: 1, label: "Research Engineer Ai 2Page (ATS)", file: output/Resumes/07-research-engineer-ai-2page/build-ats.pdf }
+  - { publish: 0, label: "Research Engineer Ai 2Page (ATS)", file: output/Resumes/07-research-engineer-ai-2page/build-ats.pdf }
   - { publish: 0, label: "Research Engineer Ai 2Page (MODERN)", file: output/Resumes/07-research-engineer-ai-2page/build-modern.pdf }
   - { publish: 0, label: "Research Engineer Ai 2Page (TWOCOL)", file: output/Resumes/07-research-engineer-ai-2page/build-twocol.pdf }
   - { publish: 0, label: "Research Engineer Ai (ATS)", file: output/Resumes/07-research-engineer-ai/build-ats.pdf }
@@ -72,7 +72,7 @@ resumes:
   - { publish: 0, label: "Master 2Page (ATS)", file: output/Resumes/09-master-2page/build-ats.pdf }
   - { publish: 0, label: "Master 2Page (MODERN)", file: output/Resumes/09-master-2page/build-modern.pdf }
   - { publish: 0, label: "Master 2Page (TWOCOL)", file: output/Resumes/09-master-2page/build-twocol.pdf }
-  - { publish: 1, label: "Counsellors Pick 2Page (ATS)", file: output/Resumes/10-counsellors-pick-2page/build-ats.pdf }
+  - { publish: 0, label: "Counsellors Pick 2Page (ATS)", file: output/Resumes/10-counsellors-pick-2page/build-ats.pdf }
   - { publish: 0, label: "Counsellors Pick 2Page (MODERN)", file: output/Resumes/10-counsellors-pick-2page/build-modern.pdf }
   - { publish: 0, label: "Counsellors Pick 2Page (TWOCOL)", file: output/Resumes/10-counsellors-pick-2page/build-twocol.pdf }
   - { publish: 0, label: "Counsellors Pick (ATS)", file: output/Resumes/10-counsellors-pick/build-ats.pdf }
